@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nginx中常用的模块整理 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Nginx中常用的模块整理</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>Nginx中常用的模块整理</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><blockquote><p>Nginx 配置文件在线生成: https://nginxconfig.io/</p></blockquote> <h1 id="第一部分-基础模块"><a href="#第一部分-基础模块" class="header-anchor">#</a> 第一部分 基础模块</h1> <h2 id="一、性能相关配置"><a href="#一、性能相关配置" class="header-anchor">#</a> 一、性能相关配置</h2> <div class="language- extra-class"><pre class="language-text"><code>worker_processes number | auto；
+</code></pre></div><blockquote><p><code>worker</code>进程的数量；通常应该为当前主机的<code>cpu</code>的物理核心数。多于<code>8</code>个的话建议写<code>8</code>，超过<code>8</code>个性能不会提升，稳定性降低</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code>worker_cpu_affinity auto <span class="token punctuation">[</span>cpumask<span class="token punctuation">]</span> <span class="token comment">#将work进程绑定在固定cpu上提高缓存命中率 </span>
+<span class="token comment"># 例：</span>
+worker_cpu_affinity 0001 0010 0100 <span class="token number">1000</span><span class="token punctuation">;</span>
+worker_cpu_affinity 0101 <span class="token number">1010</span><span class="token punctuation">;</span>
+</code></pre></div><div class="language-bash extra-class"><pre class="language-bash"><code>worker_priority number
+<span class="token comment"># 指定worker进程的nice值，设定worker进程优先级： [-20,20]</span>
+</code></pre></div><div class="language-bash extra-class"><pre class="language-bash"><code>worker_rlimit_nofile number
+worker <span class="token comment"># 进程所能够打开的文件数量上限,默认较小，生产中需要调大如65535。系统资源通过配置修改/etc/security/limits.conf 例：root soft nofile 65535，或命令修改ulimit -n，修改后需重启服务或系统生效。</span>
+</code></pre></div><h2 id="二、时间驱动events相关的配置"><a href="#二、时间驱动events相关的配置" class="header-anchor">#</a> 二、时间驱动events相关的配置</h2> <ul><li>每个<code>worker</code>进程所能够打开的最大并发连接数数量，如<code>10240</code></li> <li>总最大并发数： <code>worker_processes * worker_connections</code></li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code>worker_connections number
+</code></pre></div><ul><li>指明并发连接请求的处理方法,默认自动选择最优方法不用调整</li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code>use method
+<span class="token comment"># 如：use epoll;</span>
+</code></pre></div><ul><li><code>on</code>指由各个<code>worker</code>轮流处理新请求</li> <li><code>Off</code>指每个新请求的到达都会通知(唤醒)所有的<code>worker</code>进程，但只有一个进程可获得连接，造成“惊群”，影响性能，默认<code>on</code></li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 处理新的连接请求的方法</span>
+accept_mutex on <span class="token operator">|</span> off <span class="token comment"># 互斥；</span>
+</code></pre></div><h2 id="三、http核心模块相关配置ngx-http-core-module"><a href="#三、http核心模块相关配置ngx-http-core-module" class="header-anchor">#</a> 三、http核心模块相关配置ngx_http_core_module</h2> <h3 id="_3-1web服务模板"><a href="#_3-1web服务模板" class="header-anchor">#</a> 3.1web服务模板</h3> <div class="language-bash extra-class"><pre class="language-bash"><code>server <span class="token punctuation">{</span> <span class="token punctuation">..</span>. <span class="token punctuation">}</span>
+<span class="token comment"># 配置一个虚拟主机</span>
+server <span class="token punctuation">{</span>
+    listen address<span class="token punctuation">[</span>:PORT<span class="token punctuation">]</span><span class="token operator">|</span>PORT<span class="token punctuation">;</span>
+    server_name SERVER_NAME<span class="token punctuation">;</span> <span class="token comment"># 指令指向不同的主机名</span>
+    root /<span class="token environment constant">PATH</span>/TO/DOCUMENT_ROOT<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> 
+</code></pre></div><h3 id="_3-2套接字相关配置"><a href="#_3-2套接字相关配置" class="header-anchor">#</a> 3.2套接字相关配置</h3> <div class="language-bash extra-class"><pre class="language-bash"><code>listen address<span class="token punctuation">[</span>:port<span class="token punctuation">]</span> <span class="token punctuation">[</span>default_server<span class="token punctuation">]</span> <span class="token punctuation">[</span>ssl<span class="token punctuation">]</span> <span class="token punctuation">[</span>http2 <span class="token operator">|</span> spdy<span class="token punctuation">]</span> <span class="token punctuation">[</span>backlog<span class="token operator">=</span>number<span class="token punctuation">]</span> <span class="token punctuation">[</span>rcvbuf<span class="token operator">=</span>size<span class="token punctuation">]</span> <span class="token punctuation">[</span>sndbuf<span class="token operator">=</span>size<span class="token punctuation">]</span>
+</code></pre></div><ul><li><code>default_server</code> 设定为默认虚拟主机</li> <li><code>ssl</code> 限制仅能够通过<code>ssl</code>连接提供服务</li> <li><code>backlog=number</code> 超过并发连接数后，新请求进入后援队列的长度</li> <li><code>rcvbuf=size</code> 接收缓冲区大小</li> <li><code>sndbuf=size</code> 发送缓冲区大小</li></ul> <h3 id="_3-3-server-name"><a href="#_3-3-server-name" class="header-anchor">#</a> 3.3 server_name</h3> <ul><li>支持*通配任意长度的任意字符</li></ul> <div class="language- extra-class"><pre class="language-text"><code>server_name *.magedu.com www.magedu.*
+</code></pre></div><ul><li>支持<code>~</code>起始的字符做正则表达式模式匹配，性能原因慎用</li></ul> <div class="language- extra-class"><pre class="language-text"><code>server_name ~^www\d+\.magedu\.com$   #\d 表示 [0-9]
+</code></pre></div><p><strong>匹配优先级机制从高到低：</strong></p> <ul><li>首先是字符串精确匹配 如： <code>www.magedu.com</code></li> <li>左侧<code>*</code>通配符 如： <code>*.magedu.com</code></li> <li>右侧<code>*</code>通配符 如： <code>www.magedu.*</code></li> <li>正则表达式 如： <code>~^.*\.magedu\.com$</code></li> <li><code>default_server</code></li></ul> <h3 id="_3-4-延迟发送选项"><a href="#_3-4-延迟发送选项" class="header-anchor">#</a> 3.4 延迟发送选项</h3> <div class="language- extra-class"><pre class="language-text"><code>tcp_nodelay on | off;
+tcp_nopush  on | off;
+</code></pre></div><ul><li>在<code>keep alived</code>模式下的连接是否启用<code>TCP_NODELAY</code>选项。</li> <li><code>tcp_nopush</code>必须在<code>sendfile</code>为<code>on</code>时才有效，当为<code>off</code>时，延迟发送，合并多个请求后再发送</li> <li>默认<code>On</code>时，不延迟发送</li> <li>可用于： <code>http</code>, <code>server</code>, <code>location</code></li></ul> <h3 id="_3-5-sendfile"><a href="#_3-5-sendfile" class="header-anchor">#</a> 3.5 sendfile</h3> <div class="language-bash extra-class"><pre class="language-bash"><code>sendfile on <span class="token operator">|</span> off<span class="token punctuation">;</span>
+</code></pre></div><blockquote><p>是否启用<code>sendfile</code>功能，在内核中封装报文直接发送。如用来进行下载等应用磁盘IO重负载应用可设置为<code>off</code>，以平衡磁盘与网络IO处理速度降低系统负载，如图片显示不正常把这个改为<code>off</code>。默认<code>Off</code></p></blockquote> <h3 id="_3-6-隐藏版本信息"><a href="#_3-6-隐藏版本信息" class="header-anchor">#</a> 3.6 隐藏版本信息</h3> <blockquote><p>是否在响应报文的<code>Server</code>首部显示<code>nginx</code>版本</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code>server_tokens on <span class="token operator">|</span> off <span class="token operator">|</span> build <span class="token operator">|</span> string
+</code></pre></div><h3 id="_3-7-location匹配"><a href="#_3-7-location匹配" class="header-anchor">#</a> 3.7 location匹配</h3> <div class="language-bash extra-class"><pre class="language-bash"><code>location <span class="token punctuation">[</span> <span class="token operator">=</span> <span class="token operator">|</span> ~ <span class="token operator">|</span> ~* <span class="token operator">|</span> ^~ <span class="token punctuation">]</span> uri <span class="token punctuation">{</span> <span class="token punctuation">..</span>. <span class="token punctuation">}</span>
+location @name <span class="token punctuation">{</span> <span class="token punctuation">..</span>. <span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>在一个<code>server</code>中<code>location</code>配置段可存在多个，用于实现从<code>uri</code>到文件系统的路径映射； <code>ngnix</code>会根据用户请求的<code>URI</code>来检查定义的所有<code>location</code>，并找出一个最佳匹配，而后应用其配置</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code>server <span class="token punctuation">{</span><span class="token punctuation">..</span>.
+    server_name www.magedu.com<span class="token punctuation">;</span>
+    location /images/ <span class="token punctuation">{</span>
+        root /data/imgs/<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+http://www.magedu.com/images/logo.jpg
+--<span class="token operator">&gt;</span> /data/imgs/images/logo.jpg 
+</code></pre></div><ul><li><code>=</code>：对<code>URI</code>做精确匹配；</li> <li><code>^~</code>：对<code>URI</code>的最左边部分做匹配检查，不区分字符大小写</li> <li><code>~</code>：对<code>URI</code>做正则表达式模式匹配，区分字符大小写</li> <li><code>~*</code>：对<code>URI</code>做正则表达式模式匹配，不区分字符大小写
+不带符号：匹配起始于此<code>uri</code>的所有的<code>uri</code>
+匹配优先级从高到低：</li> <li><code>=</code>, <code>^~</code>, <code>～/～*</code>, 不带符号</li></ul> <p><strong>路径别名alias path</strong></p> <p>示例：</p> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># http://www.magedu.com/bbs/index.php</span>
+
+location /bbs/ <span class="token punctuation">{</span>
+    <span class="token builtin class-name">alias</span> /web/forum/<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token comment"># --&gt; /web/forum/index.html</span>
+location /bbs/ <span class="token punctuation">{</span>
+    root /web/forum/<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>     <span class="token comment"># --&gt; /web/forum/bbs/index.html    </span>
+</code></pre></div><p><strong>注意</strong>：</p> <blockquote><p><code>location</code>中使用<code>root</code>指令和<code>alias</code>指令的意义不同</p></blockquote> <ul><li><code>root</code>，相当于追加在<code>root</code>目录后面</li> <li><code>alias</code>，相当于对<code>location</code>中的<code>url</code>进行替换</li></ul> <h3 id="_3-8-错误页面显示"><a href="#_3-8-错误页面显示" class="header-anchor">#</a> 3.8 错误页面显示</h3> <div class="language- extra-class"><pre class="language-text"><code>error_page code ... [=[response]] uri;
+</code></pre></div><p><strong>模块：</strong></p> <div class="language- extra-class"><pre class="language-text"><code>ngx_http_core_module
+</code></pre></div><ul><li>定义错误页， 以指定的响应状态码进行响应</li> <li>可用位置： <code>http</code>, <code>server</code>, <code>location</code>, <code>if in location</code></li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code>error_page <span class="token number">404</span> /404.html
+error_page <span class="token number">404</span> <span class="token operator">=</span><span class="token number">200</span> /404.html  <span class="token comment">#防止404页面被劫持</span>
+</code></pre></div><h3 id="_3-9-长连接相关配置"><a href="#_3-9-长连接相关配置" class="header-anchor">#</a> 3.9 长连接相关配置</h3> <div class="language- extra-class"><pre class="language-text"><code>keepalive_timeout timeout [header_timeout];
+</code></pre></div><ul><li>设定保持连接超时时长， <code>0</code>表示禁止长连接， 默认为<code>75s</code></li></ul> <div class="language- extra-class"><pre class="language-text"><code>keepalive_requests number;
+</code></pre></div><ul><li>在一次长连接上所允许请求的资源的最大数量，默认为<code>100</code></li></ul> <div class="language- extra-class"><pre class="language-text"><code>keepalive_disable none | browser ...
+</code></pre></div><ul><li>对哪种浏览器禁用长连接</li></ul> <div class="language- extra-class"><pre class="language-text"><code>send_timeout time;
+</code></pre></div><ul><li>向客户端发送响应报文的超时时长，此处是指两次写操作之间的间隔时长，而非
+整个响应过程的传输时长</li></ul> <h3 id="_3-10-请求报文缓存"><a href="#_3-10-请求报文缓存" class="header-anchor">#</a> 3.10 请求报文缓存</h3> <div class="language- extra-class"><pre class="language-text"><code>client_body_buffer_size size;
+</code></pre></div><blockquote><p>用于接收每个客户端请求报文的body部分的缓冲区大小；默认为<code>16k</code>；超出此大小时，其将被暂存到磁盘上的由<code>client_body_temp_path</code>指令所定义的位置</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>client_body_temp_path path [level1 [level2 [level3]]];
+</code></pre></div><blockquote><p>设定用于存储客户端请求报文的<code>body</code>部分的临时存储路径及子目录结构和数量
+目录名为<code>16</code>进制的数字；</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>client_body_temp_path /var/tmp/client_body 1 2 2
+</code></pre></div><ul><li><code>1</code>级目录占1位<code>16</code>进制，即<code>2^4=16个目录</code>0-f`</li> <li><code>2</code>级目录占2位<code>16</code>进制，即<code>2^8=256</code>个目录 <code>00-ff</code></li> <li><code>3</code>级目录占2位<code>16</code>进制， 即<code>2^8=256</code>个目录 <code>00--ff</code></li></ul> <h3 id="_3-11-对客户端进行限制相关配置"><a href="#_3-11-对客户端进行限制相关配置" class="header-anchor">#</a> 3.11 对客户端进行限制相关配置</h3> <div class="language- extra-class"><pre class="language-text"><code>limit_rate rate;
+</code></pre></div><blockquote><p>限制响应给客户端的传输速率，单位是<code>bytes/second</code> 默认<code>0</code>表示无限制</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>limit_except method ... { ... }
+</code></pre></div><blockquote><p>仅用于<code>location</code>限制客户端使用除了指定的请求方法之外的其它方法
+<code>method:GET</code>, <code>HEAD</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>，<code>MKCOL</code>, <code>COPY</code>, <code>MOVE</code>, <code>OPTIONS</code>, <code>PROPFIND</code>,
+<code>PROPPATCH</code>, <code>LOCK</code>, <code>UNLOCK</code>, <code>PATCH</code></p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 例：</span>
+limit_except GET <span class="token punctuation">{</span>
+    allow <span class="token number">192.168</span>.1.0/24<span class="token punctuation">;</span>
+    deny all<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> 
+</code></pre></div><blockquote><p>除了<code>GET</code>和<code>HEAD</code> 之外其它方法仅允许<code>192.168.1.0/24</code>网段主机使用</p></blockquote> <h2 id="四、访问控制模块ngx-http-access-module"><a href="#四、访问控制模块ngx-http-access-module" class="header-anchor">#</a> 四、访问控制模块ngx_http_access_module</h2> <blockquote><p>实现基于<code>ip</code>的访问控制功能</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code>allow address <span class="token operator">|</span> CIDR <span class="token operator">|</span> unix: <span class="token operator">|</span> all<span class="token punctuation">;</span>
+deny address <span class="token operator">|</span> CIDR <span class="token operator">|</span> unix: <span class="token operator">|</span> all<span class="token punctuation">;</span>
+http, server, location, limit_except
+</code></pre></div><blockquote><p>自上而下检查，一旦匹配，将生效，条件严格的置前</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment">#示例：</span>
+
+location / <span class="token punctuation">{</span>
+    deny <span class="token number">192.168</span>.1.1<span class="token punctuation">;</span>
+    allow <span class="token number">192.168</span>.1.0/24<span class="token punctuation">;</span>
+    allow <span class="token number">10.1</span>.1.0/16<span class="token punctuation">;</span>
+    allow <span class="token number">2001</span>:0db8::/32<span class="token punctuation">;</span>
+    deny all<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="五、用户认证模块ngx-http-auth-basic-module"><a href="#五、用户认证模块ngx-http-auth-basic-module" class="header-anchor">#</a> 五、用户认证模块ngx_http_auth_basic_module</h2> <blockquote><p>实现基于用户的访问控制，使用<code>basic</code>机制进行用户认证</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code>auth_basic string <span class="token operator">|</span> off<span class="token punctuation">;</span>
+auth_basic_user_file <span class="token function">file</span><span class="token punctuation">;</span>
+location /admin/ <span class="token punctuation">{</span>
+    auth_basic <span class="token string">"Admin Area"</span><span class="token punctuation">;</span>
+    auth_basic_user_file /etc/nginx/.ngxpasswd<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><strong>用户口令：</strong></p> <ul><li>明文文本：格式<code>name:password:comment</code></li> <li>加密文本：由<code>htpasswd</code>命令实现 <code>httpd-tools</code>所提供</li> <li><code>htpasswd</code> [<code>-c</code>第一次创建时使用] [<code>-D</code>删除用户] <code>passwdfile</code> <code>username</code></li></ul> <p>六、状态查看模块ngx_http_stub_status_module</p> <blockquote><p>用于输出nginx的基本状态信息</p></blockquote> <ul><li><code>Active connections</code>:当前状态，活动状态的连接数</li> <li><code>accepts</code>：统计总值，已经接受的客户端请求的总数</li> <li><code>handled</code>：统计总值，已经处理完成的客户端请求的总数</li> <li><code>requests</code>：统计总值，客户端发来的总的请求数</li> <li><code>Reading</code>：当前状态，正在读取客户端请求报文首部的连接的连接数</li> <li><code>Writing</code>：当前状态，正在向客户端发送响应报文过程中的连接数</li> <li><code>Waiting</code>：当前状态，正在等待客户端发出请求的空闲连接数</li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 示例：</span>
+
+location /status <span class="token punctuation">{</span>
+    stub_status<span class="token punctuation">;</span>
+    allow <span class="token number">172.16</span>.0.0/16<span class="token punctuation">;</span>
+    deny all<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="七、日志记录模块ngx-http-log-module"><a href="#七、日志记录模块ngx-http-log-module" class="header-anchor">#</a> 七、日志记录模块ngx_http_log_module</h2> <div class="language- extra-class"><pre class="language-text"><code>log_format name string
+</code></pre></div><ul><li><code>string</code>可以使用<code>nginx</code>核心模块及其它模块内嵌的变量</li></ul> <div class="language- extra-class"><pre class="language-text"><code>access_log path [format [buffer=size] [gzip[=level]] [flush=time] [if=condition]];
+access_log off;
+</code></pre></div><ul><li>访问日志文件路径，格式及相关的缓冲的配置</li></ul> <div class="language- extra-class"><pre class="language-text"><code>buffer=size
+flush=time 
+</code></pre></div><div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 示例</span>
+log_format compression <span class="token string">'$remote_addr-$remote_user [$time_local] '</span>
+                         <span class="token string">'"$request" $status $bytes_sent '</span>
+                         <span class="token string">'"$http_referer" "$http_user_agent" "$gzip_ratio"'</span><span class="token punctuation">;</span>
+access_log /spool/logs/nginx-access.log compression <span class="token assign-left variable">buffer</span><span class="token operator">=</span>32k<span class="token punctuation">;</span> 
+json格式日志示例<span class="token punctuation">;</span>log_format json <span class="token string">'{"@timestamp":"$time_iso8601",'</span>
+                                 <span class="token string">'"client_ip":"$remote_addr",'</span>
+                                 <span class="token string">'"size":$body_bytes_sent,'</span>
+                                 <span class="token string">'"responsetime":$request_time,'</span>
+                                 <span class="token string">'"upstreamtime":"$upstream_response_time",'</span>
+                                 <span class="token string">'"upstreamhost":"$upstream_addr",'</span>
+                                 <span class="token string">'"http_host":"$host",'</span>
+                                 <span class="token string">'"method":"$request_method",'</span>
+                                 <span class="token string">'"request_uri":"$request_uri",'</span>
+                                 <span class="token string">'"xff":"$http_x_forwarded_for",'</span>
+                                 <span class="token string">'"referrer":"$http_referer",'</span>
+                                 <span class="token string">'"agent":"$http_user_agent",'</span>
+                                 <span class="token string">'"status":"$status"}'</span><span class="token punctuation">;</span>
+</code></pre></div><div class="language- extra-class"><pre class="language-text"><code>open_log_file_cache max=N [inactive=time] [min_uses=N] [valid=time];
+</code></pre></div><ul><li><code>open_log_file_cache off</code>; 缓存各日志文件相关的元数据信息</li> <li><code>max</code>：缓存的最大文件描述符数量</li> <li><code>min_uses</code>：在<code>inactive</code>指定的时长内访问大于等于此值方可被当作活动项</li> <li><code>inactive</code>：非活动时长</li> <li><code>valid</code>：验正缓存中各缓存项是否为活动项的时间间隔</li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 例: </span>
+open_log_file_cache <span class="token assign-left variable">max</span><span class="token operator">=</span><span class="token number">1000</span> <span class="token assign-left variable">inactive</span><span class="token operator">=</span>20s  <span class="token assign-left variable">valid</span><span class="token operator">=</span>1m<span class="token punctuation">;</span>
+</code></pre></div><h2 id="八、压缩相关选项ngx-http-gzip-module"><a href="#八、压缩相关选项ngx-http-gzip-module" class="header-anchor">#</a> 八、压缩相关选项ngx_http_gzip_module</h2> <ul><li><code>gzip on | off</code>;  #启用或禁用<code>gzip</code>压缩</li> <li><code>gzip_comp_level level</code>;  #压缩比由低到高： <code>1</code> 到 <code>9</code> 默认： <code>1</code></li> <li><code>gzip_disable regex</code> ...;  #匹配到客户端浏览器不执行压缩</li> <li><code>gzip_min_length length</code>;  #启用压缩功能的响应报文大小阈值</li> <li><code>gzip_http_version 1.0 | 1.1</code>; #设定启用压缩功能时，协议的最小版本 默认：<code>1.1</code></li> <li><code>gzip_buffers number size</code>;
+支持实现压缩功能时缓冲区数量及每个缓存区的大小
+默认： <code>32 4k</code> 或 <code>16 8k</code></li> <li><code>gzip_types mime-type</code> ...;
+指明仅对哪些类型的资源执行压缩操作；即压缩过滤器
+默认包含有<code>text/html</code>，不用显示指定，否则出错</li> <li><code>gzip_vary on | off;</code>
+如果启用压缩，是否在响应报文首部插入<code>“Vary: AcceptEncoding</code></li> <li><code>gzip_proxied off</code> | <code>expired</code> | <code>no-cache</code> | <code>no-store</code>|
+<code>private</code> | <code>no_last_modified</code> | <code>no_etag</code>| <code>auth</code> | <code>any</code> ...;</li></ul> <blockquote><p><code>nginx</code>对于代理服务器请求的响应报文，在何种条件下启用压缩功能</p></blockquote> <ul><li><code>off</code>：对被代理的请求不启用压缩</li> <li><code>expired</code>,<code>no-cache</code>, <code>no-store</code>， <code>private</code>：对代理服务器请求的响应报文首部<code>Cache-Control</code>值任何一个，启用压缩功能</li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 示例：</span>
+<span class="token function">gzip</span> on<span class="token punctuation">;</span>
+gzip_comp_level <span class="token number">6</span><span class="token punctuation">;</span>
+gzip_http_version <span class="token number">1.1</span><span class="token punctuation">;</span>
+gzip_vary on<span class="token punctuation">;</span>
+gzip_min_length <span class="token number">1024</span><span class="token punctuation">;</span>
+gzip_buffers <span class="token number">16</span> 8k<span class="token punctuation">;</span>
+gzip_proxied any<span class="token punctuation">;</span>
+gzip_disable <span class="token string">"MSIE[1-6]\.(?!.*SV1)"</span><span class="token punctuation">;</span>
+gzip_types text/xml text/plain text/css application/javascript application/xml application/json<span class="token punctuation">;</span>
+</code></pre></div><h2 id="九、https模块ngx-http-ssl-module模块"><a href="#九、https模块ngx-http-ssl-module模块" class="header-anchor">#</a> 九、https模块ngx_http_ssl_module模块：</h2> <ul><li><code>ssl on | off</code>; 为指定虚拟机启用<code>HTTPS protocol</code>， 建议用<code>listen</code>指令代替</li> <li><code>ssl_certificate file</code>; 当前虚拟主机使用PEM格式的证书文件</li> <li><code>ssl_certificate_key fil</code>; 当前虚拟主机上与其证书匹配的私钥文件</li> <li><code>ssl_protocols [SSLv2] [SSLv3] [TLSv1] [TLSv1.1] [TLSv1.2]</code>; 支持<code>ssl</code>协议版本，默认为后三个</li> <li><code>ssl_session_cache off | none | [builtin[:size]] [shared:name:size]</code>;
+<ul><li><code>builtin[:size]</code>：使用<code>OpenSSL</code>内建缓存，为每<code>worker</code>进程私有</li> <li><code>[shared:name:size]</code>：在各<code>worker</code>之间使用一个共享的缓存</li></ul></li> <li><code>ssl_session_timeout time</code>;
+<ul><li>客户端连接可以复用<code>ssl session cache</code>中缓存的<code>ssl</code>参数的有效时长，默认<code>5m</code></li></ul></li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 示例：</span>
+server <span class="token punctuation">{</span>
+    listen <span class="token number">443</span> ssl<span class="token punctuation">;</span>
+    server_name www.magedu.com<span class="token punctuation">;</span>
+    root /vhosts/ssl/htdocs<span class="token punctuation">;</span>
+    ssl on<span class="token punctuation">;</span>
+    ssl_certificate /etc/nginx/ssl/nginx.crt<span class="token punctuation">;</span>
+    ssl_certificate_key /etc/nginx/ssl/nginx.key<span class="token punctuation">;</span>
+    ssl_session_cache shared:sslcache:20m<span class="token punctuation">;</span>
+    ssl_session_timeout 10m<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="十、重定向模块ngx-http-rewrite-module"><a href="#十、重定向模块ngx-http-rewrite-module" class="header-anchor">#</a> 十、重定向模块ngx_http_rewrite_module</h2> <ol><li><strong>rewrite regex replacement [flag]</strong></li></ol> <blockquote><p>将用户请求的<code>URI</code>基于<code>regex</code>所描述的模式进行检查，匹配到时将其替换为<code>replacement</code>指定的新的<code>URI</code>。注意：如果在同一级配置块中存在多个<code>rewrite</code>规则，那么会自下而下逐个检查；被某条件规则替换完成后，会重新一轮的替换检查</p></blockquote> <ul><li>隐含有循环机制,但不超过<code>10</code>次；如果超过，提示<code>500</code>响应码，<code>[flag]</code>所表示的标志位用于控制此循环机制</li> <li>如果<code>replacement</code>是以<code>http://</code>或<code>https://</code>开头，则替换结果会直接以重向返回给客户端 <code>[flag]</code>：</li> <li><code>last</code>：重写完成后停止对当前<code>URI</code>在当前<code>location</code>中后续的其它重写操作，而后对新的URI启动新一轮重写检查；提前重启新一轮循环</li> <li><code>break</code>：重写完成后停止对当前<code>URI</code>在当前<code>location</code>中后续的其它重写操作，而后直接跳转至重写规则配置块之后的其它配置；结束循环，建议在<code>location</code>中使用</li> <li><code>redirect</code>：临时重定向，重写完成后以临时重定向方式直接返回重写后生成的新URI给客户端，由客户端重新发起请求；不能以<code>http://</code>或<code>https://</code>开头，使用相对路径，状态码： <code>302</code></li> <li><code>permanent</code>:重写完成后以永久重定向方式直接返回重写后生成的新URI给客户端，由客户端重新发起请求，状态码：<code>301</code></li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 例：</span>
+rewrite ^/zz/<span class="token punctuation">(</span>.*<span class="token punctuation">\</span>.html<span class="token punctuation">)</span>$  /zhengzhou/<span class="token variable">$1</span> <span class="token builtin class-name">break</span><span class="token punctuation">;</span>
+rewrite ^/zz/<span class="token punctuation">(</span>.*<span class="token punctuation">\</span>.html<span class="token punctuation">)</span>$  https://www.dianping/zhengzhou/<span class="token variable">$1</span> permanent<span class="token punctuation">;</span>
+</code></pre></div><ol start="2"><li><strong>return</strong></li></ol> <blockquote><p>停止处理，并返回给客户端指定的响应码</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token builtin class-name">return</span> code <span class="token punctuation">[</span>text<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token builtin class-name">return</span> code URL<span class="token punctuation">;</span>
+<span class="token builtin class-name">return</span> URL<span class="token punctuation">;</span>
+</code></pre></div><ol start="3"><li><strong>rewrite_log on | off;</strong></li></ol> <blockquote><p>是否开启重写日志, 发送至<code>error_log（notice level）</code></p></blockquote> <ol start="4"><li><strong>set $variable value;</strong></li></ol> <ul><li>用户自定义变量</li> <li>注意：变量定义和调用都要以<code>$</code>开头</li></ul> <ol start="5"><li><strong>if (condition) { ... }</strong></li></ol> <blockquote><p>引入新的上下文,条件满足时，执行配置块中的配置指令； <code>server</code>, <code>location</code></p></blockquote> <p><strong>比较操作符</strong>：</p> <ul><li><code>==</code> 相同</li> <li><code>!=</code> 不同</li> <li><code>~：</code>模式匹配，区分字符大小写</li> <li><code>~*</code>：模式匹配，不区分字符大小写</li> <li><code>!~</code>：模式不匹配，区分字符大小写</li> <li><code>!~*</code>：模式不匹配，不区分字符大小写
+文件及目录存在性判断：</li> <li><code>-e</code>, <code>!-e</code> 存在（包括文件，目录，软链接）</li> <li><code>-f</code>, <code>!-f</code> 文件</li> <li><code>-d</code>, <code>!-d</code> 目录</li> <li><code>-x</code>, <code>!-x</code> 执行</li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 浏览器分流示例：</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$http_user_agent</span> ~ Chrom<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+rewrite ^<span class="token punctuation">(</span>.*<span class="token punctuation">)</span>$  /chrome/<span class="token variable">$1</span> <span class="token builtin class-name">break</span><span class="token punctuation">;</span>                                                 
+<span class="token punctuation">}</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$http_user_agent</span> ~ MSIE<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+rewrite ^<span class="token punctuation">(</span>.*<span class="token punctuation">)</span>$  /IE/<span class="token variable">$1</span> <span class="token builtin class-name">break</span><span class="token punctuation">;</span>                                                      
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="十一、引用模块ngx-http-referer-module"><a href="#十一、引用模块ngx-http-referer-module" class="header-anchor">#</a> 十一、引用模块ngx_http_referer_module</h2> <div class="language- extra-class"><pre class="language-text"><code>valid_referers none|blocked|server_names|string ...;
+</code></pre></div><blockquote><p>定义<code>referer</code>首部的合法可用值，不能匹配的将是非法值,用于防盗链，</p></blockquote> <ul><li><code>none</code>：请求报文首部没有<code>referer</code>首部,比如直接在浏览器打开一个图片</li> <li><code>blocked</code>：请求报文有<code>referer</code>首部，但无有效值，伪装的头部信息。</li> <li><code>server_names</code>：参数，其可以有值作为主机名或主机名模式</li> <li><code>arbitrary_string</code>：任意字符串，但可使用<code>*</code>作通配符</li> <li><code>regular expression</code>：被指定的正则表达式模式匹配到的字符串,要使用<code>~</code>开头，</li> <li>例如： <code>~.*\.magedu\.com</code></li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 示例：</span>
+location ~*^.+<span class="token punctuation">\</span>.<span class="token punctuation">(</span>jpg<span class="token operator">|</span>gif<span class="token operator">|</span>png<span class="token operator">|</span>swf<span class="token operator">|</span>flv<span class="token operator">|</span>wma<span class="token operator">|</span>wmv<span class="token operator">|</span>asf<span class="token operator">|</span>mp3<span class="token operator">|</span>mmf<span class="token operator">|</span><span class="token function">zip</span><span class="token operator">|</span><span class="token function">rar</span><span class="token punctuation">)</span>$ <span class="token punctuation">{</span>
+valid_referers none blocked server_names *.magedu.com
+*.mageedu.com magedu.* mageedu.* ~<span class="token punctuation">\</span>.magedu<span class="token punctuation">\</span>.<span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$invalid_referer</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token builtin class-name">return</span> <span class="token number">403</span><span class="token punctuation">;</span>
+break；
+<span class="token punctuation">}</span>
+access_log off<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="十二、反向代理模块ngx-http-proxy-module"><a href="#十二、反向代理模块ngx-http-proxy-module" class="header-anchor">#</a> 十二、反向代理模块ngx_http_proxy_module</h2> <h3 id="_12-1-proxy-pass-url"><a href="#_12-1-proxy-pass-url" class="header-anchor">#</a> 12.1 proxy_pass URL</h3> <div class="language- extra-class"><pre class="language-text"><code>Context:location, if in location, limit_except
+</code></pre></div><blockquote><p>注意： <code>proxy_pass</code>后面的路径不带<code>uri</code>时，其会将<code>location</code>的<code>uri</code>传递给后端主机</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code>server <span class="token punctuation">{</span>
+    <span class="token punctuation">..</span>.
+    server_name <span class="token environment constant">HOSTNAME</span><span class="token punctuation">;</span>
+    location /uri/ <span class="token punctuation">{</span>
+    proxy_pass http://host<span class="token punctuation">[</span>:port<span class="token punctuation">]</span><span class="token punctuation">;</span> 
+    <span class="token punctuation">}</span>
+    <span class="token punctuation">..</span>.
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>上面示例： <code>http://HOSTNAME/uri --&gt; http://host/uri</code></li> <li><code>http://host[:port]/</code> 意味着： <code>http://HOSTNAME/uri --&gt; http://host/</code></li> <li>注意：如果<code>location</code>定义其<code>uri</code>时使用了正则表达式的模式，则<code>proxy_pass</code>之后必须不能使用<code>uri</code>;</li> <li>用户请求时传递的<code>uri</code>将直接附加代理到的服务的之后</li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code>server <span class="token punctuation">{</span>
+    <span class="token punctuation">..</span>.
+    server_name <span class="token environment constant">HOSTNAME</span><span class="token punctuation">;</span>
+    location ~<span class="token operator">|</span>~* /uri/ <span class="token punctuation">{</span>
+    proxy_pass http://host<span class="token punctuation">;</span> 不能加/
+    <span class="token punctuation">}</span>
+    <span class="token punctuation">..</span>.
+<span class="token punctuation">}</span>
+<span class="token comment"># http://HOSTNAME/uri/ --&gt; http://host/uri/</span>
+</code></pre></div><h3 id="_12-2-proxy-set-header-field-value"><a href="#_12-2-proxy-set-header-field-value" class="header-anchor">#</a> 12.2 proxy_set_header field value</h3> <blockquote><p>设定发往后端主机的请求报文的请求首部的值</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>Context: http, server, location
+</code></pre></div><ul><li>后端记录日志记录真实请求服务器<code>IP</code></li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code>proxy_set_header	Host	<span class="token variable">$host</span>；
+proxy_set_header X-Real-IP <span class="token variable">$remote_addr</span><span class="token punctuation">;</span>
+proxy_set_header X-Forwarded-For <span class="token variable">$proxy_add_x_forwarded_for</span><span class="token punctuation">;</span>
+</code></pre></div><p><strong>标准格式如下</strong>：</p> <ul><li><code>X-Forwarded-For: client1, proxy1, proxy2</code></li></ul> <p>如后端是<code>Apache</code>服务器应更改日志格式：</p> <div class="language- extra-class"><pre class="language-text"><code>%h -----&gt; %{X-Real-IP}i
+</code></pre></div><h3 id="_12-3-proxy-cache-path"><a href="#_12-3-proxy-cache-path" class="header-anchor">#</a> 12.3 proxy_cache_path</h3> <blockquote><p>定义可用于<code>proxy</code>功能的缓存； <code>Context:http</code></p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 定义可用于proxy功能的缓存； Context:http</span>
+proxy_cache_path path <span class="token punctuation">[</span>levels<span class="token operator">=</span>levels<span class="token punctuation">]</span> <span class="token punctuation">[</span>use_temp_path<span class="token operator">=</span>on<span class="token operator">|</span>off<span class="token punctuation">]</span>
+<span class="token assign-left variable">keys_zone</span><span class="token operator">=</span>name:size <span class="token punctuation">[</span>inactive<span class="token operator">=</span>time<span class="token punctuation">]</span> <span class="token punctuation">[</span>max_size<span class="token operator">=</span>size<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>manager_files<span class="token operator">=</span>number<span class="token punctuation">]</span> <span class="token punctuation">[</span>manager_sleep<span class="token operator">=</span>time<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>manager_threshold<span class="token operator">=</span>time<span class="token punctuation">]</span> <span class="token punctuation">[</span>loader_files<span class="token operator">=</span>number<span class="token punctuation">]</span> <span class="token punctuation">[</span>loader_sleep<span class="token operator">=</span>time<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>loader_threshold<span class="token operator">=</span>time<span class="token punctuation">]</span> <span class="token punctuation">[</span>purger<span class="token operator">=</span>on<span class="token operator">|</span>off<span class="token punctuation">]</span> <span class="token punctuation">[</span>purger_files<span class="token operator">=</span>number<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>purger_sleep<span class="token operator">=</span>time<span class="token punctuation">]</span> <span class="token punctuation">[</span>purger_threshold<span class="token operator">=</span>time<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token comment"># 例：</span>
+proxy_cache_path /data/nginx/cache（属主要为nginx） <span class="token assign-left variable">levels</span><span class="token operator">=</span><span class="token number">1</span>:2 <span class="token assign-left variable">keys_zone</span><span class="token operator">=</span>nginxcache:20m <span class="token assign-left variable">inactive</span><span class="token operator">=</span>2m
+</code></pre></div><h3 id="_12-4-调用缓存"><a href="#_12-4-调用缓存" class="header-anchor">#</a> 12.4 调用缓存</h3> <div class="language-bash extra-class"><pre class="language-bash"><code>proxy_cache zone <span class="token operator">|</span> off<span class="token punctuation">;</span> <span class="token comment">#默认off</span>
+</code></pre></div><blockquote><p>指明调用的缓存，或关闭缓存机制； <code>Context: http</code>,<code>server</code>, <code>location</code></p></blockquote> <h3 id="_12-5-proxy-cache-key-string"><a href="#_12-5-proxy-cache-key-string" class="header-anchor">#</a> 12.5 proxy_cache_key string</h3> <blockquote><p>缓存中用于“键”的内容</p></blockquote> <ul><li>默认值： <code>proxy_cache_key $scheme$proxy_host$request_uri;</code></li></ul> <h3 id="_12-6-proxy-cache-valid-code-time"><a href="#_12-6-proxy-cache-valid-code-time" class="header-anchor">#</a> 12.6 proxy_cache_valid [code ...] time;</h3> <blockquote><p>定义对特定响应码的响应内容的缓存时</p></blockquote> <blockquote><p>定义在<code>http{...}</code>中</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 示例:</span>
+proxy_cache_valid <span class="token number">200</span> <span class="token number">302</span> 10m<span class="token punctuation">;</span>
+proxy_cache_valid <span class="token number">404</span> 1m<span class="token punctuation">;</span> 
+
+<span class="token comment"># 示例：</span>
+<span class="token comment"># 在http配置定义缓存信</span>
+proxy_cache_path /var/cache/nginx/proxy_cache
+<span class="token assign-left variable">levels</span><span class="token operator">=</span><span class="token number">1</span>:1:1 <span class="token assign-left variable">keys_zone</span><span class="token operator">=</span>proxycache:20m
+<span class="token assign-left variable">inactive</span><span class="token operator">=</span>120s <span class="token assign-left variable">max_size</span><span class="token operator">=</span>1g<span class="token punctuation">;</span>
+
+<span class="token comment"># 调用缓存功能，需要定义在相应的配置段，如server{...}；</span>
+proxy_cache proxycache<span class="token punctuation">;</span>
+proxy_cache_key <span class="token variable">$request_uri</span><span class="token punctuation">;</span>
+proxy_cache_valid <span class="token number">200</span> <span class="token number">302</span> <span class="token number">301</span> 1h<span class="token punctuation">;</span>
+proxy_cache_valid any 1m<span class="token punctuation">;</span>
+</code></pre></div><h3 id="_12-7-proxy-cache-use-stale"><a href="#_12-7-proxy-cache-use-stale" class="header-anchor">#</a> 12.7 proxy_cache_use_stale</h3> <blockquote><p>在被代理的后端服务器出现哪种情况下，可以直接使用过期的缓存响应客户端</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code>proxy_cache_use_stale error <span class="token operator">|</span> <span class="token function">timeout</span> <span class="token operator">|</span>
+invalid_header <span class="token operator">|</span> updating <span class="token operator">|</span> http_500 <span class="token operator">|</span> http_502 <span class="token operator">|</span>
+http_503 <span class="token operator">|</span> http_504 <span class="token operator">|</span> http_403 <span class="token operator">|</span> http_404 <span class="token operator">|</span> off <span class="token punctuation">..</span>
+</code></pre></div><h3 id="_12-8-proxy-cache-methods-get-head-post"><a href="#_12-8-proxy-cache-methods-get-head-post" class="header-anchor">#</a> 12.8 proxy_cache_methods GET | HEAD | POST</h3> <blockquote><p>对哪些客户端请求方法对应的响应进行缓存， <code>GET</code>和<code>HEAD</code>方法总是被缓存</p></blockquote> <h3 id="_12-9-proxy-hide-header-field"><a href="#_12-9-proxy-hide-header-field" class="header-anchor">#</a> 12.9 proxy_hide_header field;</h3> <blockquote><p>用于隐藏后端服务器特定的响应首部</p></blockquote> <h3 id="_12-10-proxy-connect-timeout-time"><a href="#_12-10-proxy-connect-timeout-time" class="header-anchor">#</a> 12.10  proxy_connect_timeout time;</h3> <blockquote><p>定义与后端服务器建立连接的超时时长，如超时会出现<code>502</code>错误，默认为<code>60s</code>，一般不建议超出<code>75s</code></p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>proxy_connect_timeout time;
+</code></pre></div><h3 id="_12-11-proxy-send-timeout-time"><a href="#_12-11-proxy-send-timeout-time" class="header-anchor">#</a> 12.11 proxy_send_timeout time</h3> <blockquote><p>把请求发送给后端服务器的超时时长；默认为<code>60s</code></p></blockquote> <h3 id="_12-12-proxy-read-timeout-time"><a href="#_12-12-proxy-read-timeout-time" class="header-anchor">#</a> 12.12 proxy_read_timeout time;</h3> <blockquote><p>等待后端服务器发送响应报文的超时时长， 默认为60s</p></blockquote> <h2 id="十三、首部信息"><a href="#十三、首部信息" class="header-anchor">#</a> 十三、首部信息</h2> <p>添加自定义首部</p> <div class="language- extra-class"><pre class="language-text"><code>add_header name value [always];
+</code></pre></div><p>添加自定义响应信息的尾部</p> <div class="language-bash extra-class"><pre class="language-bash"><code>add_header X-Via <span class="token variable">$server_addr</span><span class="token punctuation">;</span>
+add_header X-Cache <span class="token variable">$upstream_cache_status</span><span class="token punctuation">;</span>
+add_header X-Accel <span class="token variable">$server_name</span><span class="token punctuation">;</span>
+add_trailer name value <span class="token punctuation">[</span>always<span class="token punctuation">]</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="十四、-hph-相关模块ngx-http-fastcgi-module"><a href="#十四、-hph-相关模块ngx-http-fastcgi-module" class="header-anchor">#</a> 十四、 hph 相关模块ngx_http_fastcgi_module</h2> <p><strong>fastcgi_pass address</strong></p> <ul><li><code>address</code>为后端的<code>fastcgi server</code>的地址</li> <li>可用位置：<code>location</code>, <code>if in location</code></li></ul> <p><strong>fastcgi_index name</strong></p> <ul><li><code>fastcgi</code>默认的主页资源</li> <li>示例： <code>fastcgi_index index.php</code></li></ul> <p><strong>fastcgi_param parameter value [if_not_empty];</strong></p> <ul><li>设置传递给 <code>FastCGI</code>服务器的参数值，可以是文本，变量或组合</li></ul> <p>示例1：</p> <ul><li>在后端服务器先配置<code>fpm server</code>和<code>mariadb-server</code></li> <li>在前端<code>nginx</code>服务上做以下配置：</li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code>location ~* <span class="token punctuation">\</span>.php$ <span class="token punctuation">{</span>
+    fastcgi_pass <span class="token comment"># 后端fpm服务器IP:9000;</span>
+    fastcgi_index index.php<span class="token punctuation">;</span>
+    fastcgi_param SCRIPT_FILENAME
+/usr/share/nginx/html<span class="token variable">$fastcgi_script_name</span><span class="token punctuation">;</span>
+    include     fastcgi.conf<span class="token punctuation">;</span>    
+    …    
+<span class="token punctuation">}</span>
+</code></pre></div><p>示例2：</p> <ul><li>通过<code>/pm_status</code>和<code>/ping</code>来获取<code>fpm server</code>状态信息（真实服务器端<code>php-fpm</code>配置文件中将这两项
+注释掉）</li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code>location ~* ^/<span class="token punctuation">(</span>status<span class="token operator">|</span><span class="token function">ping</span><span class="token punctuation">)</span>$ <span class="token punctuation">{</span>
+    include fastcgi_params<span class="token punctuation">;</span>
+    fastcgi_pass <span class="token comment"># 后端fpm服务器IP:9000;</span>
+    fastcgi_param SCRIPT_FILENAME <span class="token variable">$fastcgi_script_name</span><span class="token punctuation">;</span>
+    include     fastcgi.conf<span class="token punctuation">;</span> 
+<span class="token punctuation">}</span>
+</code></pre></div><p><strong>fastcgi 缓存相关</strong></p> <div class="language-bash extra-class"><pre class="language-bash"><code>fastcgi_cache_path path <span class="token punctuation">[</span>levels<span class="token operator">=</span>levels<span class="token punctuation">]</span> <span class="token punctuation">[</span>use_temp_path<span class="token operator">=</span>on<span class="token operator">|</span>off<span class="token punctuation">]</span>
+<span class="token assign-left variable">keys_zone</span><span class="token operator">=</span>name:size <span class="token punctuation">[</span>inactive<span class="token operator">=</span>time<span class="token punctuation">]</span> <span class="token punctuation">[</span>max_size<span class="token operator">=</span>size<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>manager_files<span class="token operator">=</span>number<span class="token punctuation">]</span> <span class="token punctuation">[</span>manager_sleep<span class="token operator">=</span>time<span class="token punctuation">]</span> <span class="token punctuation">[</span>manager_threshold<span class="token operator">=</span>time<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>loader_files<span class="token operator">=</span>number<span class="token punctuation">]</span> <span class="token punctuation">[</span>loader_sleep<span class="token operator">=</span>time<span class="token punctuation">]</span> <span class="token punctuation">[</span>loader_threshold<span class="token operator">=</span>time<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>purger<span class="token operator">=</span>on<span class="token operator">|</span>off<span class="token punctuation">]</span> <span class="token punctuation">[</span>purger_files<span class="token operator">=</span>number<span class="token punctuation">]</span> <span class="token punctuation">[</span>purger_sleep<span class="token operator">=</span>time<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>purger_threshold<span class="token operator">=</span>time<span class="token punctuation">]</span><span class="token punctuation">;</span>
+</code></pre></div><ul><li>定义<code>fastcgi</code>的缓存；</li> <li><code>path</code> 缓存位置为磁盘上的文件系统</li> <li><code>max_size=size</code> <ul><li>磁盘<code>path</code>路径中用于缓存数据的缓存空间上限</li></ul></li> <li><code>levels=levels</code>：缓存目录的层级数量，以及每一级的目录数量</li> <li><code>levels=ONE:TWO:THREE</code></li> <li>示例： <code>leves=1:2:2</code></li> <li><code>keys_zone=name:size</code> <ul><li><code>k/v</code>映射的内存空间的名称及大小</li></ul></li> <li><code>inactive=time</code> 非活动时长</li></ul> <h2 id="十五、代理模块ngx-http-upstream-module模块"><a href="#十五、代理模块ngx-http-upstream-module模块" class="header-anchor">#</a> 十五、代理模块ngx_http_upstream_module模块</h2> <blockquote><p>用于将多个服务器定义成服务器组，而由<code>proxy_pass</code>,<code>fastcgi_pass</code>等指令进行引用</p></blockquote> <h3 id="_15-1-upstream-name"><a href="#_15-1-upstream-name" class="header-anchor">#</a> 15.1 upstream name { ... }</h3> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 定义后端服务器组，会引入一个新的上下文</span>
+<span class="token comment"># 默认调度算法是wrr</span>
+
+Context: http
+upstream httpdsrvs <span class="token punctuation">{</span>
+server <span class="token punctuation">..</span>.
+server<span class="token punctuation">..</span>.
+<span class="token punctuation">..</span>.
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="_15-2-server-address-parameters"><a href="#_15-2-server-address-parameters" class="header-anchor">#</a> 15.2 server address [parameters];</h3> <blockquote><p>在<code>upstream</code>上下文中<code>server</code>成员，以及相关的参数； <code>Context:upstream</code></p></blockquote> <p><strong>address的表示格式</strong></p> <ul><li><code>unix:/PATH/TO/SOME_SOCK_FILE</code></li> <li><code>IP[:PORT]</code></li> <li><code>HOSTNAME[:PORT]</code></li> <li><strong>parameters</strong>：
+<ul><li><code>weight=number</code>     权重，默认为<code>1</code></li> <li><code>max_conns</code>     连接后端报务器最大并发活动连接数， <code>1.11.5</code>后支持</li> <li><code>max_fails=number</code>     失败尝试最大次数；超出此处指定的次数时</li> <li><code>server</code>将被标记为不可用,默认为<code>1</code></li> <li><code>fail_timeout=time</code> 后端服务器标记为不可用状态的连接超时时
+长，默认<code>10s</code></li> <li><code>backup</code> 将服务器标记为“备用”，即所有服务器均不可用时才启用</li> <li><code>down</code> 标记为“不可用”，配合<code>ip_hash</code>使用，实现灰度发布</li></ul></li></ul> <h3 id="_15-3-ip-hash-源地址hash调度方法"><a href="#_15-3-ip-hash-源地址hash调度方法" class="header-anchor">#</a> 15.3 ip_hash 源地址hash调度方法</h3> <h3 id="_15-4-least-conn"><a href="#_15-4-least-conn" class="header-anchor">#</a> 15.4 least_conn</h3> <blockquote><p>最少连接调度算法，当<code>server</code>拥有不同的权重时其为<code>wlc</code>，当所有后端主机连接数相同时，则使用<code>wrr</code>，适用于长连接</p></blockquote> <h3 id="_15-5-hash-key-consistent"><a href="#_15-5-hash-key-consistent" class="header-anchor">#</a> 15.5 hash key [consistent]</h3> <blockquote><p>基于指定的<code>key</code>的<code>hash</code>表来实现对请求的调度，此处的<code>key</code>可以直接文本、变量或二者组合</p></blockquote> <ul><li>作用：将请求分类，同一类请求将发往同一个<code>upstream</code></li></ul> <blockquote><p><code>server</code>，使用<code>consistent</code>参数， 将使用<code>ketama</code>一致性<code>hash</code>算法，适用于后端是<code>Cache</code>服务器（如<code>varnish</code>）时使用</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token builtin class-name">hash</span> <span class="token variable">$request_uri</span> consistent<span class="token punctuation">;</span>
+<span class="token builtin class-name">hash</span> <span class="token variable">$remote_addr</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="_15-6-keepalive"><a href="#_15-6-keepalive" class="header-anchor">#</a> 15.6 keepalive</h3> <ul><li><code>keepalive</code> 连接<code>数N</code>;</li> <li>为每个<code>worker</code>进程保留的空闲的长连接数量,可节约<code>nginx</code>端口，并减少连接管理的消耗</li></ul> <h3 id="_15-7-health-check-parameters"><a href="#_15-7-health-check-parameters" class="header-anchor">#</a> 15.7 health_check [parameters]</h3> <blockquote><p>健康状态检测机制；只能用于<code>location</code>上下文</p></blockquote> <p><strong>常用参数：</strong></p> <ul><li><code>interval=time</code>检测的频率，默认为<code>5</code>秒</li> <li><code>fails=number</code>：判定服务器不可用的失败检测次数；默认为<code>1</code>次</li> <li><code>passes=number</code>：判定服务器可用的失败检测次数；默认为<code>1</code>次</li> <li><code>uri=uri</code>：做健康状态检测测试的目标<code>uri</code>；默认为<code>/</code></li> <li><code>match=NAME</code>：健康状态检测的结果评估调用此处指定的<code>match</code>配置块</li> <li><strong>注意</strong>：仅对<code>nginx plus</code>有效</li></ul> <h3 id="_15-8-match-name"><a href="#_15-8-match-name" class="header-anchor">#</a> 15.8 match name { ... }</h3> <blockquote><p>对<code>backend server</code>做健康状态检测时，定义其结果判断机制；</p></blockquote> <p>只能用于<code>http</code>上下文</p> <p><strong>常用的参数</strong>：</p> <ul><li><code>status code[ code ...]</code>: 期望的响应状态码</li> <li><code>header HEADER[operator value]</code>：期望存在响应首
+部，也可对期望的响应首部的值基于比较操作符和值进行比较</li> <li><code>body</code>：期望响应报文的主体部分应该有的内容</li> <li>注意：仅对<code>nginx plus</code>有效</li></ul> <h3 id="十六、ngx-stream-core-module模块"><a href="#十六、ngx-stream-core-module模块" class="header-anchor">#</a> 十六、ngx_stream_core_module模块</h3> <blockquote><p>模拟反代基于<code>tcp</code>或<code>udp</code>的服务连接，即工作于传输层的反代或调度器</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code>stream <span class="token punctuation">{</span> <span class="token punctuation">..</span>. <span class="token punctuation">}</span>
+
+<span class="token comment"># 定义stream相关的服务； Context:main</span>
+
+stream <span class="token punctuation">{</span>
+    upstream telnetsrvs <span class="token punctuation">{</span>
+        server <span class="token number">192.168</span>.22.2:23<span class="token punctuation">;</span>
+        server <span class="token number">192.168</span>.22.3:23<span class="token punctuation">;</span>
+        least_conn<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+server <span class="token punctuation">{</span>
+    listen <span class="token number">10.1</span>.0.6:23<span class="token punctuation">;</span>
+    proxy_pass telnetsrvs<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span> 
+listen address:port <span class="token punctuation">[</span>ssl<span class="token punctuation">]</span> <span class="token punctuation">[</span>udp<span class="token punctuation">]</span> <span class="token punctuation">[</span>proxy_protocol<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>backlog<span class="token operator">=</span>number<span class="token punctuation">]</span> <span class="token punctuation">[</span>bind<span class="token punctuation">]</span> <span class="token punctuation">[</span>ipv6only<span class="token operator">=</span>on<span class="token operator">|</span>off<span class="token punctuation">]</span> <span class="token punctuation">[</span>reuseport<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>so_keepalive<span class="token operator">=</span>on<span class="token operator">|</span>off<span class="token operator">|</span><span class="token punctuation">[</span>keepidle<span class="token punctuation">]</span>:<span class="token punctuation">[</span>keepintvl<span class="token punctuation">]</span>:<span class="token punctuation">[</span>keepcnt<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="十七、ngx-stream-proxy-module模块"><a href="#十七、ngx-stream-proxy-module模块" class="header-anchor">#</a> 十七、ngx_stream_proxy_module模块</h2> <blockquote><p>可实现代理基于·TCP·， ·UDP (1.9.13)·, ·UNIX-domain·</p></blockquote> <p><strong>sockets的数据流</strong></p> <ul><li><code>proxy_pass address</code>;指定后端服务器地址</li> <li><code>proxy_timeout timeout</code>;无数据传输时，保持连接状态的超时时长
+默认为<code>10m</code></li> <li><code>proxy_connect_timeout time</code>;设置<code>nginx</code>与被代理的服务器尝试建立连接的超时时长
+默认为<code>60s</code></li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code>stream <span class="token punctuation">{</span>
+    upstream telnetsrvs <span class="token punctuation">{</span>
+        server <span class="token number">192.168</span>.10.130:23<span class="token punctuation">;</span>
+        server <span class="token number">192.168</span>.10.131:23<span class="token punctuation">;</span>
+        <span class="token builtin class-name">hash</span> <span class="token variable">$remote_addr</span> consistent<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    server <span class="token punctuation">{</span>
+        listen <span class="token number">172.16</span>.100.10:2323<span class="token punctuation">;</span>
+        proxy_pass telnetsrvs<span class="token punctuation">;</span>
+        proxy_timeout 60s<span class="token punctuation">;</span>
+        proxy_connect_timeout 10s<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><strong>linux对于nginx做的内核优化(/etc/sysctl.conf)</strong></p> <div class="language-bash extra-class"><pre class="language-bash"><code>fs.file-max <span class="token operator">=</span> <span class="token number">999999</span>
+net.ipv4.ip_forward <span class="token operator">=</span> <span class="token number">0</span>
+net.ipv4.conf.default.rp_filter <span class="token operator">=</span> <span class="token number">1</span>
+net.ipv4.conf.default.accept_source_route <span class="token operator">=</span> <span class="token number">0</span>
+kernel.sysrq <span class="token operator">=</span> <span class="token number">0</span>
+kernel.core_uses_pid <span class="token operator">=</span> <span class="token number">1</span>
+net.ipv4.tcp_syncookies <span class="token operator">=</span> <span class="token number">1</span>
+kernel.msgmnb <span class="token operator">=</span> <span class="token number">65536</span>
+kernel.msgmax <span class="token operator">=</span> <span class="token number">65536</span>
+kernel.shmmax <span class="token operator">=</span> <span class="token number">68719476736</span>
+kernel.shmall <span class="token operator">=</span> <span class="token number">4294967296</span>
+net.ipv4.tcp_max_tw_buckets <span class="token operator">=</span> <span class="token number">6000</span>
+net.ipv4.tcp_sack <span class="token operator">=</span> <span class="token number">1</span>
+net.ipv4.tcp_window_scaling <span class="token operator">=</span> <span class="token number">1</span>
+net.ipv4.tcp_rmem <span class="token operator">=</span> <span class="token number">10240</span> <span class="token number">87380</span> <span class="token number">12582912</span>
+net.ipv4.tcp_wmem <span class="token operator">=</span> <span class="token number">10240</span> <span class="token number">87380</span> <span class="token number">12582912</span>
+net.core.wmem_default <span class="token operator">=</span> <span class="token number">8388608</span>
+net.core.rmem_default <span class="token operator">=</span> <span class="token number">8388608</span>
+net.core.rmem_max <span class="token operator">=</span> <span class="token number">16777216</span>
+net.core.wmem_max <span class="token operator">=</span> <span class="token number">16777216</span>
+net.core.netdev_max_backlog <span class="token operator">=</span> <span class="token number">262144</span>
+net.core.somaxconn <span class="token operator">=</span> <span class="token number">40960</span>
+net.ipv4.tcp_max_orphans <span class="token operator">=</span> <span class="token number">3276800</span>
+net.ipv4.tcp_max_syn_backlog <span class="token operator">=</span> <span class="token number">262144</span>
+net.ipv4.tcp_timestamps <span class="token operator">=</span> <span class="token number">0</span>
+net.ipv4.tcp_synack_retries <span class="token operator">=</span> <span class="token number">1</span>
+net.ipv4.tcp_syn_retries <span class="token operator">=</span> <span class="token number">1</span>
+net.ipv4.tcp_tw_recycle <span class="token operator">=</span> <span class="token number">1</span>
+net.ipv4.tcp_tw_reuse <span class="token operator">=</span> <span class="token number">1</span>
+net.ipv4.tcp_mem <span class="token operator">=</span> <span class="token number">94500000</span> <span class="token number">915000000</span> <span class="token number">927000000</span>
+net.ipv4.tcp_fin_timeout <span class="token operator">=</span> <span class="token number">1</span>
+net.ipv4.tcp_keepalive_time <span class="token operator">=</span> <span class="token number">30</span>
+net.ipv4.ip_local_port_range <span class="token operator">=</span> <span class="token number">1024</span> <span class="token number">65000</span>
+
+<span class="token comment"># 执行sysctl  -p使内核修改生效</span>
+</code></pre></div><h1 id="第二部分-功能详解"><a href="#第二部分-功能详解" class="header-anchor">#</a> 第二部分 功能详解</h1> <h2 id="一、proxy-pass"><a href="#一、proxy-pass" class="header-anchor">#</a> 一、proxy_pass</h2> <blockquote><p>在<code>nginx</code>中配置<code>proxy_pass</code>代理转发时，如果在<code>proxy_pass</code>后面的<code>url</code>加<code>/</code>，表示绝对根路径；如果没有<code>/</code>，表示相对路径，把匹配的路径部分也给代理走。</p></blockquote> <ul><li>假设下面四种情况分别用 <code>http://192.168.1.1/proxy/test.html</code> 进行访问</li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 第一种：</span>
+
+location /proxy/ <span class="token punctuation">{</span>
+
+    proxy_pass http://127.0.0.1/<span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token comment"># 代理到URL：http://127.0.0.1/test.html</span>
+
+<span class="token comment"># 第二种（相对于第一种，最后少一个 / ）</span>
+
+location /proxy/ <span class="token punctuation">{</span>
+
+    proxy_pass http://127.0.0.1<span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token comment"># 代理到URL：http://127.0.0.1/proxy/test.html</span>
+
+<span class="token comment"># 第三种：</span>
+
+location /proxy/ <span class="token punctuation">{</span>
+
+    proxy_pass http://127.0.0.1/aaa/<span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token comment"># 代理到URL：http://127.0.0.1/aaa/test.html</span>
+
+ 
+
+<span class="token comment"># 第四种（相对于第三种，最后少一个 / ）</span>
+
+location /proxy/ <span class="token punctuation">{</span>
+
+    proxy_pass http://127.0.0.1/aaa<span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token comment"># 代理到URL：http://127.0.0.1/aaatest.html</span>
+
+<span class="token comment"># 第五种 配合upstream模块</span>
+
+<span class="token comment"># 如果一个域名可以解析到多个地址，那么这些地址会被轮流使用，此外，还可以把一个地址指定为 server group</span>
+
+upstream fasf.com <span class="token punctuation">{</span>
+
+          server <span class="token number">10</span>.*.*.20:17007 <span class="token assign-left variable">max_fails</span><span class="token operator">=</span><span class="token number">2</span> <span class="token assign-left variable">fail_timeout</span><span class="token operator">=</span>15s<span class="token punctuation">;</span>
+
+          server <span class="token number">10</span>.*.*.21:17007 <span class="token assign-left variable">max_fails</span><span class="token operator">=</span><span class="token number">2</span> <span class="token assign-left variable">fail_timeout</span><span class="token operator">=</span>15s down<span class="token punctuation">;</span>
+
+          ip_hash<span class="token punctuation">;</span>
+
+    <span class="token punctuation">}</span>
+
+server <span class="token punctuation">{</span>
+
+        listen       <span class="token number">9000</span><span class="token punctuation">;</span>
+
+        server_name  fsf-NGINX-P01<span class="token punctuation">;</span>
+
+        location / <span class="token punctuation">{</span>
+
+                proxy_pass http://fasf.com<span class="token punctuation">;</span>
+
+                proxy_read_timeout <span class="token number">300</span><span class="token punctuation">;</span>
+
+                proxy_connect_timeout <span class="token number">90</span><span class="token punctuation">;</span>
+
+                proxy_send_timeout <span class="token number">300</span><span class="token punctuation">;</span>
+
+               proxy_set_header HTTP_X_FORWARDED_FOR <span class="token variable">$remote_addr</span><span class="token punctuation">;</span>
+
+        <span class="token punctuation">}</span> 
+</code></pre></div><blockquote><p><code>X_Forward_For</code>字段表示该条<code>http</code>请求是有谁发起的？如果反向代理服务器不重写该请求头的话，那么后端真实服务器在处理时会认为所有的请求都来在反向代理服务器，如果后端有防攻击策略的话，那么机器就被封掉了(显示真实访问ip)</p></blockquote> <h2 id="二、rewrite"><a href="#二、rewrite" class="header-anchor">#</a> 二、rewrite</h2> <div class="language- extra-class"><pre class="language-text"><code>syntax: rewrite regex replacement [flag]
+</code></pre></div><blockquote><p><code>rewrite</code>由<code>ngx_http_rewrite_module</code>标准模块支持是实现URL重定向的重要指令，他根据<code>regex</code>(正则表达式)来匹配内容跳转到<code>replacement</code>，结尾是<code>flag</code>标记</p></blockquote> <p><strong>简单的小例子：</strong></p> <div class="language- extra-class"><pre class="language-text"><code>rewrite ^/(.*) http://www.baidu.com/ permanent;     
+</code></pre></div><blockquote><p>匹配成功后跳转到百度，执行永久<code>301</code>跳转</p></blockquote> <p><strong>常用正则表达式regex：</strong></p> <ul><li><p><code>\</code> 将后面接着的字符标记为一个特殊字符或者一个原义字符或一个向后引用</p></li> <li><p><code>^</code> 匹配输入字符串的起始位置</p></li> <li><p><code>$</code> 匹配输入字符串的结束位置</p></li> <li><p><code>*</code> 匹配前面的字符零次或者多次</p></li> <li><p><code>+</code> 匹配前面字符串一次或者多次</p></li> <li><p><code>?</code> 匹配前面字符串的零次或者一次</p></li> <li><p><code>.</code> 匹配除“<code>\n</code>”之外的所有单个字符</p></li></ul> <p><strong>rewrite 最后一项flag参数</strong></p> <table><thead><tr><th>标记符号</th> <th>说明</th></tr></thead> <tbody><tr><td><code>last</code></td> <td>本条规则匹配完成后继续向下匹配新的<code>location URI</code>规则</td></tr> <tr><td><code>break</code></td> <td>本条规则匹配完成后终止，不在匹配任何规则</td></tr> <tr><td><code>redirect</code></td> <td>返回<code>302</code>临时重定向</td></tr> <tr><td><code>permanent</code></td> <td>返回<code>301</code>永久重定向</td></tr></tbody></table> <blockquote><p>在反向代理域名的使用，在<code>tomcat</code>中配置多个项目需要挂目录的使用案例</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code>server <span class="token punctuation">{</span>
+
+    listen <span class="token number">443</span><span class="token punctuation">;</span>
+
+    server_name FLS-Nginx-P01<span class="token punctuation">;</span>
+
+    ssl on<span class="token punctuation">;</span>
+
+    ssl_certificate   cert/214837463560686.pem<span class="token punctuation">;</span>
+
+    ssl_certificate_key  cert/214837463560686.key<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>公网域名解析<code>fls.***.com</code></p> <div class="language-bash extra-class"><pre class="language-bash"><code>ssl_session_timeout 5m<span class="token punctuation">;</span>
+
+ ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:<span class="token operator">!</span>NULL:<span class="token operator">!</span>aNULL:<span class="token operator">!</span>MD5:<span class="token operator">!</span>ADH:<span class="token operator">!</span>RC4<span class="token punctuation">;</span>
+
+ ssl_protocols TLSv1 TLSv1.1 TLSv1.2<span class="token punctuation">;</span>
+
+ ssl_prefer_server_ciphers on<span class="token punctuation">;</span>
+
+ location  <span class="token operator">=</span> / <span class="token punctuation">{</span>
+
+ rewrite ^<span class="token punctuation">(</span>.*<span class="token punctuation">)</span>$ https://fls.***.com/fls/<span class="token punctuation">;</span>
+
+ <span class="token punctuation">}</span>
+
+ location / <span class="token punctuation">{</span>
+
+ proxy_redirect http https<span class="token punctuation">;</span>
+
+ proxy_set_header Host <span class="token variable">$host</span><span class="token punctuation">;</span>
+
+ proxy_set_header X-Real-IP <span class="token variable">$remote_addr</span><span class="token punctuation">;</span>
+
+ proxy_set_header X-Forwarded_For <span class="token variable">$proxy_add_x_forwarded_for</span><span class="token punctuation">;</span>
+
+ proxy_pass http://10.0.3.4:8080<span class="token punctuation">;</span>
+
+ <span class="token punctuation">}</span>
+ <span class="token punctuation">}</span>
+</code></pre></div><h2 id="三、log-format"><a href="#三、log-format" class="header-anchor">#</a> 三、log_format</h2> <blockquote><p><code>nginx</code>服务器日志相关指令主要有两条：一条是<code>log_format</code>，用来设置日志格式；另外一条是<code>access_log</code>，用来指定日志文件的存放路径、格式和缓存大小，可以参加<code>ngx_http_log_module</code>。一般在<code>nginx</code>的配置文件中日记配置(<code>/usr/local/nginx/conf/nginx.conf</code>)</p></blockquote> <ul><li><code>log_format</code>指令用来设置日志的记录格式，它的语法如下：</li> <li><code>log_format name format {format ...}</code></li> <li>其中<code>name</code>表示定义的格式名称，<code>format</code>表示定义的格式样式。</li> <li><code>log_format</code>有一个默认的、无须设置的<code>combined</code>日志格式设置，相当于<code>Apache</code>的<code>combined</code>日志格式，其具体参数如下：</li></ul> <div class="language- extra-class"><pre class="language-text"><code>log_format combined '$remote_addr-$remote_user [$time_local]'
+</code></pre></div><ul><li><code>‘"$request"$status $body_bytes_sent’</code></li> <li><code>‘"$http_referer" "$http_user_agent"’</code></li></ul> <h2 id="四、ssl证书加密配置"><a href="#四、ssl证书加密配置" class="header-anchor">#</a> 四、ssl证书加密配置</h2> <div class="language-bash extra-class"><pre class="language-bash"><code>upstream fasf.com <span class="token punctuation">{</span>
+
+        server <span class="token number">10.5</span>.1.*:17007 <span class="token assign-left variable">max_fails</span><span class="token operator">=</span><span class="token number">2</span> <span class="token assign-left variable">fail_timeout</span><span class="token operator">=</span>15s<span class="token punctuation">;</span>
+
+        server <span class="token number">10.5</span>.1.*:17007 <span class="token assign-left variable">max_fails</span><span class="token operator">=</span><span class="token number">2</span> <span class="token assign-left variable">fail_timeout</span><span class="token operator">=</span>15s down<span class="token punctuation">;</span>
+
+        ip_hash<span class="token punctuation">;</span>      <span class="token comment"># ----同一ip会被分配给固定的后端服务器,解决session问题</span>
+
+<span class="token punctuation">}</span>
+
+server <span class="token punctuation">{</span>
+
+    listen       <span class="token number">443</span><span class="token punctuation">;</span>
+
+    server_name fsfs-pi-P01<span class="token punctuation">;</span>
+
+    ssl on<span class="token punctuation">;</span>
+
+    ssl_certificate   <span class="token number">214820781820381</span>.pem<span class="token punctuation">;</span>    <span class="token comment">#证书路径:nginx.conf所在目录</span>
+
+    ssl_certificate_key  <span class="token number">214820781820381</span>.key<span class="token punctuation">;</span>
+
+    ssl_session_timeout 5m<span class="token punctuation">;</span>
+
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:<span class="token operator">!</span>NULL:<span class="token operator">!</span>aNULL:<span class="token operator">!</span>MD5:<span class="token operator">!</span>ADH:<span class="token operator">!</span>RC4<span class="token punctuation">;</span>
+
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2<span class="token punctuation">;</span>
+
+    ssl_prefer_server_ciphers on<span class="token punctuation">;</span>
+
+ location / <span class="token punctuation">{</span>
+
+    proxy_pass http://fafs.com<span class="token punctuation">;</span>
+
+    proxy_set_header HTTP_X_FORWARDED_FOR <span class="token variable">$remote_addr</span><span class="token punctuation">;</span>
+
+ <span class="token punctuation">}</span> 
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="五、sendfile"><a href="#五、sendfile" class="header-anchor">#</a> 五、sendfile</h2> <blockquote><p><code>sendfile</code>: 设置为<code>on</code>表示启动高效传输文件的模式。<code>sendfile</code>可以让<code>Nginx</code>在传输文件时直接在磁盘和<code>tcp</code> <code>socket</code>之间传输数据。如果这个参数不开启，会先在用户空间（Nginx进程空间）申请一个<code>buffer</code>，用<code>read</code>函数把数据从磁盘读到<code>cache</code>，再从<code>cache</code>读取到用户空间的<code>buffer</code>，再用<code>write</code>函数把数据从用户空间的<code>buffer</code>写入到内核的<code>buffer</code>，最后到<code>tcp</code> <code>socket</code>。开启这个参数后可以让数据不用经过用户<code>buffer</code></p></blockquote> <h2 id="六、keepalive-timeout"><a href="#六、keepalive-timeout" class="header-anchor">#</a> 六、keepalive_timeout</h2> <blockquote><p>当上传一个发数据文件时，<code>nginx</code>往往会超时，此时需要调整<code>keepalive_timeout</code>参数，保持会话长链接</p></blockquote> <h2 id="七、gzip"><a href="#七、gzip" class="header-anchor">#</a> 七、gzip</h2> <blockquote><p>如果你是个前端开发人员，你肯定知道线上环境要把<code>js</code>，<code>css</code>，图片等压缩，尽量减少文件的大小，提升响应速度，特别是对移动端，这个非常重要。</p></blockquote> <ul><li><code>gzip</code>使用环境:<code>http</code>,<code>server</code>,<code>location</code>,<code>if(x)</code>,一般把它定义在<code>nginx.conf</code>的<code>http{…..}</code>之间</li></ul> <p><strong>gzip on</strong></p> <ul><li><code>on</code>为启用，<code>off</code>为关闭</li></ul> <p><strong>gzip_min_length 1k</strong></p> <blockquote><p>设置允许压缩的页面最小字节数，页面字节数从<code>header</code>头中的<code>Content-Length</code>中进行获取。默认值是<code>0</code>，不管页面多大都压缩。建议设置成大于1k的字节数，小于1k可能会越压越大。</p></blockquote> <p><strong>gzip_buffers 4 16k</strong></p> <blockquote><p>获取多少内存用于缓存压缩结果，<code>‘4 16k’</code>表示以<code>16k*4</code>为单位获得</p></blockquote> <p><strong>gzip_comp_level 5</strong></p> <blockquote><p><code>gzip</code>压缩比（1~9），越小压缩效果越差，但是越大处理越慢，所以一般取中间值;</p></blockquote> <p><strong>gzip_types text/plain application/x-javascript text/css application/xml text/javascript application/x-httpd-php</strong></p> <blockquote><p>对特定的<code>MIME</code>类型生效,其中<code>'text/html’</code>被系统强制启用</p></blockquote> <p><strong>gzip_http_version 1.1</strong></p> <blockquote><p>识别<code>http</code>协议的版本,早起浏览器可能不支持<code>zip</code>自解压,用户会看到乱码</p></blockquote> <p><strong>gzip_vary on</strong></p> <ul><li>启用应答头<code>"Vary: Accept-Encoding"</code></li></ul> <p><strong>gzip_proxied off</strong></p> <blockquote><p><code>nginx</code>做为反向代理时启用,<code>off</code>(关闭所有代理结果的数据的压缩),<code>expired</code>(启用压缩,如果<code>header</code>头中包括<code>"Expires"</code>头信息),<code>no-cache</code>(启用压缩,<code>header</code>头中包含<code>"Cache-Control:no-cache"</code>),<code>no-store</code>(启用压缩,header头中包含<code>"Cache-Control:no-store")</code>,<code>private</code>(启用压缩,<code>header</code>头中包含<code>"Cache-Control:private"</code>),<code>no_last_modefied</code>(启用压缩,h<code>eader</code>头中不包含<code>"Last-Modified")</code>,<code>no_etag</code>(启用压缩,如果<code>header</code>头中不包含"<code>Etag</code>"头信息),<code>auth</code>(启用压缩,如果<code>header</code>头中包含"<code>Authorization</code>"头信息)</p></blockquote> <p><strong>gzip_disable msie6</strong></p> <blockquote><p>(<code>IE5.5</code>和<code>IE6 SP1</code>使用<code>msie6</code>参数来禁止<code>gzip</code>压缩 )指定哪些不需要<code>gzip</code>压缩的浏览器(将和<code>User-Agents</code>进行匹配),依赖于<code>PCRE</code>库</p></blockquote> <blockquote><p>以上代码可以插入到 <code>http {...}</code>整个服务器的配置里，也可以插入到虚拟主机的 <code>server {...}</code>或者下面的<code>location</code>模块内</p></blockquote> <h2 id="八、客户端上传文件限制"><a href="#八、客户端上传文件限制" class="header-anchor">#</a> 八、客户端上传文件限制</h2> <div class="language- extra-class"><pre class="language-text"><code>client_body_buffer_size 15M;
+</code></pre></div><blockquote><p>请求缓冲区在<code>NGINX</code>请求处理中起着重要作用。 在接收到请求时，<code>NGINX</code>将其写入这些缓冲区，此指令设置用于请求主体的缓冲区大小。 如果主体超过缓冲区大小，则完整主体或其一部分将写入临时文件。 如果<code>NGINX</code>配置为使用文件而不是内存缓冲区，则该指令会被忽略。 默认情况下，该指令为<code>32</code>位系统设置一个8k缓冲区，为<code>64</code>位系统设置一个<code>16k</code>缓冲区</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>client_body_temp_path clientpath 3 2;
+</code></pre></div><blockquote><p>关于<code>client_body_temp</code>目录的作用，简单说就是如果客户端<code>POST</code>一个比较大的文件，长度超过了<code>nginx</code>缓冲区的大小，需要把这个文件的部分或者全部内容暂存到<code>client_body_temp</code>目录下的临时文件</p></blockquote> <ul><li>后面的<code>level1，2，3</code>是什么意思？</li> <li>因为如果所有上传的文件都放在一个文件夹下，不仅很容易文件名冲突，并且容易导致一个文件夹特别大。</li> <li>所以有必要创建子目录</li> <li>这里的<code>level1,2,3</code>如果有值就代表存在一级，二级，三级子目录。</li> <li>目录名是由数字进行命名的，所以这里的具体的值就是代表目录名的数字位数</li></ul> <div class="language- extra-class"><pre class="language-text"><code>client_body_temp_path  /spool/nginx/client_temp 3 2;
+</code></pre></div><p>可能创建的文件路径为</p> <div class="language- extra-class"><pre class="language-text"><code>/spool/nginx/client_temp/702/45/00000123457
+</code></pre></div><div class="language- extra-class"><pre class="language-text"><code>client_max_body_size 30M;
+</code></pre></div><blockquote><p>此指令设置<code>NGINX</code>能处理的最大请求主体大小。如果请求大于指定的大小，则<code>NGINX</code>发回<code>HTTP 413（Request Entity too large）</code>错误。 如果服务器处理大文件上传，则该指令非常重要</p></blockquote> <h2 id="九、worker-processes和worker-connections"><a href="#九、worker-processes和worker-connections" class="header-anchor">#</a> 九、worker_processes和worker_connections</h2> <p><strong>worker_processes</strong>：</p> <ul><li><p>操作系统启动多少个工作进程运行Nginx。注意是工作进程，不是有多少个nginx工程。在Nginx运行的时候，会启动两种进程，一种是主进程<code>master process</code>；一种是工作进程<code>worker process</code>。例如我在配置文件中将<code>worker_processes</code>设置为<code>4</code>，启动<code>Nginx</code>后，使用进程查看命令观察名字叫做<code>nginx</code>的进程信息，我会看到如下结果：<code>1</code>个<code>nginx</code>主进程，<code>master process</code>；还有四个工作进程，<code>worker process</code>。主进程负责监控端口，协调工作进程的工作状态，分配工作任务，工作进程负责进行任务处理。一般这个参数要和操作系统的CPU内核数成倍数。可以设置为<code>auto</code>自动识别
+<strong>worker_connections</strong>：</p></li> <li><p>这个属性是指单个工作进程可以允许同时建立外部连接的数量。无论这个连接是外部主动建立的，还是内部建立的。这里需要注意的是，一个工作进程建立一个连接后，进程将打开一个文件副本。所以这个数量还受操作系统设定的，进程最大可打开的文件数有关。</p></li></ul> <h2 id="十、stream模块"><a href="#十、stream模块" class="header-anchor">#</a> 十、stream模块</h2> <ul><li><code>nginx</code>从<code>1.9.0</code>开始，新增加了一个<code>stream</code>模块，用来实现四层协议的转发、代理或者负载均衡等。这完全就是抢<code>HAproxy</code>份额的节奏，鉴于<code>nginx</code>在<code>7</code>层负载均衡和<code>web service</code>上的成功，和<code>nginx</code>良好的框架，<code>stream</code>模块前景一片光明</li> <li><code>stream</code>模块默认没有编译到<code>nginx</code>， 编译<code>nginx</code>时候 <code>./configure –with-stream</code>即可</li> <li><code>stream</code>模块用法和<code>http</code>模块差不多，关键的是语法几乎一致。熟悉<code>http</code>模块配置语法的上手更快
+以下是一个配置了<code>tcp</code>负载均衡和<code>udp(dns)</code>负载均衡的例子, 有 <code>server</code>，<code>upstream</code>块，而且还有<code>server</code>，
+<code>hash</code>， <code>listen</code>， <code>proxy_pass</code>等指令，如果不看最外层的<code>stream</code>关键字，还以为是<code>http</code>模块呢,下例是四层反代邮箱协议的例子，直写了<code>25</code>端口，其他端口方法相同</li></ul> <div class="language-bash extra-class"><pre class="language-bash"><code>stream <span class="token punctuation">{</span>
+
+     upstream smtp <span class="token punctuation">{</span>
+
+     least_conn<span class="token punctuation">;</span>    <span class="token comment"># ------把请求转发给连接数较少的后端，能够达到更好的负载均衡效果</span>
+
+     server <span class="token number">10.5</span>.3.17:25 <span class="token assign-left variable">max_fails</span><span class="token operator">=</span><span class="token number">2</span> <span class="token assign-left variable">fail_timeout</span><span class="token operator">=</span>10s<span class="token punctuation">;</span>
+
+     <span class="token punctuation">}</span>
+
+    server <span class="token punctuation">{</span>
+
+     listen        <span class="token number">25</span><span class="token punctuation">;</span>
+
+     proxy_pass    smtp<span class="token punctuation">;</span>
+
+     proxy_timeout 3s<span class="token punctuation">;</span>
+
+     proxy_connect_timeout 1s<span class="token punctuation">;</span>
+
+   <span class="token punctuation">}</span>
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,87 @@
+<!-- Section: # 25 setTimeout与setInterval实现 -->
+<div class="section-content" data-section-id="_25-settimeout与setinterval实现">
+<h2 id="_25-settimeout与setinterval实现"><a href="#_25-settimeout与setinterval实现" class="header-anchor">#</a> 25 setTimeout与setInterval实现</h2>
+<h3 id="_1-settimeout-模拟实现-setinterval"><a href="#_1-settimeout-模拟实现-setinterval" class="header-anchor">#</a> 1 setTimeout 模拟实现 setInterval</h3>
+<p>题目描述: <code>setInterval</code> 用来实现循环定时调用 可能会存在一定的问题 能用 <code>setTimeout</code> 解决吗</p>
+<p>实现代码如下:</p>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">mySetInterval</span><span class="token punctuation">(</span><span class="token parameter">fn<span class="token punctuation">,</span> t</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> timerId <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+  <span class="token keyword">function</span> <span class="token function">interval</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">fn</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    timerId <span class="token operator">=</span> <span class="token function">setTimeout</span><span class="token punctuation">(</span>interval<span class="token punctuation">,</span> t<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 递归调用</span>
+  <span class="token punctuation">}</span>
+  timerId <span class="token operator">=</span> <span class="token function">setTimeout</span><span class="token punctuation">(</span>interval<span class="token punctuation">,</span> t<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 首次调用</span>
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 利用闭包的特性 保存timerId</span>
+    <span class="token function-variable function">cancel</span><span class="token operator">:</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token function">clearTimeout</span><span class="token punctuation">(</span>timerId<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 测试</span>
+<span class="token keyword">var</span> a <span class="token operator">=</span> <span class="token function">mySetInterval</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">=&gt;</span><span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">111</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span><span class="token number">1000</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> b <span class="token operator">=</span> <span class="token function">mySetInterval</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">222</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 终止定时器</span>
+a<span class="token punctuation">.</span><span class="token function">cancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+b<span class="token punctuation">.</span><span class="token function">cancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div>
+<blockquote><p>为什么要用 <code>setTimeout</code> 模拟实现 <code>setInterval</code>？<code>setInterval</code> 的缺陷是什么？</p></blockquote>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token function">setInterval</span><span class="token punctuation">(</span><span class="token function">fn</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token constant">N</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div>
+<blockquote><p>上面这句代码的意思其实是<code>fn()</code>将会在 <code>N</code> 秒之后被推入任务队列。在 <code>setInterval</code> 被推入任务队列时，如果在它前面有很多任务或者某个任务等待时间较长比如网络请求等，那么这个定时器的执行时间和我们预定它执行的时间可能并不一致</p></blockquote>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 最常见的出现的就是，当我们需要使用 ajax 轮询服务器是否有新数据时，必定会有一些人会使用 setInterval，然而无论网络状况如何，它都会去一遍又一遍的发送请求，最后的间隔时间可能和原定的时间有很大的出入</span>
+
+<span class="token comment">// 做一个网络轮询，每一秒查询一次数据。</span>
+<span class="token keyword">let</span> startTime <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">let</span> count <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+<span class="token function">setInterval</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span>i<span class="token operator">++</span> <span class="token operator">&lt;</span> <span class="token number">10000000</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 假设的网络延迟</span>
+    count<span class="token operator">++</span><span class="token punctuation">;</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>
+        <span class="token string">"与原设定的间隔时差了："</span><span class="token punctuation">,</span>
+        <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token punctuation">(</span>startTime <span class="token operator">+</span> count <span class="token operator">*</span> <span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token string">"毫秒"</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 输出：</span>
+<span class="token comment">// 与原设定的间隔时差了： 567 毫秒</span>
+<span class="token comment">// 与原设定的间隔时差了： 552 毫秒</span>
+<span class="token comment">// 与原设定的间隔时差了： 563 毫秒</span>
+<span class="token comment">// 与原设定的间隔时差了： 554 毫秒(2次)</span>
+<span class="token comment">// 与原设定的间隔时差了： 564 毫秒</span>
+<span class="token comment">// 与原设定的间隔时差了： 602 毫秒</span>
+<span class="token comment">// 与原设定的间隔时差了： 573 毫秒</span>
+<span class="token comment">// 与原设定的间隔时差了： 633 毫秒</span>
+</code></pre></div>
+<blockquote><p><strong>再次强调</strong>，定时器指定的时间间隔，表示的是何时将定时器的代码添加到消息队列，而不是何时执行代码。所以真正何时执行代码的时间是不能保证的，取决于何时被主线程的事件循环取到，并执行。</p></blockquote>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token function">setInterval</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">,</span> <span class="token constant">N</span><span class="token punctuation">)</span>
+<span class="token comment">//即：每隔N秒把function事件推到消息队列中</span>
+</code></pre></div>
+<p><img alt="" src="https://s.poetries.top/uploads/2022/08/7f7c9be625208e11.png"></p>
+<blockquote><p>上图可见，<code>setInterval</code> 每隔 <code>100ms</code> 往队列中添加一个事件；<code>100ms</code> 后，添加 <code>T1</code> 定时器代码至队列中，主线程中还有任务在执行，所以等待，<code>some event</code> 执行结束后执行 <code>T1</code>定时器代码；又过了 <code>100ms</code>，<code>T2</code> 定时器被添加到队列中，主线程还在执行 <code>T1</code> 代码，所以等待；又过了 <code>100ms</code>，理论上又要往队列里推一个定时器代码，但由于此时 <code>T2</code> 还在队列中，所以 <code>T3</code> 不会被添加（<code>T3</code> 被跳过），结果就是此时被跳过；这里我们可以看到，<code>T1</code> 定时器执行结束后马上执行了 T2 代码，所以并没有达到定时器的效果</p></blockquote>
+<p><strong>setInterval有两个缺点</strong></p>
+<ul><li>使用<code>setInterval</code>时，某些间隔会被跳过</li> <li>可能多个定时器会连续执行</li></ul>
+<blockquote><p><strong>可以这么理解</strong>：每个<code>setTimeout</code>产生的任务会直接<code>push</code>到任务队列中；而<code>setInterval</code>在每次把任务<code>push</code>到任务队列前，都要进行一下判断(看上次的任务是否仍在队列中)。因而我们一般用<code>setTimeout</code>模拟<code>setInterval</code>，来规避掉上面的缺点</p></blockquote>
+<h3 id="_2-setinterval-模拟实现-settimeout"><a href="#_2-setinterval-模拟实现-settimeout" class="header-anchor">#</a> 2 setInterval 模拟实现 setTimeout</h3>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> <span class="token function-variable function">mySetTimeout</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">fn<span class="token punctuation">,</span> t</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> timer <span class="token operator">=</span> <span class="token function">setInterval</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">clearInterval</span><span class="token punctuation">(</span>timer<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fn</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span> t<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 测试</span>
+<span class="token comment">// mySetTimeout(()=&gt;{</span>
+<span class="token comment">//   console.log(1);</span>
+<span class="token comment">// },1000)</span>
+</code></pre></div>
+</div>

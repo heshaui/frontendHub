@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOC真的就那么高级吗 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>HOC真的就那么高级吗</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>HOC真的就那么高级吗</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="_1-hoc的概念"><a href="#_1-hoc的概念" class="header-anchor">#</a> 1. HOC的概念</h2> <p>其实如果有过<code>React</code>开发经验的小伙伴对<code>HOC</code>的概念应该就不陌生了，不过既然是介绍它的话，那也稍微正式一点：</p> <p><code>HOC</code>，全称<code>Higher-Order Components</code>，即高阶组件。</p> <p>它的概念应该是来源于<code>JavaScript</code>的高阶函数，我们知道高阶函数就是接受函数作为输入或者输出的函数。</p> <p>通俗来说就是一个函数，它的参数可以是一个函数，它的返回值也可以是一个函数😄，这样的函数就被称为高阶函数。</p> <p>例如🌰下面的这两个函数：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 1. 参数为函数</span>
+<span class="token keyword">const</span> <span class="token function-variable function">test1</span> <span class="token operator">=</span> <span class="token parameter">fn</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">fn</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token function-variable function">log1</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'我爱学习'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">test1</span><span class="token punctuation">(</span>log1<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 1s后打印</span>
+
+<span class="token comment">// 2. 返回值为函数</span>
+<span class="token keyword">const</span> <span class="token function-variable function">test2</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> <span class="token function-variable function">log2</span> <span class="token operator">=</span> <span class="token parameter">name</span> <span class="token operator">=&gt;</span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> log2<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token function">test2</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token string">'学习不爱我'</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 理解打印</span>
+</code></pre></div><p>那么其实，<strong>高阶组件它也仅仅只是一个接受组件作为输入并返回组件的函数</strong>。认为它并不是一个新的API或者一个新的什么玩意，仅仅是一种模式吧，或者说是一种技巧，这种技巧能够帮助我们<strong>复用组件逻辑</strong>。</p> <p>就像下面👇这样的用法：</p> <p>让我们来创建一个<em>FinalComponent.js</em></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> React <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">MyHOC</span> <span class="token punctuation">(</span><span class="token parameter">WrappedComponent</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">class</span> <span class="token class-name">extends</span> React<span class="token punctuation">.</span>Component <span class="token punctuation">{</span>
+    <span class="token function">render</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token operator">&lt;</span>WrappedComponent <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">TestComponent</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>div<span class="token operator">&gt;</span>我就是个普通的组件<span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">const</span> FinalComponent <span class="token operator">=</span> <span class="token function">MyHOC</span><span class="token punctuation">(</span>TestComponent<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> FinalComponent<span class="token punctuation">;</span>
+</code></pre></div><p>在这个案例中，我做了这么几件事：</p> <ul><li>创建了一个名为<code>MyHOC</code>的函数，它接收一个名为<code>WrappedComponent</code>的参数，并返回一个新的匿名组件</li> <li>这个匿名组件的<code>render</code>返回的是传递进来的<code>WrappedComponent</code>组件</li> <li>之后创建了一个名为<code>TestComponent</code>的组件</li> <li>再调用<code>MyHOC</code>函数并把<code>TestComponent</code>传递进去赋值给<code>FinalComponent</code>变量</li> <li>此时的<code>FinalComponent</code>其实就是那个匿名组件，我们将它导出。</li></ul> <p>在其它地方使用<code>FinalComponent</code>这个组件的话，就能正常渲染出<code>"我就是个普通的组件"</code>了。</p> <p>可以看到，上面👆的这种用法其实就叫高阶组件，它首先需要定义一个函数，然后这个函数接收一个组件并返回一个新的组件。</p> <p>大家要注意这里的命名哟，<code>MyHOC</code>函数的参数必须大写开头的，因为后面需要把它当成组件来返回，而我们知道，在<code>React</code>中如果是组件的话，它的命名开头必须是要大写，<code>React</code>会将小写开头的组件当成普通的<code>HTML</code>标签处理，这样就会报错。</p> <p>(另外还有一点，<code>HOC</code>并不是<code>React</code>里独有的，其它框架也可以使用，比如晨曦老哥的这篇文章就介绍了它在<code>Vue</code>中的用法：<a href="https://juejin.im/post/5e8b5fa6f265da47ff7cc139" target="_blank" rel="noopener noreferrer">Vue 进阶必学之高阶组件 HOC<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>)</p> <p>好的，既然在上面谈到了<strong>高阶组件</strong>主要是可以帮助我们<strong>复用组件逻辑</strong>，那大家会不会想到另一个叫<code>Mixin</code>的东西呢？但是因为<code>ES6</code>本身是不包含任何<code>Mixin</code>支持的，所以当你在<code>React</code>中使用<code>ES6 class</code>时，将不支持<code>Mixin</code>，而且使用它本身会有很多问题，现在也是不推荐使用了。</p> <p>既然你把高阶组件吹的这么牛，那它具体怎么用呢？</p> <p>咦～这么着急干嘛？哈哈哈哈，咱接着往下看。</p> <p>表情包不要着急</p> <h2 id="_2-如何实现高阶组件"><a href="#_2-如何实现高阶组件" class="header-anchor">#</a> 2. 如何实现高阶组件</h2> <h3 id="_2-1-属性代理"><a href="#_2-1-属性代理" class="header-anchor">#</a> 2.1 属性代理</h3> <p>其实在上面👆已经向大家展示了高阶组件的基本用法，让我们来简单回顾一下前面是怎么做的：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> React <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">MyHOC</span> <span class="token punctuation">(</span><span class="token parameter">WrappedComponent</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">class</span> <span class="token class-name">extends</span> React<span class="token punctuation">.</span>Component <span class="token punctuation">{</span>
+    <span class="token function">render</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token operator">&lt;</span>WrappedComponent <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">TestComponent</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>div<span class="token operator">&gt;</span>我就是个普通的组件<span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">const</span> FinalComponent <span class="token operator">=</span> <span class="token function">MyHOC</span><span class="token punctuation">(</span>TestComponent<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> FinalComponent<span class="token punctuation">;</span>
+</code></pre></div><p>定义一个函数(<code>MyHOC</code>)且接收一个组件，之后返回一个新的组件。</p> <p>那大家试想一下，如果此时我在页面中引用了<code>FinalComponent</code>组件，并且需要向<code>TestComponent</code>传递一些属性，也就是<code>props</code>，该怎么做呢？</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token operator">&lt;</span>FinalComponent id<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">1</span><span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
+</code></pre></div><p>通过这样传递的<code>id</code>虽然不能直接被<code>TestComponent</code>组件给拿到，但是却可以在<code>MyHOC</code>中拿到，因为此时<code>FinalComponent</code>确实就是<code>MyHOC</code>函数中导出的那个匿名组件，这样的话，我们就可以通过<code>this</code>来访问到这个匿名组件的一些属性，包括使用这个组件时传递的一些<code>props</code>：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">MyHOC</span> <span class="token punctuation">(</span><span class="token parameter">WrappedComponent</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">class</span> <span class="token class-name">extends</span> React<span class="token punctuation">.</span>Component <span class="token punctuation">{</span>
+    <span class="token function">render</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// { id: 1 }</span>
+      <span class="token keyword">return</span> <span class="token operator">&lt;</span>WrappedComponent <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>好的👌！我们已经成功拿到调用<code>FinalComponent</code>时传递的<code>props</code>，接下里需要把它传递给<code>WrappedComponent</code>，这就很简单了，只需要使用<code>ES6</code>的对象展开操作符即可实现，也就是这样：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">MyHOC</span> <span class="token punctuation">(</span><span class="token parameter">WrappedComponent</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">class</span> <span class="token class-name">extends</span> React<span class="token punctuation">.</span>Component <span class="token punctuation">{</span>
+    <span class="token function">render</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 一、{ id: 1 }</span>
+      <span class="token keyword">return</span> <span class="token operator">&lt;</span>WrappedComponent <span class="token punctuation">{</span><span class="token operator">...</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">TestComponent</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 二、在这里能拿到</span>
+      <span class="token operator">&lt;</span>div<span class="token operator">&gt;</span>我就是个普通的组件<span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>这个过程其实就是一个浅拷贝的过程，如果<code>this.props</code>有多个属性的话，都会将其展开传递给<code>WrappedComponent</code>：</p> <div class="language-js extra-class"><pre class="language-js"><code>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// { id: 1, uid: 123 }</span>
+
+<span class="token operator">&lt;</span>WrappedComponent <span class="token punctuation">{</span><span class="token operator">...</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
+<span class="token comment">// 等价于 =&gt;</span>
+<span class="token operator">&lt;</span>WrappedComponent id<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">1</span><span class="token punctuation">}</span> uid<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">123</span><span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
+</code></pre></div><p>可以看到，在每次调用<code>WrappedComponent</code>组件的时候，都必然要经过<code>MyHOC</code>函数，也就是说<code>MyHOC</code>成了<code>WrappedComponent</code>的<code>"代理"</code>，那么我们是不是就可以对在这一层做一些额外的操作，例如操作前面提到的<code>this.props</code>，或者是<code>WrappedComponent</code>的静态属性方法。</p> <p>像这种<strong>函数返回一个我们自己定义的组件，然后在<code>render</code>中返回要包裹的组件，同时在函数中做一些额外处理的方式</strong>，我们就称之为<strong>属性代理</strong>，根据它的功能来看这个名字是不是很好理解呢？😊。</p> <p>一起来看个简写：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">proxyHOC</span><span class="token punctuation">(</span><span class="token parameter">WrappedComponent</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">class</span> <span class="token class-name">extends</span> Component <span class="token punctuation">{</span>
+    <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token operator">&lt;</span>WrappedComponent <span class="token punctuation">{</span><span class="token operator">...</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>表情包开心</p> <p>好的👌，既然已经告诉了你们这种全新的使用方式了，那你能想到通过这种名为<code>"属性代理"</code>的东西能让我们做哪些好玩有趣的事吗？</p> <p>首先第一点来给你起个头：在我们定义的高级组件的那个函数中，是可以对要返回的组件的属性进行二次加工的，那我们是不是就可以给<code>this.props</code>添加上一些新的属性，并传递给<code>WrappedComponent</code>？OK👌，让我们来看看<code>"属性代理"</code>它的第一种用法。</p> <h4 id="_2-1-1-操作props"><a href="#_2-1-1-操作props" class="header-anchor">#</a> 2.1.1 操作props</h4> <p>就像上面👆说的，我们可以给<code>this.props</code>添加上一些新的属性并向下传递，但是这个添加不是让你去直接修改<code>this.props</code>哈，比如下面👇这种用法肯定就是不行的了：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">render</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+ <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>remark <span class="token operator">=</span> <span class="token string">'别自闭'</span>
+ <span class="token keyword">return</span> <span class="token operator">&lt;</span>WrappedComponent <span class="token punctuation">{</span><span class="token operator">...</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>因为<code>React</code>是单向数据流，它不允许你去修改<code>props</code>，因此你会发现控制台直接就报错了：</p> <div class="language- extra-class"><pre class="language-text"><code>HOC21.jsx:10 Uncaught TypeError: Cannot add property remark, object is not extensible
+</code></pre></div><p>那好的，我新建一个对象再添加额外属性就不行了😄？比如我们可以把前面的案例改造一下，这样做：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> React <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">MyHOC</span> <span class="token punctuation">(</span><span class="token parameter">WrappedComponent</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">class</span> <span class="token class-name">extends</span> React<span class="token punctuation">.</span>Component <span class="token punctuation">{</span>
+    <span class="token function">render</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> newProps <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token comment">// 重点看这里</span>
+        <span class="token operator">...</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">,</span>
+        <span class="token literal-property property">remark</span><span class="token operator">:</span> <span class="token string">'别自闭'</span>
+      <span class="token punctuation">}</span>
+      <span class="token keyword">return</span> <span class="token operator">&lt;</span>WrappedComponent <span class="token punctuation">{</span><span class="token operator">...</span>newProps<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">TestComponent</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">)</span> <span class="token comment">// { id: 1, remark: '别自闭' }</span>
+    <span class="token keyword">return</span> <span class="token operator">&lt;</span>div<span class="token operator">&gt;</span>我就是个普通div<span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">const</span> FinalComponent <span class="token operator">=</span> <span class="token function">MyHOC</span><span class="token punctuation">(</span>TestComponent<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> FinalComponent<span class="token punctuation">;</span>
+</code></pre></div><p>使用：</p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>FinalComponent</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span>{1}</span> <span class="token punctuation">/&gt;</span></span>
+</code></pre></div><p>大家可以看到，虽然<code>FinalComponent</code>我们在调用的时候只传递了一个属性，也就是<code>id</code>，但是最终<code>TestComponent</code>组件接收到的<code>props</code>却经过<code>MyHOC</code>添加上了额外的属性<code>"自闭"</code>，呸，是<code>"别自闭"</code>。</p> <p>这样就达到了在调用<code>TestComponent</code>的时候，可以额外新加一些属性的功能。例如现在如果我们有好几个组件，都需要添加一些相同的属性，那么我们是不是只需要定义好一个<code>MyHOC</code>，然后让这些组件都经过<code>MyHOC</code>过一遍就可以了。</p> <p><code>Good boy!</code>现在我们已经会<code>"属性代理"</code>的其中一种用法了，不说了，学累了，喝口水去，顺便想想还可以怎样用。</p> <p>表情包休息时间</p> <h4 id="_2-1-2-组合渲染"><a href="#_2-1-2-组合渲染" class="header-anchor">#</a> 2.1.2 组合渲染</h4> <p>唔，欢迎回来呀。就在刚刚看表情包的时间，大家有想到什么其它的用法不？</p> <p>没有？好吧。咳咳 可是想到了😅。其实大家可以这样去想，一个<code>React</code>组件里，无非就是这几种东西，像基础点的有什么<code>props、state、生命周期、render函数</code>啦，再高级点的可能就是<code>refs</code>。既然这样的话，咱把这几个都套上去试试，看是不是能产生很多新鲜的用法呢。</p> <p>就比如<code>render函数</code>吧，既然前面的<code>props</code>是在数据传递的层面做一些事情，那么我们也可以从渲染层去看看。</p> <p>比如给最终输出的<code>UI</code>再添加一些额外的元素，这个元素可以是<code>HTML</code>元素，也可以是<code>React</code>组件，我们先来看看给上面的案例增加一个<code>HTML</code>元素：</p> <div class="language-diff extra-class"><pre class="language-diff"><code>import React from 'react';
+function MyHOC (WrappedComponent) {
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> return class extends React.Component {
+</span><span class="token prefix unchanged"> </span><span class="token line">   render () {
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">      return (&lt;&gt;
+</span><span class="token prefix inserted">+</span><span class="token line">        &lt;div&gt;我是额外添加的HTML元素&lt;/div&gt;
+</span><span class="token prefix inserted">+</span><span class="token line">        &lt;WrappedComponent {...this.props} /&gt;
+</span><span class="token prefix inserted">+</span><span class="token line">      &lt;/&gt;)
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   }
+</span><span class="token prefix unchanged"> </span><span class="token line"> }
+</span></span>}
+class TestComponent extends React.Component {
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> render () {
+</span><span class="token prefix unchanged"> </span><span class="token line">   console.log(this.props)
+</span><span class="token prefix unchanged"> </span><span class="token line">   return &lt;div&gt;我就是个普通div&lt;/div&gt;
+</span><span class="token prefix unchanged"> </span><span class="token line"> }
+</span></span>}
+const FinalComponent = MyHOC(TestComponent);
+export default FinalComponent;
+</code></pre></div><p>增加<code>React</code>组件也可以：</p> <div class="language-diff extra-class"><pre class="language-diff"><code>import React from 'react';
+<span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> function ExtraComponent () {
+</span><span class="token prefix inserted">+</span><span class="token line">  return (
+</span><span class="token prefix inserted">+</span><span class="token line">    &lt;div&gt;我是额外添加的React组件&lt;/div&gt;
+</span><span class="token prefix inserted">+</span><span class="token line">  )
+</span><span class="token prefix inserted">+</span><span class="token line"> }
+</span></span>function MyHOC (WrappedComponent) {
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> return class extends React.Component {
+</span><span class="token prefix unchanged"> </span><span class="token line">   render () {
+</span><span class="token prefix unchanged"> </span><span class="token line">     return (&lt;&gt;
+</span><span class="token prefix unchanged"> </span><span class="token line">       &lt;div&gt;我是额外添加的HTML元素&lt;/div&gt;
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">       { ExtraComponent() }
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">       &lt;WrappedComponent {...this.props} /&gt;
+</span><span class="token prefix unchanged"> </span><span class="token line">     &lt;/&gt;)
+</span><span class="token prefix unchanged"> </span><span class="token line">   }
+</span><span class="token prefix unchanged"> </span><span class="token line"> }
+</span></span>}
+class TestComponent extends React.Component {
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> render () {
+</span><span class="token prefix unchanged"> </span><span class="token line">   console.log(this.props)
+</span><span class="token prefix unchanged"> </span><span class="token line">   return &lt;div&gt;我就是个普通div&lt;/div&gt;
+</span><span class="token prefix unchanged"> </span><span class="token line"> }
+</span></span>}
+const FinalComponent = MyHOC(TestComponent);
+export default FinalComponent;
+</code></pre></div><p>(额，关于<code>&lt;&gt;&lt;/&gt;</code>大家应该知道是什么意思吧，其实就是<code>React.Fragment</code>的简写，你可以把它想象成就是一个透明的<code>div</code>，但是并不会在页面上渲染出这个<code>div</code>，用过<code>Vue</code>的小伙伴可能好理解一些，就是类似<code>Vue</code>中的<code>template</code>标签)</p> <p>像上面👆的这种实现方式我们也来给它取个名字吧——<code>组合渲染</code>。</p> <p>和它的名字一样，它可以对我们最终要渲染的<code>UI</code>做一些组合，不管这种组合是包裹的，还是兄弟之间的组合，都可以。怎么样？小伙伴们有没有感觉有内味了？😁</p> <p>表情包嘿嘿</p> <h4 id="_2-1-3-条件渲染"><a href="#_2-1-3-条件渲染" class="header-anchor">#</a> 2.1.3 条件渲染</h4> <p>其实有了<strong>组合渲染</strong>，条件渲染这种用法我们也很好理解了，甚至我在听到这个词的时候，脑子里已然能想到可以怎么去做了。</p> <p>最简单的一种，我们可以通过三元运算符判断组件是否渲染(咳咳，这个三元不是神三元哈😅)：</p> <div class="language-diff extra-class"><pre class="language-diff"><code>import React from 'react';
+<span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> function ReboundGuy () {
+</span><span class="token prefix inserted">+</span><span class="token line">  return (
+</span><span class="token prefix inserted">+</span><span class="token line">    &lt;div&gt;我只是个备胎...&lt;/div&gt;
+</span><span class="token prefix inserted">+</span><span class="token line">  )
+</span><span class="token prefix inserted">+</span><span class="token line"> }
+</span></span>function MyHOC (WrappedComponent) {
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> return class extends React.Component {
+</span><span class="token prefix unchanged"> </span><span class="token line">   render () {
+</span><span class="token prefix unchanged"> </span><span class="token line">     return (&lt;&gt;
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">        {
+</span><span class="token prefix inserted">+</span><span class="token line">          this.props.flag ? &lt;WrappedComponent {...this.props} /&gt; :
+</span><span class="token prefix inserted">+</span><span class="token line">          ReboundGuy()
+</span><span class="token prefix inserted">+</span><span class="token line">        }
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">     &lt;/&gt;)
+</span><span class="token prefix unchanged"> </span><span class="token line">   }
+</span><span class="token prefix unchanged"> </span><span class="token line"> }
+</span></span>}
+class TestComponent extends React.Component {
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> render () {
+</span><span class="token prefix unchanged"> </span><span class="token line">   console.log(this.props)
+</span><span class="token prefix unchanged"> </span><span class="token line">   return &lt;div&gt;我就是个普通div&lt;/div&gt;
+</span><span class="token prefix unchanged"> </span><span class="token line"> }
+</span></span>}
+const FinalComponent = MyHOC(TestComponent);
+export default FinalComponent;
+</code></pre></div><p>通过判断传递进来的<code>flag</code>的值来决定渲染出什么内容。</p> <p>其实大家可以发现，这些用法并没有想象的那么难。可能也有小伙伴会问了，如果只是想要实现一个这样的条件渲染，我不用高级组件，写在每个组件里也可以实现呀。</p> <p>没错，是有很多的办法可以实现，也没说非得使用高阶组件，只不过这确实是我们实现功能的一种方式。</p> <h4 id="_2-1-4-状态管理-抽象state"><a href="#_2-1-4-状态管理-抽象state" class="header-anchor">#</a> 2.1.4 状态管理(抽象state)</h4> <p>还有一种用法被称之为<code>状态管理</code>，有的教材里也叫做<code>抽象state</code>。刚开始听到这个词可能不太好理解，不过如果大家知道它是怎样用的话读懂这个命名就很简单了。</p> <p>在继续讲解之前，得先向大家介绍一下<code>受控组件</code>和<code>非受控组件</code>。有的小伙伴可能听过这两词，有的可能没有。不过没关系，在这里统一讲解。</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

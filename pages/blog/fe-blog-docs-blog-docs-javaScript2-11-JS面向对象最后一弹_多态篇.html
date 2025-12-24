@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS面向对象最后一弹_多态篇 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>JS面向对象最后一弹_多态篇</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>JS面向对象最后一弹_多态篇</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="_1-看似-多态-的一段代码"><a href="#_1-看似-多态-的一段代码" class="header-anchor">#</a> 1. 看似"多态"的一段代码</h2> <p>我们听的比较多的一种说法是：</p> <blockquote><p>多态的实际含义是：同一操作作用于不同的对象上，可以产生不同的解释和不同的执行结果。</p></blockquote> <p>用例子🌰来说话吧。</p> <p>假设我家现在养了两只宠物，一只是小猫咪🐱，一只是小狗🐶。现在我对它们发号一个指令让它们叫。</p> <p>小猫咪需要<code>"喵喵喵～"</code>的叫，而小狗则要<code>"汪汪汪！"</code>。</p> <p>让它们叫就是同一操作，叫声不同就是不同的执行结果。</p> <p>如果想要你转换为代码你会如何设计呢？</p> <p>让我们来理一下，我们需要：</p> <ul><li>一个发出声音的方法<code>makeSound</code></li> <li>一个猫的类<code>Cat</code></li> <li>一个狗的类<code>Dog</code></li> <li>当调用<code>makeSound</code>并且传入的是一只猫则打印出<code>"喵喵喵～"</code></li> <li>当调用<code>makeSound</code>并且传入的是一只狗则打印出<code>"汪汪汪！"</code></li></ul> <p>那么我们很容易就得出以下这段代码了：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">makeSound</span> <span class="token punctuation">(</span><span class="token parameter">animal</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>animal <span class="token keyword">instanceof</span> <span class="token class-name">Cat</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'喵喵喵～'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>animal <span class="token keyword">instanceof</span> <span class="token class-name">Dog</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'汪汪汪！'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">Cat</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">Dog</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token function">makeSound</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// '喵喵喵～'</span>
+<span class="token function">makeSound</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Dog</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// '汪汪汪！'</span>
+</code></pre></div><p>当然上面👆这种做法虽然实现了我们想要的<code>"多态性"</code>，<code>makeSound</code>确实是实现了传入不同类型的对象就产生不同效果的功能，但是想想如果现在我家又多养了一只小猪🐷呢？我想让它发出<code>"啂妮妮"</code>的叫声是不是又得去修改<code>makeSound</code>方法呢？</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">makeSound</span> <span class="token punctuation">(</span><span class="token parameter">animal</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>animal <span class="token keyword">instanceof</span> <span class="token class-name">Cat</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'喵喵喵～'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>animal <span class="token keyword">instanceof</span> <span class="token class-name">Dog</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'汪汪汪！'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>animal <span class="token keyword">instanceof</span> <span class="token class-name">Pig</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  	console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'啂妮妮'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">Cat</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">Dog</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">Pig</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token function">makeSound</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// '喵喵喵～'</span>
+<span class="token function">makeSound</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Dog</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// '汪汪汪！'</span>
+<span class="token function">makeSound</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Pig</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// '啂妮妮'</span>
+</code></pre></div><p>当我们每次需要多添加一种动物的时候，都需要去改公共的方法<code>makeSound</code>，并不停的往里面堆砌条件分支，这显然不是我想要的。因为我们知道修改代码总是危险的，特别是修改这种带有公共性质的方法，程序出错的可能性会增大。并且随着动物种类越来越多，我们的<code>makeSound</code>函数的代码也会越来越多。(作为一个有职业操守的程序员我是不能忍的啊)</p> <h2 id="_2-对象的多态性"><a href="#_2-对象的多态性" class="header-anchor">#</a> 2. 对象的多态性</h2> <p>其实<strong>多态最根本的作用就是通过把过程化的条件语句转化为对象的多态性，从而消除这些条件分支语句</strong>。</p> <p>它背后的思想通俗点来说就是把<code>"做什么"</code>和<code>"谁去做以及怎么去做"</code>分离开来。你也可以认为是把<code>"不变的事物"</code>和<code>"可能改变的事物"</code>分离开来。</p> <p>这个例子🌰中既然我们已经明确了<code>动物都会发出叫声</code>(它就是<code>"不变的事物"</code>)，而动物<code>具体怎样叫</code>是不同的(它就是<code>"可能改变的事物"</code>)，那我们就可以把<code>"具体怎样叫"</code>这个动作分布到各个类上(封装到各个类上)，然后在发出叫声的<code>makeSound</code>函数中调用<code>"叫"</code>这个动作就可以了。</p> <p>让我们用<strong>多态</strong>的思想来改造一下上面👆的题目：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">makeSound</span> <span class="token punctuation">(</span><span class="token parameter">animal</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>animal<span class="token punctuation">.</span>sound <span class="token keyword">instanceof</span> <span class="token class-name">Function</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 判断是否有animal.sound且该属性为函数</span>
+    animal<span class="token punctuation">.</span><span class="token function">sound</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">Cat</span> <span class="token punctuation">{</span>
+  <span class="token function">sound</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'喵喵喵～'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">Dog</span> <span class="token punctuation">{</span>
+  <span class="token function">sound</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'汪汪汪！'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">Pig</span> <span class="token punctuation">{</span>
+  <span class="token function">sound</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'啂妮妮'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token function">makeSound</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// '喵喵喵～'</span>
+<span class="token function">makeSound</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Dog</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// '汪汪汪！'</span>
+<span class="token function">makeSound</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Pig</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// '啂妮妮'</span>
+</code></pre></div><p>现在我们看到的是：调用<code>makeSound</code>方法并传入不同的类，就会有不同的表现形式，并且后续如果我们再需要添加其它的老虎🐯、狮子🦁️、熊🐻等动物的时候也不需要再去改公共的<code>makeSound</code>方法了，只要这个类中有一个叫做<code>sound</code>的方法就可以自动执行了。并且也消除了<code>makeSound</code>中的各个<code>if..else</code>。</p> <p>在这个例子🌰中我们就是把<code>不变的部分</code>动物都会叫(<code>animal.sound()</code>)隔离出来，把<code>可变的部分</code>动物具体怎样叫的(<code>sound(){console.log('喵喵喵～')}</code>)各自封装起来。</p> <p>你还可以怎样理解它呢？</p> <p>唔...猫这种动物的叫声是它与生俱来，是我在要叫它发出叫声之前就已经规定好了的，当我在需要它叫的时候它就知道自己该用<code>"喵喵喵～"</code>的声音叫了。</p> <p>而不是像最开始那样，虽然你是只猫，但是你却不知道自己要怎样叫，在我要你发出叫声的时候并且告诉你你应该要<code>"喵喵喵～"</code>的叫，你才叫。</p> <p>叫叫叫叫叫叫，我提莫的...是来学技术的，你给👴整绕口令呢？！嗯？！</p> <p>算了，你要还不懂上面说的各种叫，我只能用另一个例子来说明这个问题了。</p> <h2 id="_3-拍小电影的例子"><a href="#_3-拍小电影的例子" class="header-anchor">#</a> 3. 拍小电影的例子</h2> <p>(年轻人脑袋里别总想着一些污七八糟的，这里的小电影是指成本和人员较少的小规模电影)</p> <p>现在是导演，利用对象的多态性来拍摄电影，当我喊<code>action</code>的时候，演员开始了他的表演，摄影师开始拍摄，灯光师打好灯，各个岗位的工作人员在开拍之前就都知道自己的工作是什么要做什么了。</p> <p>如果不利用对象的多态性而是利用面向过程的方式的话，当我喊出<code>action</code>之后，我得跑到每个人面前告诉他们他们得做什么，他们在按照我交代给他们的再做。</p> <h2 id="_4-强类型语言与多态"><a href="#_4-强类型语言与多态" class="header-anchor">#</a> 4. 强类型语言与多态</h2> <p>在上面👆我们一直使用的是<code>JavaScript</code>来进行案例讲解，这会让你觉得多态的实现似乎是一件非常容易的事情。</p> <p>这个想法的产生其实源自于我们常听到的一句话：<code>JS是一门弱类型(动态类型)语言。</code></p> <p>(额，你没听过啊，那不好意思了，也就是我们在定义一个变量的时候可以先不指定它是什么类型的，后面赋值的时候再指定)</p> <p>就像是我要宠物们叫这个案例一样。在定义<code>makeSound</code>方法的时候，我是传递了一个参数<code>animal</code>进去的，而且我并没有规定这个<code>animal</code>它是个什么类型的东西，比如我并没有规定它就一定是只猫，或者一定是条狗，因为在<code>JS</code>里可以不要我们这么做，它并没有那么严格的限制。</p> <p>但是想想如果换成其它的强类型(静态)语言，来个都听过的，比如<code>Java</code>。</p> <p>当我在定义<code>makeSound</code>方法的时候，它需要我指定一下<code>animal</code>的类型，假设我就指定为猫好了：</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">AnimalSound</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> makeSound <span class="token punctuation">(</span><span class="token class-name">Cat</span> animal<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// Cat animal这段代码的意思就是参数 animal 的类型是一只猫</span>
+        animal<span class="token punctuation">.</span><span class="token function">sound</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>现在当我们调用<code>makeSound</code>方法的时候并且传入了一只猫(<code>new Cat()</code>)，是可以正常执行的。</p> <p>但是如果调用<code>makeSound</code>方法的时候传入的是一条狗呢？程序就不允许我们这么做了，因为它规定了这只动物必须是只猫。</p> <p>所以可以看出，强类型语言的类型检查在给带来安全性的同时也让我们在设计某个程序时有种不能大展身手的感觉。</p> <p>那么在<code>Java</code>这种强类型语言中可以怎样解决这个问题呢 🤔️ ？</p> <p>额，它主要是通过<code>向上转型</code>，先给你们来一段概念性的东西：</p> <p>静态类型的面向对象语言通常被设计为可以向上转型：当给一个类变量赋值的时候，这个变量的类型既可以使用这个类本身，也可以使用这个类的超类。</p> <p>就像是我们在描述宠物叫的时候，通常是说：<code>一只小猫在叫</code>或<code>一只小狗在叫</code>。但是如果忽略它具体的类型，我们可以说是：<code>一只动物在叫</code>。</p> <p>同样的，这里我们可以设计一个类型：<code>Animal</code>，当猫<code>Cat</code>和狗<code>Dog</code>的类型都被隐藏在超类型<code>Animal</code>身后的时候，<code>Cat</code>和<code>Dog</code>就能被交换着使用了。</p> <p>这是让对象表现出多态性的必经之路，而多态性的表现正是实现众多设计模式的目标。</p> <p>这样平白的说好像有些枯燥，让我们看看下面<code>TypeScript</code>的例子。</p> <h2 id="_5-typescript中使用继承得到多态效果"><a href="#_5-typescript中使用继承得到多态效果" class="header-anchor">#</a> 5. TypeScript中使用继承得到多态效果</h2> <p>如果你觉得<code>Java</code>你看不懂也不想看的话，那我就以<code>TypeScript</code>来给你举例。众所周知它是能让我们写<code>"静态类型的JS"</code>。我用它来实现<code>静态类型的向上转型</code>。</p> <p>（额，不过<code>TypeScript</code>在使用上和一些真正的静态类型语言还是有区别的，这里我只是为了方便你理解所以用它来编写案例）</p> <p>现在我用上面👆提到的东西，给<code>makeSound</code>方法指定一个类型<code>Animal</code>，它规定了传入的对象必须要会叫才行：</p> <p>(不会<code>TypeScript</code>没关系，但以此为理由不去看下面的内容就不行了，我会尽量说的详细一些 😊)</p> <div class="language-typescript extra-class"><pre class="language-typescript"><code><span class="token keyword">interface</span> <span class="token class-name">Animal</span> <span class="token punctuation">{</span>
+  <span class="token function">sound</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">:</span> <span class="token keyword">void</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">function</span> <span class="token function">makeSound</span> <span class="token punctuation">(</span>animal<span class="token operator">:</span> Animal<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  animal<span class="token punctuation">.</span><span class="token function">sound</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><code>makeSound</code>方法中的参数的意思简单理解就是：</p> <ul><li>需要传入一个<code>animal</code>的对象，这个对象必须是<code>Animal</code>类型的</li> <li>而<code>Animal</code>类型(用<code>interface</code>定义的称之为<code>接口</code>)的限制就是必须要有<code>sound</code>方法</li> <li>所以我们可以得出：传入的<code>animal</code>对象必须要有<code>sound</code>方法</li></ul> <p>(<code>sound(): void</code>表示的是定义一个名为<code>sound</code>的方法且这个方法的返回值为空)</p> <p>所以现在让我们来设计一下<code>Cat</code>和<code>Dog</code>：</p> <p><img src="https://s.poetries.top/gitee/2020/09/160.png" alt=""></p> <p>就像上面这段代码，我把<code>Dog</code>的<code>sound</code>方法隐掉了，那么在调用<code>makeSound</code>的时候类型检查就已经错了，它要求我们传入的对象必须要有<code>sound</code>属性。</p> <p>（扩展一下，当然你也可以在<code>tsconfig.json</code>中修改一下配置：<code>"noImplicitAny": false</code>，设置了这个属性之后，你的<code>function makeSound(animal) {}</code> 的参数<code>animal</code>可以不用必须指定一个类型，不过这样的话就失去了我讲解这个案例的意义了）</p> <p>对于上面这种情况，我们就可以使用<code>接口继承</code>来设计这么一个多态的功能：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">interface</span> <span class="token class-name">Animal</span> <span class="token punctuation">{</span>
+  <span class="token function">sound</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">:</span> <span class="token keyword">void</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">function</span> <span class="token function">makeSound</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">animal</span><span class="token operator">:</span> Animal</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  animal<span class="token punctuation">.</span><span class="token function">sound</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">Cat</span> <span class="token keyword">implements</span> <span class="token class-name">Animal</span> <span class="token punctuation">{</span> <span class="token comment">// 使用 implements 继承接口 Animal</span>
+  <span class="token function">sound</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">:</span> <span class="token keyword">void</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'喵喵喵～'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">Dog</span> <span class="token keyword">implements</span> <span class="token class-name">Animal</span> <span class="token punctuation">{</span>
+  <span class="token function">sound</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">:</span> <span class="token keyword">void</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'汪汪汪！'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token function">makeSound</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token function">makeSound</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Dog</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre></div><p>我们看到了一个生疏的<code>API</code>：<code>implements</code>，英文意思：<code>实现、执行、落实</code>。</p> <p>它的作用其实和<code>extends</code>差不多，只不过<code>extends</code>后面接着的是一个类，而<code>implements</code>规定继承的是一个接口(也就是用<code>interface</code>声明的东西)</p> <p>使用了<code>implements</code>接口继承的<code>Cat</code>和<code>Dog</code>就表示这两个类中必须要有<code>sound</code>方法才行。</p> <p>比如我又把<code>Dog</code>中的<code>sound</code>去掉：</p> <p><img src="https://s.poetries.top/gitee/2020/09/161.png" alt=""></p> <p>现在在我定义<code>Dog</code>这个类的时候就已经给出错误提示了。</p> <h2 id="_6-js与身俱来的多态性"><a href="#_6-js与身俱来的多态性" class="header-anchor">#</a> 6. JS与身俱来的多态性</h2> <p>从上面👆的几个案例我们可以看出，<strong>多态的思想实际上是要把<code>"做什么"</code>与<code>"谁去做"</code>分离开来</strong>，那么要实现这一点，最主要的一点就是要先消除<strong>类型之间的耦合关系</strong>。</p> <p>这什么<code>耦合关系</code>其实就是我们前面<code>Java</code>案例中的那种，一旦我们指定了<code>makeSound</code>方法的参数<code>animal</code>是一个<code>Cat</code>之后，那<code>animal</code>这个参数就不能传入一只<code>Dog</code>的对象。即：一旦我们指定了方法的参数是某个类型，它就不能再被替换为另一个类型。</p> <p>而通过<code>TypeScript</code>那个案例我们又可以知道对于<code>Java</code>这种静态类型语言可以通过向上转型来实现多态。</p> <p>但是对于<code>JS</code>呢？它的变量类型在运行期是可变的，我的<code>animal</code>参数即可以是<code>Cat</code>也可以是<code>Dog</code>，程序并没有要求我指定它的类型，也就是它并不存在这种类型之间的耦合关系，所以我说它的这种多态性是与生俱来的。</p> <p>这也可以看出，一个东西能否叫，只取决于它是否有<code>sound</code>方法，而不取决于它是否是某种类型的对象。</p> <p>例如下面这个案例🌰，我设计了一个<code>Phone</code>类，它并不是一个动物类型的，但是它有<code>sound</code>方法，所以它也能叫：</p> <p><img src="https://s.poetries.top/gitee/2020/09/162.png" alt=""></p> <p><strong>在<code>JS</code>中并不需要诸如向上转型之类的技术来取得多态的效果。</strong></p> <h2 id="_7-多态的实际应用"><a href="#_7-多态的实际应用" class="header-anchor">#</a> 7. 多态的实际应用</h2> <p>如果你没有接触过一些设计模式的话，可能就没有感受到它的重要性。实际上绝大多数设计模式的实现都离不开多态性的思想，例如组合模式、策略模式等等</p> <p>在实际工作上来说，没怎么用过，所以不敢妄下结论说它用的不多。这边在网上是搜寻了一下它的实际应用，十有八九的案例都是和《JavaScript设计模式与开发实践》一书中的百度地图谷歌地图的案例一样。</p> <p>怎么回事现在的年轻人，就不能有点新创意新想法？</p> <p>我就不用百度和谷歌地图，我就用高德和搜狗地图！硬气～</p> <p>案例是这样的，其实和我开始列举的<code>命令宠物们叫</code>差不多，你可以看下题目然后自个想想解法。</p> <p>假设我们现在要编写一个地图应用，有两家可选的地图API提供商供我们接入自己的应用。但是我们不确定实际用会用哪一家，而两家地图的API都提供了一个<code>show</code>方法，负责在页面上展示整个地图。请你利用多态的思想设计一个<code>showMap</code>方法，传入不同的地图供应商进去渲染出不同的地图。</p> <ul><li>高德：GaodeMap</li> <li>搜狗：SogouMap</li></ul> <p>代码如下：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">class</span> <span class="token class-name">GaodeMap</span> <span class="token punctuation">{</span>
+  <span class="token function">show</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'高德地图持续为您导航'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">SogouMap</span> <span class="token punctuation">{</span>
+  <span class="token function">show</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'欢迎使用搜狗地图'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">function</span> <span class="token function">showMap</span> <span class="token punctuation">(</span><span class="token parameter">map</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>map<span class="token punctuation">.</span>show <span class="token keyword">instanceof</span> <span class="token class-name">Function</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    map<span class="token punctuation">.</span><span class="token function">show</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token function">showMap</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">GaodeMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token function">showMap</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">SogouMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二进制数据 buffer - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>二进制数据 buffer</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>二进制数据 buffer</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="模块概览"><a href="#模块概览" class="header-anchor">#</a> 模块概览</h2> <p>Buffer是node的核心模块，开发者可以利用它来处理二进制数据，比如文件流的读写、网络请求数据的处理等。</p> <p>Buffer的API非常多，本文仅挑选 比较常用/容易理解 的API进行讲解，包括Buffer实例的创建、比较、连接、拷贝、查找、遍历、类型转换、截取、编码转换等。</p> <h2 id="创建"><a href="#创建" class="header-anchor">#</a> 创建</h2> <ul><li>new Buffer(array)</li> <li>Buffer.alloc(length)</li> <li>Buffer.allocUnsafe(length)</li> <li>Buffer.from(array)</li></ul> <h3 id="通过-new-buffer-array"><a href="#通过-new-buffer-array" class="header-anchor">#</a> 通过 new Buffer(array)</h3> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Creates a new Buffer containing the ASCII bytes of the string 'buffer'</span>
+<span class="token keyword">const</span> buf <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Buffer</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">0x62</span><span class="token punctuation">,</span> <span class="token number">0x75</span><span class="token punctuation">,</span> <span class="token number">0x66</span><span class="token punctuation">,</span> <span class="token number">0x66</span><span class="token punctuation">,</span> <span class="token number">0x65</span><span class="token punctuation">,</span> <span class="token number">0x72</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>验证下：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> array <span class="token operator">=</span> <span class="token string">'buffer'</span><span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">v</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token string">'0x'</span> <span class="token operator">+</span> v<span class="token punctuation">.</span><span class="token function">charCodeAt</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token number">16</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span> array<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 输出：0x62,0x75,0x66,0x66,0x65,0x72</span>
+</code></pre></div><h3 id="通过-buffer-alloc-length"><a href="#通过-buffer-alloc-length" class="header-anchor">#</a> 通过 Buffer.alloc(length)</h3> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buf1 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">alloc</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 长度为10的buffer，初始值为0x0</span>
+<span class="token keyword">var</span> buf2 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">alloc</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 长度为10的buffer，初始值为0x1</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buf3 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">allocUnsafe</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 长度为10的buffer，初始值不确定</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buf4 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">)</span>  <span class="token comment">// 长度为3的buffer，初始值为 0x01, 0x02, 0x03</span>
+</code></pre></div><h3 id="通过buffer-from"><a href="#通过buffer-from" class="header-anchor">#</a> 通过Buffer.from()</h3> <p>例子一：Buffer.from(array)</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// [0x62, 0x75, 0x66, 0x66, 0x65, 0x72] 为字符串 "buffer" </span>
+<span class="token comment">// 0x62 为16进制，转成十进制就是 98，代表的就是字母 b</span>
+<span class="token keyword">var</span> buf <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">0x62</span><span class="token punctuation">,</span> <span class="token number">0x75</span><span class="token punctuation">,</span> <span class="token number">0x66</span><span class="token punctuation">,</span> <span class="token number">0x66</span><span class="token punctuation">,</span> <span class="token number">0x65</span><span class="token punctuation">,</span> <span class="token number">0x72</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>例子二：Buffer.from(string[, encoding])</p> <p>通过string创建buffer，跟将buffer转成字符串时，记得编码保持一致，不然会出现乱码，如下所示。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buf <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'this is a tést'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 默认采用utf8</span>
+
+<span class="token comment">// 输出：this is a tést</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 默认编码是utf8，所以正常打印</span>
+
+<span class="token comment">// 输出：this is a tC)st</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token string">'ascii'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 转成字符串时，编码不是utf8，所以乱码</span>
+</code></pre></div><p>对乱码的分析如下：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> letter <span class="token operator">=</span> <span class="token string">'é'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span>letter<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 默认编码是utf8，这里占据两个字节 &lt;Buffer c3 a9&gt;</span>
+<span class="token keyword">var</span> len <span class="token operator">=</span> buff<span class="token punctuation">.</span>length<span class="token punctuation">;</span>  <span class="token comment">// 2</span>
+<span class="token keyword">var</span> code <span class="token operator">=</span> buff<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// 第一个字节为0xc3，即195：超出ascii的最大支持范围</span>
+<span class="token keyword">var</span> binary <span class="token operator">=</span> code<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 195的二进制：10101001</span>
+<span class="token keyword">var</span> finalBinary <span class="token operator">=</span> binary<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 将高位的1舍弃，变成：0101001</span>
+<span class="token keyword">var</span> finalCode <span class="token operator">=</span> <span class="token function">parseInt</span><span class="token punctuation">(</span>finalBinary<span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 0101001 对应的十进制：67</span>
+<span class="token keyword">var</span> finalLetter <span class="token operator">=</span> String<span class="token punctuation">.</span><span class="token function">fromCharCode</span><span class="token punctuation">(</span>finalCode<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 67对应的字符：C</span>
+
+<span class="token comment">// 同理 0xa9最终转成的ascii字符为)</span>
+<span class="token comment">// 所以，最终输出为 this is a tC)st</span>
+</code></pre></div><p>例子三：Buffer.from(buffer)</p> <p>创建新的Buffer实例，并将buffer的数据拷贝到新的实例子中去。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'buffer'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> buff2 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span>buff<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 输出：buffer</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff2<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 输出：buffer</span>
+
+buff2<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0x61</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 输出：buffer</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff2<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 输出：auffer</span>
+</code></pre></div><h2 id="buffer比较"><a href="#buffer比较" class="header-anchor">#</a> buffer比较</h2> <h3 id="buf-equals-otherbuffer"><a href="#buf-equals-otherbuffer" class="header-anchor">#</a> buf.equals(otherBuffer)</h3> <p>判断两个buffer实例存储的数据是否相同，如果是，返回true，否则返回false。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 例子一：编码一样，内容相同</span>
+<span class="token keyword">var</span> buf1 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'A'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> buf2 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'A'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span> buf1<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>buf2<span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// true</span>
+
+<span class="token comment">// 例子二：编码一样，内容不同</span>
+<span class="token keyword">var</span> buf3 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'A'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> buf4 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'B'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span> buf3<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>buf4<span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// false</span>
+
+<span class="token comment">// 例子三：编码不一样，内容相同</span>
+<span class="token keyword">var</span> buf5 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'ABC'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// &lt;Buffer 41 42 43&gt;</span>
+<span class="token keyword">var</span> buf6 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'414243'</span><span class="token punctuation">,</span> <span class="token string">'hex'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf5<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>buf6<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment">//true</span>
+
+<span class="token comment">//只要比较的两者内容相同,`buf.equals(otherBuffer)` 就返回true</span>
+</code></pre></div><h3 id="buf-compare-target-targetstart-targetend-sourcestart-sourceend"><a href="#buf-compare-target-targetstart-targetend-sourcestart-sourceend" class="header-anchor">#</a> buf.compare(target[, targetStart[, targetEnd[, sourceStart[, sourceEnd]]]])</h3> <p>同样是对两个buffer实例进行比较，不同的是：</p> <ol><li>可以指定特定比较的范围（通过start、end指定）</li> <li>返回值为整数，达标buf、target的大小关系</li></ol> <p>假设返回值为</p> <ul><li><code>0</code>：buf、target大小相同。</li> <li><code>1</code>：buf大于target，也就是说buf应该排在target之后。</li> <li><code>-1</code>：buf小于target，也就是说buf应该排在target之前。</li></ul> <p>看例子，官方的例子挺好的，直接贴一下：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> buf1 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'ABC'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> buf2 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'BCD'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> buf3 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'ABCD'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: 0</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf1<span class="token punctuation">.</span><span class="token function">compare</span><span class="token punctuation">(</span>buf1<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: -1</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf1<span class="token punctuation">.</span><span class="token function">compare</span><span class="token punctuation">(</span>buf2<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: -1</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf1<span class="token punctuation">.</span><span class="token function">compare</span><span class="token punctuation">(</span>buf3<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: 1</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf2<span class="token punctuation">.</span><span class="token function">compare</span><span class="token punctuation">(</span>buf1<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: 1</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf2<span class="token punctuation">.</span><span class="token function">compare</span><span class="token punctuation">(</span>buf3<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: [ &lt;Buffer 41 42 43&gt;, &lt;Buffer 41 42 43 44&gt;, &lt;Buffer 42 43 44&gt; ]</span>
+<span class="token comment">// (This result is equal to: [buf1, buf3, buf2])</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token punctuation">[</span>buf1<span class="token punctuation">,</span> buf2<span class="token punctuation">,</span> buf3<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">(</span>Buffer<span class="token punctuation">.</span>compare<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="buffer-compare-buf1-buf2"><a href="#buffer-compare-buf1-buf2" class="header-anchor">#</a> Buffer.compare(buf1, buf2)</h3> <p>跟 <code>buf.compare(target)</code> 大同小异，一般用于排序。直接贴官方例子：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> buf1 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'1234'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> buf2 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'0123'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> arr <span class="token operator">=</span> <span class="token punctuation">[</span>buf1<span class="token punctuation">,</span> buf2<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: [ &lt;Buffer 30 31 32 33&gt;, &lt;Buffer 31 32 33 34&gt; ]</span>
+<span class="token comment">// (This result is equal to: [buf2, buf1])</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>arr<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">(</span>Buffer<span class="token punctuation">.</span>compare<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="从buffer-from-62-谈起"><a href="#从buffer-from-62-谈起" class="header-anchor">#</a> 从Buffer.from([62])谈起</h2> <p>这里稍微研究下Buffer.from(array)。下面是官方文档对API的说明，也就是说，每个array的元素对应1个字节（8位），取值从0到255。</p> <blockquote><p>Allocates a new Buffer using an array of octets.</p></blockquote> <h3 id="数组元素为数字"><a href="#数组元素为数字" class="header-anchor">#</a> 数组元素为数字</h3> <p>首先看下，传入的元素为数字的场景。下面分别是10进制、8进制、16进制，跟预期中的结果一致。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">62</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token comment">// &lt;Buffer 3e&gt;</span>
+<span class="token comment">// buff[0] === parseInt('3e', 16) === 62</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">062</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token comment">// &lt;Buffer 32&gt;</span>
+<span class="token comment">// buff[0] === parseInt(62, 8) === parseInt(32, 16) === 50</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">0x62</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token comment">// &lt;Buffer 62&gt;</span>
+<span class="token comment">// buff[0] === parseInt(62, 16) === 98</span>
+</code></pre></div><h3 id="数组元素为字符串"><a href="#数组元素为字符串" class="header-anchor">#</a> 数组元素为字符串</h3> <p>再看下，传入的元素为字符串的场景。</p> <ol><li><code>0</code>开头的字符串，在parseInt('062')时，可以解释为62，也可以解释为50（八进制），这里看到采用了第一种解释。</li> <li>字符串的场景，跟parseInt()有没有关系，暂未深入探究，只是这样猜想。TODO（找时间研究下）</li></ol> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'62'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token comment">// &lt;Buffer 3e&gt;</span>
+<span class="token comment">// buff[0] === parseInt('3e', 16) === parseInt('62') === 62</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'062'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token comment">// &lt;Buffer 3e&gt;</span>
+<span class="token comment">// buff[0] === parseInt('3e', 16) === parseInt('062') === 62</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'0x62'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token comment">// &lt;Buffer 62&gt;</span>
+<span class="token comment">// buff[0] === parseInt('62', 16) === parseInt('0x62') === 98</span>
+</code></pre></div><h3 id="数组元素大小超出1个字节"><a href="#数组元素大小超出1个字节" class="header-anchor">#</a> 数组元素大小超出1个字节</h3> <p>感兴趣的同学自行探究。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">256</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token comment">// &lt;Buffer 00&gt;</span>
+</code></pre></div><h2 id="buffer-from-1"><a href="#buffer-from-1" class="header-anchor">#</a> Buffer.from('1')</h2> <p>一开始不自觉的会将<code>Buffer.from('1')[0]</code>跟<code>"1"</code>划等号，其实<code>"1"</code>对应的编码是49。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'1'</span><span class="token punctuation">)</span>  <span class="token comment">// &lt;Buffer 31&gt;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span>  <span class="token comment">// false</span>
+</code></pre></div><p>这样对比就知道了，编码为1的是个控制字符，表示 Start of Heading。</p> <div class="language-js extra-class"><pre class="language-js"><code>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span> String<span class="token punctuation">.</span><span class="token function">fromCharCode</span><span class="token punctuation">(</span><span class="token number">49</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>  <span class="token comment">// '1'</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span> String<span class="token punctuation">.</span><span class="token function">fromCharCode</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>  <span class="token comment">// '\u0001'</span>
+</code></pre></div><h2 id="buffer连接-buffer-concat-list-totallength"><a href="#buffer连接-buffer-concat-list-totallength" class="header-anchor">#</a> buffer连接：Buffer.concat(list[, totalLength])</h2> <p>备注：个人觉得<code>totalLength</code>这个参数挺多余的，从官方文档来看，是处于性能提升的角度考虑。不过内部实现也只是遍历list，将length累加得到totalLength，从这点来看，性能优化是几乎可以忽略不计的。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff1 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">alloc</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> buff2 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">alloc</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> totalLength <span class="token operator">=</span> buff1<span class="token punctuation">.</span>length <span class="token operator">+</span> buff2<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>totalLength<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 30</span>
+
+<span class="token keyword">var</span> buff3 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">concat</span><span class="token punctuation">(</span><span class="token punctuation">[</span>buff1<span class="token punctuation">,</span> buff2<span class="token punctuation">]</span><span class="token punctuation">,</span> totalLength<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff3<span class="token punctuation">.</span>length<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 30</span>
+</code></pre></div><p>除了上面提到的性能优化，totalLength还有两点需要注意。假设list里面所有buffer的长度累加和为length</p> <ul><li>totalLength &gt; length：返回长度为totalLength的Buffer实例，超出长度的部分填充0。</li> <li>totalLength &lt; length：返回长度为totalLength的Buffer实例，后面部分舍弃。</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff4 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> buff5 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> buff6 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">concat</span><span class="token punctuation">(</span><span class="token punctuation">[</span>buff4<span class="token punctuation">,</span> buff5<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff6<span class="token punctuation">.</span>length<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// </span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff6<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// &lt;Buffer 01 02 03 04 00&gt;</span>
+
+<span class="token keyword">var</span> buff7 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">concat</span><span class="token punctuation">(</span><span class="token punctuation">[</span>buff4<span class="token punctuation">,</span> buff5<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff7<span class="token punctuation">.</span>length<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 3</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff7<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// &lt;Buffer 01 02 03&gt;</span>
+</code></pre></div><h2 id="拷贝-buf-copy-target-targetstart-sourcestart-sourceend"><a href="#拷贝-buf-copy-target-targetstart-sourcestart-sourceend" class="header-anchor">#</a> 拷贝：buf.copy(target[, targetStart[, sourceStart[, sourceEnd]]])</h2> <p>使用比较简单，如果忽略后面三个参数，那就是将buf的数据拷贝到target里去，如下所示：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff1 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> buff2 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">alloc</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+buff1<span class="token punctuation">.</span><span class="token function">copy</span><span class="token punctuation">(</span>buff2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff2<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// &lt;Buffer 01 02&gt;</span>
+</code></pre></div><p>另外三个参数比较直观，直接看官方例子</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> buf1 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">allocUnsafe</span><span class="token punctuation">(</span><span class="token number">26</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> buf2 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">allocUnsafe</span><span class="token punctuation">(</span><span class="token number">26</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">fill</span><span class="token punctuation">(</span><span class="token string">'!'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span> <span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">26</span> <span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 97 is the decimal ASCII value for 'a'</span>
+  buf1<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> i <span class="token operator">+</span> <span class="token number">97</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+buf1<span class="token punctuation">.</span><span class="token function">copy</span><span class="token punctuation">(</span>buf2<span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">,</span> <span class="token number">16</span><span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: !!!!!!!!qrst!!!!!!!!!!!!!</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf2<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token string">'ascii'</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">25</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="查找-buf-indexof-value-byteoffset-encoding"><a href="#查找-buf-indexof-value-byteoffset-encoding" class="header-anchor">#</a> 查找：buf.indexOf(value[, byteOffset][, encoding])</h2> <p>跟数组的查找差不多，需要注意的是，value可能是String、Buffer、Integer中的任意类型。</p> <ul><li>String：如果是字符串，那么encoding就是其对应的编码，默认是utf8。</li> <li>Buffer：如果是Buffer实例，那么会将value中的完整数据，跟buf进行对比。</li> <li>Integer：如果是数字，那么value会被当做无符号的8位整数，取值范围是0到255。</li></ul> <p>另外，可以通过<code>byteOffset</code>来指定起始查找位置。</p> <p>直接上代码，官方例子妥妥的，耐心看完它基本就理解得差不多了。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> buf <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'this is a buffer'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: 0</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'this'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: 2</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'is'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: 8</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'a buffer'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: 8</span>
+<span class="token comment">// (97 is the decimal ASCII value for 'a')</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token number">97</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: -1</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'a buffer example'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: 8</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buf<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'a buffer example'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+<span class="token keyword">const</span> utf16Buffer <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'\u039a\u0391\u03a3\u03a3\u0395'</span><span class="token punctuation">,</span> <span class="token string">'ucs2'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: 4</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>utf16Buffer<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'\u03a3'</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">'ucs2'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Prints: 6</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>utf16Buffer<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'\u03a3'</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token string">'ucs2'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="写-buf-write-string-offset-length-encoding"><a href="#写-buf-write-string-offset-length-encoding" class="header-anchor">#</a> 写：buf.write(string[, offset[, length]][, encoding])</h2> <p>将sring写入buf实例，同时返回写入的字节数。</p> <p>参数如下：</p> <ul><li>string：写入的字符串。</li> <li>offset：从buf的第几位开始写入，默认是0。</li> <li>length：写入多少个字节，默认是 buf.length - offset。</li> <li>encoding：字符串的编码，默认是utf8。</li></ul> <p>看个简单例子</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">alloc</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+buff<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">'a'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 返回 1</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 打印 &lt;Buffer 61 00 00 00&gt;</span>
+
+buff<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">'ab'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 返回 2</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 打印 &lt;Buffer 61 62 00 00&gt;</span>
+</code></pre></div><h2 id="填充-buf-fill-value-offset-end-encoding"><a href="#填充-buf-fill-value-offset-end-encoding" class="header-anchor">#</a> 填充：buf.fill(value[, offset[, end]][, encoding])</h2> <p>用<code>value</code>填充buf，常用于初始化buf。参数说明如下：</p> <ul><li>value：用来填充的内容，可以是Buffer、String或Integer。</li> <li>offset：从第几位开始填充，默认是0。</li> <li>end：停止填充的位置，默认是 buf.length。</li> <li>encoding：如果<code>value</code>是String，那么为<code>value</code>的编码，默认是utf8。</li></ul> <p>例子：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">alloc</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">fill</span><span class="token punctuation">(</span><span class="token string">'a'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// aaaaaaaaaaaaaaaaaaaa</span>
+</code></pre></div><h2 id="转成字符串-buf-tostring-encoding-start-end"><a href="#转成字符串-buf-tostring-encoding-start-end" class="header-anchor">#</a> 转成字符串: buf.toString([encoding[, start[, end]]])</h2> <p>把buf解码成字符串，用法比较直观，看例子</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'hello'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span> buff<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// hello</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span> buff<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token string">'utf8'</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// he</span>
+</code></pre></div><h2 id="转成json字符串-buf-tojson"><a href="#转成json字符串-buf-tojson" class="header-anchor">#</a> 转成JSON字符串：buf.toJSON()</h2> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'hello'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span> buff<span class="token punctuation">.</span><span class="token function">toJSON</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// { type: 'Buffer', data: [ 104, 101, 108, 108, 111 ] }</span>
+</code></pre></div><h2 id="遍历-buf-values-、buf-keys-、buf-entries"><a href="#遍历-buf-values-、buf-keys-、buf-entries" class="header-anchor">#</a> 遍历：buf.values()、buf.keys()、buf.entries()</h2> <p>用于对<code>buf</code>进行<code>for...of</code>遍历，直接看例子。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'abcde'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">const</span> key <span class="token keyword">of</span> buff<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'key is %d'</span><span class="token punctuation">,</span> key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment">// key is 0</span>
+<span class="token comment">// key is 1</span>
+<span class="token comment">// key is 2</span>
+<span class="token comment">// key is 3</span>
+<span class="token comment">// key is 4</span>
+
+<span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">const</span> value <span class="token keyword">of</span> buff<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'value is %d'</span><span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment">// value is 97</span>
+<span class="token comment">// value is 98</span>
+<span class="token comment">// value is 99</span>
+<span class="token comment">// value is 100</span>
+<span class="token comment">// value is 101</span>
+
+<span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">const</span> pair <span class="token keyword">of</span> buff<span class="token punctuation">.</span><span class="token function">entries</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'buff[%d] === %d'</span><span class="token punctuation">,</span> pair<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> pair<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment">// buff[0] === 97</span>
+<span class="token comment">// buff[1] === 98</span>
+<span class="token comment">// buff[2] === 99</span>
+<span class="token comment">// buff[3] === 100</span>
+<span class="token comment">// buff[4] === 101</span>
+</code></pre></div><h2 id="截取-buf-slice-start-end"><a href="#截取-buf-slice-start-end" class="header-anchor">#</a> 截取：buf.slice([start[, end]])</h2> <p>用于截取buf，并返回一个新的Buffer实例。需要注意的是，这里返回的Buffer实例，指向的仍然是buf的内存地址，所以对新Buffer实例的修改，也会影响到buf。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> buff1 <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">'abcde'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff1<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// &lt;Buffer 61 62 63 64 65&gt;</span>
+
+<span class="token keyword">var</span> buff2 <span class="token operator">=</span> buff1<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff2<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// &lt;Buffer 61 62 63 64 65&gt;</span>
+
+<span class="token keyword">var</span> buff3 <span class="token operator">=</span> buff1<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff3<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// &lt;Buffer 62 63&gt;</span>
+
+buff3<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">97</span><span class="token punctuation">;</span>  <span class="token comment">// parseInt(61, 16) ==&gt; 97</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>buff1<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// &lt;Buffer 62 63&gt;</span>
+</code></pre></div><h2 id="todo"><a href="#todo" class="header-anchor">#</a> TODO</h2> <ol><li>创建、拷贝、截取、转换、查找</li> <li>buffer、arraybuffer、dataview、typedarray</li> <li>buffer vs 编码</li> <li>Buffer.from()、Buffer.alloc()、Buffer.alocUnsafe()</li> <li>Buffer vs TypedArray</li></ol> <h2 id="文档摘要"><a href="#文档摘要" class="header-anchor">#</a> 文档摘要</h2> <p>关于buffer内存空间的动态分配</p> <blockquote><p>Instances of the Buffer class are similar to arrays of integers but correspond to fixed-sized, raw memory allocations outside the V8 heap. The size of the Buffer is established when it is created and cannot be resized.</p></blockquote> <h2 id="相关链接"><a href="#相关链接" class="header-anchor">#</a> 相关链接</h2> <p>unicode对照表
+https://unicode-table.com/cn/#control-character</p> <p>字符编码笔记：ASCII，Unicode和UTF-8
+http://www.ruanyifeng.com/blog/2007/10/ascii_unicode_and_utf-8.html</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

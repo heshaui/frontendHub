@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前序遍历 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>前序遍历</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>前序遍历</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h3 id="前序遍历"><a href="#前序遍历" class="header-anchor">#</a> 前序遍历</h3> <p>遍历顺序为：</p> <p><img src="https://hexo-blog-1256114407.cos.ap-shenzhen-fsi.myqcloud.com/binaryTree5.png" alt="img5"></p> <p>首先我们来实现一下前序遍历, 你可能很容易的就想到了必须用递归的方式来实现:</p> <p><strong>递归遍历</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">preOrderRec</span><span class="token punctuation">(</span><span class="token parameter">tree</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 前序遍历函数</span>
+    <span class="token keyword">let</span> list <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token comment">// 定义一个数组来放最终遍历结果</span>
+    <span class="token keyword">let</span> <span class="token function-variable function">preOrderRecFn</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">node</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 定义一个函数来实现递归</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 若是该节点存在</span>
+            list<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>value<span class="token punctuation">)</span> <span class="token comment">// 当前节点的值推进数组</span>
+            <span class="token function">preOrderRecFn</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span> <span class="token comment">// 先遍历左子树</span>
+            <span class="token function">preOrderRecFn</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span> <span class="token comment">// 然后遍历右子树</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">preOrderRecFn</span><span class="token punctuation">(</span>tree<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> list
+<span class="token punctuation">}</span>
+</code></pre></div><p>可以看到,上面<code>preOrderRec</code>函数接受一个<code>tree</code>对象, 然后判断每个节点是否存在, 若是存在则先将当前节点的值推进数组, 然后再遍历左子树, 之后再遍历右子树.</p> <p><strong>非递归遍历</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">preOrderUnRec</span><span class="token punctuation">(</span><span class="token parameter">tree</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> list <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token comment">// 定义一个数组来放最终遍历结果</span>
+    <span class="token keyword">let</span> <span class="token function-variable function">preOrderUnRecFn</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">node</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 定义一个函数来遍历节点</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 若是该节点存在</span>
+            <span class="token keyword">let</span> stack <span class="token operator">=</span> <span class="token punctuation">[</span>node<span class="token punctuation">]</span> <span class="token comment">// 将当前节点推入栈</span>
+            <span class="token keyword">while</span> <span class="token punctuation">(</span>stack<span class="token punctuation">.</span>length <span class="token operator">!==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 终止条件: stack数组为空</span>
+                node <span class="token operator">=</span> stack<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 取出栈中的最后一个节点</span>
+                list<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>value<span class="token punctuation">)</span> <span class="token comment">// 当前节点的值推进数组</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span> stack<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span> <span class="token comment">// 先将右子树节点推入栈</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span> stack<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span> <span class="token comment">// 再将左子树节点推入栈</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">preOrderUnRecFn</span><span class="token punctuation">(</span>tree<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> list
+<span class="token punctuation">}</span>
+</code></pre></div><p>如果你看上面的代码觉得有点生涩的话, 可以先看第一遍循环:</p> <p><strong>非递归遍历第一次循环</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">preOrderUnRec</span><span class="token punctuation">(</span><span class="token parameter">tree</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> list <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token comment">// 定义一个数组来放最终遍历结果</span>
+    <span class="token keyword">let</span> <span class="token function-variable function">preOrderUnRecFn</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">node</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 定义一个函数来遍历节点</span>
+        <span class="token comment">// 第一次输入的 node 为 {value: 'Root', left: {}, right: {}}</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment">// 将当前节点推入栈</span>
+            <span class="token comment">// 此时 stack: [ {value: 'Root', left: {}, right: {}} ]</span>
+            <span class="token keyword">let</span> stack <span class="token operator">=</span> <span class="token punctuation">[</span>node<span class="token punctuation">]</span>
+            <span class="token keyword">while</span> <span class="token punctuation">(</span>stack<span class="token punctuation">.</span>length <span class="token operator">!==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 终止条件: stack数组为空</span>
+                <span class="token comment">// 取出栈中的最后一个节点, 此时:</span>
+                <span class="token comment">// node: {value: 'Root', left: {}, right: {}}</span>
+                <span class="token comment">// stack: []</span>
+                node <span class="token operator">=</span> stack<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token comment">// 当前节点的值推进数组</span>
+                <span class="token comment">// list: ['Root']</span>
+                list<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>value<span class="token punctuation">)</span>
+                <span class="token comment">// 先将右子树节点推入栈</span>
+                <span class="token comment">// stack: [ {value: 'R', left: {}, right: {}} ]</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span> stack<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span>
+                <span class="token comment">// 再将左子树节点推入栈</span>
+                <span class="token comment">// stack: [ {value: 'R', left: {}, right: {}}, {value: 'L', left: {}, right: {}} ]</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span> stack<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">preOrderUnRecFn</span><span class="token punctuation">(</span>tree<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> list
+<span class="token punctuation">}</span>
+</code></pre></div><p>经过第一次循环之后, 我们发现<code>list</code>中已经存放了我们想要的<code>Root</code>字符串.</p> <p><code>stack</code>数组也变成了两项:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">stack</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span><span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token string">'R'</span><span class="token punctuation">,</span> <span class="token literal-property property">left</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token literal-property property">right</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token string">'L'</span><span class="token punctuation">,</span> <span class="token literal-property property">left</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token literal-property property">right</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">}</span> <span class="token punctuation">]</span>
+</code></pre></div><p>此时进入<code>while</code>循环的判断<code>stack.length !== 0</code>, 显然这个判断是为true, 所以程序又会继续往下走:</p> <p><strong>非递归遍历第二次循环</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">while</span> <span class="token punctuation">(</span>stack<span class="token punctuation">.</span>length <span class="token operator">!==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 终止条件: stack数组为空</span>
+    <span class="token comment">// 第二次循环</span>
+    <span class="token comment">// 此时 stack: [ {value: 'R', left: {}, right: {}}, {value: 'L', left: {}, right: {}} ]</span>
+    <span class="token comment">// node: {value: 'L', left: {}, right: {}}</span>
+    <span class="token comment">// stack: [ {value: 'R', left: {}, right: {}} ]</span>
+    node <span class="token operator">=</span> stack<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment">// 当前节点的值推进数组</span>
+    <span class="token comment">// list: ['Root', 'L']</span>
+    list<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>value<span class="token punctuation">)</span>
+    <span class="token comment">// 先将右子树节点推入栈</span>
+    <span class="token comment">// stack: [ {value: 'R', left: {}, right: {}}, {value: 'LR'} ]</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span> stack<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span>
+    <span class="token comment">// 再将左子树节点推入栈</span>
+    <span class="token comment">// stack: [ {value: 'R', left: {}, right: {}}, {value: 'LR'}, {value: 'LL'} ]</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span> stack<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>看到这里你应该就看懂了.</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

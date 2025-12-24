@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学会使用Graphviz绘制流程图 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>学会使用Graphviz绘制流程图</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>学会使用Graphviz绘制流程图</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、初识graphviz"><a href="#一、初识graphviz" class="header-anchor">#</a> 一、初识Graphviz</h2> <h3 id="_1-1-简介"><a href="#_1-1-简介" class="header-anchor">#</a> 1.1 简介</h3> <blockquote><p><code>GraphViz</code>是一个开源的图像可视化的软件，是贝尔实验室开发的一个开源的工具包，它使用一个特定的<code>DSL</code>(领域特定语言): <code>dot</code>作为脚本语言，然后使用布局引擎来解析此脚本，并完成自动布局。<code>graphviz</code>提供丰富的导出格式，如常用的图片格式，<code>SVG</code>，<code>PDF</code>格式等</p></blockquote> <h3 id="_1-2-环境搭建"><a href="#_1-2-环境搭建" class="header-anchor">#</a> 1.2 环境搭建</h3> <p><strong>结合sublime Text插件实时编译预览</strong></p> <blockquote><p>使用<code>shift+command+p</code>，输入搜索选中<code>Package Control: Install Package</code>,然后输入<code>GraphViz</code>,然后安装<code>GraphVizPreview</code>即可，安装完成后，只要全选中代码，然后按<code>shift+command+g</code>就可以预览了。</p></blockquote> <ul><li>其实也可以直接用<code>brew</code>安装<code>GraphViz</code>,但是每次要敲命令行，太麻烦了</li></ul> <p><strong><code>mac</code>下执行</strong></p> <div class="language- extra-class"><pre class="language-text"><code>brew install graphviz
+</code></pre></div><blockquote><p>终端编译代码 <code>dot test.dot -T png -o test.png</code></p></blockquote> <h2 id="二、使用"><a href="#二、使用" class="header-anchor">#</a> 二、使用</h2> <blockquote><p><code>Graphviz</code> 支持两类图：无向图（<code>graph</code>,用“ <code>- -</code> ”表示节点之间）和 有向图（<code>digraph</code>,用“ <code>-&gt;</code>” 表示节点之间）。graphviz包含3中元素，图，顶点和边。<strong>每个元素都可以具有各自的属性，用来定义字体，样式，颜色，形状等</strong></p></blockquote> <p><strong><code>GraphViz</code>中包含多种布局</strong></p> <ul><li><code>dot</code> 默认布局，用于有向图</li> <li><code>neato</code> 基于<code>spring-model</code>算法(<code>force-based</code>)</li> <li><code>twopo</code> 径向布局</li> <li><code>circo</code> 圆形布局</li> <li><code>fdp</code> 用于无向图</li></ul> <h3 id="_2-1-第一个graphviz图"><a href="#_2-1-第一个graphviz图" class="header-anchor">#</a> 2.1 第一个graphviz图</h3> <blockquote><p>语法介绍 http://graphs.grevian.org/reference</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>digraph abc{
+  a;
+  b;
+  c;
+  d;
+ 
+  a -&gt; b;
+  b -&gt; d;
+  c -&gt; d;
+}
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2019/10/208.png" alt=""></p> <p><strong>定义顶点和边的样式</strong></p> <div class="language- extra-class"><pre class="language-text"><code>digraph abc{
+  node [shape="record"];
+  edge [style="dashed"];
+  a;
+  b;
+  c;
+  d;
+ 
+  a -&gt; b;
+  b -&gt; d;
+  c -&gt; d;
+}
+</code></pre></div><p><img src="https://s.poetries.top/uploads/2022/07/aecd59a9daad66e5.png" alt=""></p> <blockquote><p>进一步修改顶点和边样式,将顶点<code>a</code>的颜色改为淡绿色，并将<code>c</code>到<code>d</code>的边改为红色</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>digraph abc{
+  node [shape="record"];
+  edge [style="dashed"];
+ 
+  a [style="filled", color="black", fillcolor="chartreuse"];
+  b;
+  c;
+  d;
+ 
+  a -&gt; b;
+  b -&gt; d;
+  c -&gt; d [color="red"];
+}
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2019/10/209.png" alt=""></p> <p>其他例子</p> <div class="language- extra-class"><pre class="language-text"><code>digraph demo{
+  label="儿茶酚胺合成代谢路径";
+
+  酪氨酸 -&gt; L多巴 -&gt; 多巴胺 -&gt; 去甲肾上腺素 -&gt; 肾上腺素;
+
+  下丘脑 -&gt; 多巴胺;
+  交感神经元 -&gt; 去甲肾上腺素;
+  肾上腺髓质 -&gt; 去甲肾上腺素,肾上腺素;
+
+  酪氨酸 [label="酪氨酸",color=green];
+  多巴胺 [label="多巴胺", color=red];
+  肾上腺素 [label="肾上腺素", color=red];
+
+  下丘脑 [shape=box];
+  交感神经元 [shape=box];
+  肾上腺髓质 [shape=box];
+}
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2019/10/210.png" alt=""></p> <h3 id="_2-2-带标签"><a href="#_2-2-带标签" class="header-anchor">#</a> 2.2 带标签</h3> <div class="language- extra-class"><pre class="language-text"><code>digraph {
+
+    player[label = "player", color = Blue, fontcolor = Red, fontsize = 24, shape = box];
+    game[label = "game", color = Red, fontcolor = Blue, fontsize = 24, shape = ellipse];
+
+    player -&gt; game[label = "play"]
+}
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2019/10/211.jpg" alt=""></p> <h3 id="_2-3-子视图"><a href="#_2-3-子视图" class="header-anchor">#</a> 2.3 子视图</h3> <div class="language- extra-class"><pre class="language-text"><code>digraph {
+
+    label = visitNet
+
+    rankdir = LR
+
+    node[color = Red, fontsize = 24, shape = box]
+    edge[color = Blue, style = "dashed"]
+
+    user[style = "filled", color = "yellow", fillcolor = "chartreuse"]
+    subgraph cluster_cd{
+        label = "server and browser"
+        bgcolor = green;
+
+        browser -&gt; server
+    }
+
+    user -&gt; computer;
+    computer -&gt; browser;
+}
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2019/10/212.jpg" alt=""></p> <h3 id="_2-4-结构视图"><a href="#_2-4-结构视图" class="header-anchor">#</a> 2.4 结构视图</h3> <div class="language- extra-class"><pre class="language-text"><code>digraph {
+
+    node[shape = record];
+    struct1[label = "&lt;f0&gt; left|&lt;f1&gt; mid&amp;#92; dle|&lt;f2&gt; right"];
+    struct2[label = "&lt;f0&gt; one|&lt;f1&gt; two"];
+    struct3[label = "hello&amp;#92;nworld | {b|{c|&lt;here&gt; d|e}|f}|g|h"];
+    struct1:f1 -&gt; struct2:f0;
+    struct1:f2 -&gt; struct3:here;
+}
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2019/10/213.jpg" alt=""></p> <h3 id="_2-5-树形结构"><a href="#_2-5-树形结构" class="header-anchor">#</a> 2.5 树形结构</h3> <div class="language- extra-class"><pre class="language-text"><code>digraph tree {
+  
+  fontname = "PingFang-SC-Light"
+  fontsize = 24
+
+  node[shape = "plaintext"]
+
+  1 -&gt; 2;
+  1 -&gt; 3;
+  2 -&gt; 4;
+  2 -&gt; 5;
+  3 -&gt; 6;
+  3 -&gt; 7;
+  4 -&gt; 8;
+  4 -&gt; 9;
+  5 -&gt; 10;
+  5 -&gt; 11;
+  6 -&gt; 12;
+  6 -&gt; 13;
+  7 -&gt; 14;
+  7 -&gt; 15;
+}
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2019/10/214.jpg" alt=""></p> <h3 id="_2-6-时序图"><a href="#_2-6-时序图" class="header-anchor">#</a> 2.6 时序图</h3> <div class="language- extra-class"><pre class="language-text"><code>digraph time {
+
+    rankdir = "LR";
+    node[shape = "point", width = 0, height = 0];
+    edge[arrowhead = "none", style = "dashed"];
+
+    {
+        rank = "same"
+        edge[style = "solided"];
+        APP[shape = "plaintext"];
+        APP -&gt; step00 -&gt; step01 -&gt; step02 -&gt; step03 -&gt; step04 -&gt; step05;
+    }
+    
+    {
+        rank="same";
+        edge[style="solided"];
+        SDK[shape="plaintext"];
+        SDK -&gt; step10 -&gt; step11 -&gt; step12 -&gt; step13 -&gt; step14 -&gt; step15;
+    }
+    {
+        rank="same";
+        edge[style="solided"];
+        AliPay[shape="plaintext"];
+        AliPay -&gt; step20 -&gt; step21 -&gt; step22 -&gt; step23 -&gt; step24 -&gt; step25;
+    }
+    {
+        rank="same";
+        edge[style="solided"];
+        Server[shape="plaintext"];
+        Server -&gt; step30 -&gt; step31 -&gt; step32 -&gt; step33 -&gt; step34 -&gt; step35;
+    }
+
+    step00 -&gt; step10 [label="sends order info", arrowhead="normal"];
+    step11 -&gt; step21 [label="open AliPay", arrowhead="normal"];
+    step22 -&gt; step12 [label="pay success", arrowhead="normal"];
+    step13 -&gt; step03 [label="pay success", arrowhead="normal"];
+    step24 -&gt; step34 [label="pay success", arrowhead="normal"];
+}
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2019/10/215.jpg" alt=""></p> <h3 id="_2-7-一个hash表的数据结构"><a href="#_2-7-一个hash表的数据结构" class="header-anchor">#</a> 2.7 一个hash表的数据结构</h3> <blockquote><p><code>hash</code>表内容</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>struct st_hash_type {
+    int (*compare) ();
+    int (*hash) ();
+};
+ 
+struct st_table_entry {
+    unsigned int hash;
+    char *key;
+    char *record;
+    st_table_entry *next;
+};
+ 
+struct st_table {
+    struct st_hash_type *type;
+    int num_bins;
+/* slot count */
+    int num_entries;
+/* total number of entries */
+    struct st_table_entry **bins;
+/* slot */
+};
+</code></pre></div><p>脚本如下：</p> <div class="language- extra-class"><pre class="language-text"><code>digraph st2{
+  fontname = "Verdana";
+  fontsize = 10;
+  rankdir=TB;
+ 
+  node [fontname = "Verdana", fontsize = 10, color="skyblue", shape="record"];
+ 
+  edge [fontname = "Verdana", fontsize = 10, color="crimson", style="solid"];
+ 
+  st_hash_type [label="{&lt;head&gt;st_hash_type|(*compare)|(*hash)}"];
+  st_table_entry [label="{&lt;head&gt;st_table_entry|hash|key|record|&lt;next&gt;next}"];
+  st_table [label="{st_table|&lt;type&gt;type|num_bins|num_entries|&lt;bins&gt;bins}"];
+ 
+  st_table:bins -&gt; st_table_entry:head;
+  st_table:type -&gt; st_hash_type:head;
+  st_table_entry:next -&gt; st_table_entry:head [style="dashed", color="forestgreen"];
+}
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2019/10/216.jpg" alt=""></p> <h3 id="_2-8-模块的生命周期图"><a href="#_2-8-模块的生命周期图" class="header-anchor">#</a> 2.8 模块的生命周期图</h3> <div class="language- extra-class"><pre class="language-text"><code>digraph module_lc{
+  rankdir=TB;
+  fontname = "Microsoft YaHei";
+  fontsize = 12;
+ 
+  node [fontname = "Microsoft YaHei", fontsize = 12, shape = "Mrecord", color="skyblue", style="filled"];
+  edge [fontname = "Microsoft YaHei", fontsize = 12, color="darkgreen" ];
+ 
+  installed [label="已安装状态"];
+  resolved [label="已就绪状态"];
+  uninstalled [label="已卸载状态"];
+  starting [label="正在启动"];
+  active [label="已激活(运行)状态"];
+  stopping [label="正在停止"];
+  start [label="", shape="circle", width=0.5, fixedsize=true, style="filled", color="black"];
+ 
+  start -&gt; installed [label="安装"];
+  installed -&gt; uninstalled [label="卸载"];
+  installed -&gt; resolved [label="准备"];
+  installed -&gt; installed [label="更新"];
+  resolved -&gt; installed [label="更新"];
+  resolved -&gt; uninstalled [label="卸载"];
+  resolved -&gt; starting [label="启动"];
+  starting -&gt; active [label=""];
+  active -&gt; stopping [label="停止"];
+  stopping -&gt; resolved [label=""];
+}
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2019/10/217.jpg" alt=""></p> <h3 id="_2-9-简单的uml类图"><a href="#_2-9-简单的uml类图" class="header-anchor">#</a> 2.9 简单的UML类图</h3> <div class="language- extra-class"><pre class="language-text"><code>digraph G{
+ 
+  fontname = "Courier New"
+  fontsize = 10
+ 
+  node [ fontname = "Courier New", fontsize = 10, shape = "record" ];
+  edge [ fontname = "Courier New", fontsize = 10 ];
+ 
+  Animal [ label = "{Animal |+ name : String\\l+ age : int\\l|+ die() : void\\l}" ];
+ 
+      subgraph clusterAnimalImpl{
+          bgcolor="yellow"
+          Dog [ label = "{Dog||+ bark() : void\\l}" ];
+          Cat [ label = "{Cat||+ meow() : void\\l}" ];
+      };
+ 
+  edge [ arrowhead = "empty" ];
+ 
+  Dog-&gt;Animal;
+  Cat-&gt;Animal;
+  Dog-&gt;Cat [arrowhead="none", label="0..*"];
+}
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2019/10/218.jpg" alt=""></p> <h3 id="_2-10-有限状态机"><a href="#_2-10-有限状态机" class="header-anchor">#</a> 2.10 有限状态机</h3> <div class="language- extra-class"><pre class="language-text"><code>digraph finite_state_machine {
+    rankdir=LR;
+    size="8,5"
+    node [shape = circle];
+    S0 -&gt; S1 [ label = "Lift Nozzle" ]
+    S1 -&gt; S0 [ label = "Replace Nozzle" ]
+    S1 -&gt; S2 [ label = "Authorize Pump" ]
+    S2 -&gt; S0 [ label = "Replace Nozzle" ]
+    S2 -&gt; S3 [ label = "Pull Trigger" ]
+    S3 -&gt; S2 [ label = "Release Trigger" ]
+}
+
+</code></pre></div><p><img src="http://img2.tuicool.com/yEze6z.png%21web" alt=""></p> <h2 id="三、语法"><a href="#三、语法" class="header-anchor">#</a> 三、语法</h2> <blockquote><p>完整列表 http://graphviz.org/doc/info/attrs.html</p></blockquote> <h3 id="_3-1-图像属性"><a href="#_3-1-图像属性" class="header-anchor">#</a> 3.1 图像属性</h3> <ul><li><code>label="My Graph";</code>       给图像设置标签</li> <li><code>rankdir=LR</code>;             将图片由原来的从上到下布局变成从左到右布局</li> <li><code>{rank=same; a, b, c }</code>   将一组元素放到同一个<code>level</code></li> <li><code>splines="line"</code>;         让边框变为直线，没有曲线和锐角</li> <li><code>K=0.6</code>;      用来在布局中影响<code>spring</code>属性，<code>spring</code>属性可以用于将节点往外推，这个在<code>twopi</code>和<code>sfdp</code>布局中很有用。</li></ul> <h3 id="_3-2-交点属性"><a href="#_3-2-交点属性" class="header-anchor">#</a> 3.2 交点属性</h3> <ul><li><code>[label="Some Label"]</code>    给交点打标签</li> <li><code>[color="red"]</code>         给交点上色</li> <li><code>[fillcolor="blue"]</code>      设置交点的填充色</li></ul> <h3 id="_3-3-边的属性"><a href="#_3-3-边的属性" class="header-anchor">#</a> 3.3 边的属性</h3> <ul><li><code>[label="Some Label"]</code>    给边设置标签 (设置路径权重的时候很有用)</li> <li><code>[color="red"]</code>          # 给交点上色 (标示路径的时候很有用)</li> <li><code>[penwidth=2.0]</code>          # 给边适配厚度，标示路径的时候很有用。</li></ul> <h3 id="_3-4-尺寸-背景颜色"><a href="#_3-4-尺寸-背景颜色" class="header-anchor">#</a> 3.4 尺寸, 背景颜色</h3> <ul><li><code>fixedsize=true</code>;</li> <li><code>size="1,1"</code>;</li> <li><code>resolution=72</code>;</li> <li><code>bgcolor="#C6CFD532"</code>;</li></ul> <h2 id="四、一些技巧"><a href="#四、一些技巧" class="header-anchor">#</a> 四、一些技巧</h2> <h3 id="_4-1-插入图片"><a href="#_4-1-插入图片" class="header-anchor">#</a> 4.1 插入图片</h3> <div class="language- extra-class"><pre class="language-text"><code>digraph {
+
+    c[shape = none, image = "./pic.png"]
+    a -&gt; b -&gt; c;
+    c -&gt; d;
+}
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2019/10/219.jpg" alt=""></p> <blockquote><p>注：需要用命令行<code>dot test.dot -T png -o test.png</code>生成，前提是用<code>brew</code>安装了<code>GraphViz</code></p></blockquote> <h3 id="_4-2-统一节点和连线"><a href="#_4-2-统一节点和连线" class="header-anchor">#</a> 4.2 统一节点和连线</h3> <div class="language- extra-class"><pre class="language-text"><code>digraph {
+
+    node[color = Red, fontsize = 24, shape = box]
+    edge[color = Blue, style = "dashed"]
+
+    c[shape = none, image = "./pic.png"]
+    a -&gt; b -&gt; c;
+    c -&gt; d;
+}
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2019/10/220.jpg" alt=""></p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

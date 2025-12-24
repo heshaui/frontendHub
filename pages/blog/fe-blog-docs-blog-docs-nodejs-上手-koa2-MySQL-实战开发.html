@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上手 koa2 MySQL 实战开发 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>上手 koa2 MySQL 实战开发</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>上手 koa2 MySQL 实战开发</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="学习目标"><a href="#学习目标" class="header-anchor">#</a> 学习目标</h2> <p>学完这篇教程，你将学会：</p> <ul><li>如果编写 Koa 中间件</li> <li>通过 @koa/router 实现路由配置</li> <li>通过 TypeORM 连接和读写 MySQL 数据库（其他数据库都类似）</li> <li>了解 JWT 鉴权的原理，并动手实现</li> <li>掌握 Koa 的错误处理机制</li></ul> <h2 id="准备初始代码"><a href="#准备初始代码" class="header-anchor">#</a> 准备初始代码</h2> <p>我们已经为你准备好了项目的脚手架，运行以下命令克隆我们的初始代码：</p> <div class="language- extra-class"><pre class="language-text"><code>git clone https://github.com/poetries/koa-quickstart.git
+</code></pre></div><p>如果你访问 GitHub 不流畅，可以克隆我们的 Gitee 仓库：</p> <div class="language- extra-class"><pre class="language-text"><code>git clone https://github.com/poetries/koa-quickstart.git
+</code></pre></div><p>然后进入项目，安装依赖：</p> <div class="language- extra-class"><pre class="language-text"><code>cd koa-quickstart &amp;&amp; npm install
+</code></pre></div><blockquote><p>这里我使用了 package-lock.json 确保所有依赖版本一致，如果你用 yarn 安装依赖出现问题，建议删除 node_modules ，重新用 npm install 安装。</p></blockquote> <h2 id="最简单的-koa-服务器"><a href="#最简单的-koa-服务器" class="header-anchor">#</a> 最简单的 Koa 服务器</h2> <blockquote><p>创建 <code>src/server.ts</code> ，编写第一个 Koa 服务器，代码如下：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/server.ts</span>
+<span class="token keyword">import</span> Koa <span class="token keyword">from</span> <span class="token string">'koa'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> cors <span class="token keyword">from</span> <span class="token string">'@koa/cors'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> bodyParser <span class="token keyword">from</span> <span class="token string">'koa-bodyparser'</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 初始化 Koa 应用实例</span>
+<span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Koa</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 注册中间件</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">cors</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">bodyParser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 响应用户请求</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">ctx</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token string">'Hello Koa'</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 运行服务器</span>
+app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p><strong>整个流程与一个基本的 Express 服务器几乎完全一致：</strong></p> <ul><li>初始化应用实例 app</li> <li>注册相关的中间件（跨域 cors 和请求体解析中间件 bodyParser）</li> <li>添加请求处理函数，响应用户请求</li> <li>运行服务器</li> <li>定睛一看，第 3 步中的请求处理函数（Request Handler）好像不太一样。在 Express 框架中，一个请求处理函数一般是这样的：</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">handler</span><span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  res<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">'Hello Express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>两个参数分别对应请求对象（Request）和响应对象（Response），但是在 Koa 中，请求处理函数却只有一个参数 ctx （Context，上下文），然后只需向上下文对象写入相关的属性即可（例如这里就是写入到返回数据 body 中）</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">handler</span><span class="token punctuation">(</span><span class="token parameter">ctx</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token string">'Hello Koa'</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="运行服务器"><a href="#运行服务器" class="header-anchor">#</a> 运行服务器</h2> <p>我们通过 npm start 就能开启服务器了。可以通过 Curl （或者 Postman 等）来测试我们的 API：</p> <div class="language- extra-class"><pre class="language-text"><code>$ curl localhost:3000
+Hello Koa
+</code></pre></div><h2 id="大名鼎鼎的-洋葱模型"><a href="#大名鼎鼎的-洋葱模型" class="header-anchor">#</a> 大名鼎鼎的“洋葱模型”</h2> <blockquote><p>你也许从来没有用过 Koa 框架，但很有可能听说过“洋葱模型”，而 Koa 正是洋葱模型的代表框架之一。下面这个图你也许很熟悉了：</p></blockquote> <p><img src="https://s.poetries.top/gitee/2020/08/57.png" alt=""></p> <blockquote><p>不过以个人观点，这个图实在是太像“洋葱”了，反而不太好理解。接下来我们将以更清晰直观的方式来感受 Koa 中间件的设计之美。首先我们来看一下 Express 的中间件是什么样的：</p></blockquote> <p><img src="https://s.poetries.top/gitee/2020/08/58.png" alt=""></p> <blockquote><p>请求（Request）直接依次贯穿各个中间件，最后通过请求处理函数返回响应（Response），非常简单。然后我们来看看 Koa 的中间件是什么样的：</p></blockquote> <p><img src="https://s.poetries.top/gitee/2020/08/59.png" alt=""></p> <blockquote><p>可以看到，Koa 中间件不像 Express 中间件那样在请求通过了之后就完成了自己的使命；相反，中间件的执行清晰地分为「两个阶段」。我们马上来看下 Koa 中间件具体是什么样的。</p></blockquote> <h2 id="koa-中间件的定义"><a href="#koa-中间件的定义" class="header-anchor">#</a> Koa 中间件的定义</h2> <p>Koa 的中间件是这样一个函数：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">middleware</span><span class="token punctuation">(</span><span class="token parameter">ctx<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 第一阶段</span>
+  <span class="token keyword">await</span> <span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// 第二阶段</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>第一个参数就是 <code>Koa Context</code>，也就是上图中贯穿所有中间件和请求处理函数的绿色箭头所传递的内容，里面「封装了请求体和响应体」（实际上还有其他属性，但这里暂时不讲），分别可以通过 ctx.request 和 ctx.response 来获取，以下是一些常用的属性：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code>ctx<span class="token punctuation">.</span>url    <span class="token comment">// 相当于 ctx.request.url</span>
+ctx<span class="token punctuation">.</span>body   <span class="token comment">// 相当于 ctx.response.body</span>
+ctx<span class="token punctuation">.</span>status <span class="token comment">// 相当于 ctx.response.status</span>
+</code></pre></div><ul><li>中间件的第二个参数便是 next 函数，这个熟悉 Express 的同学一定知道它是干什么的：用来把控制权转交给下一个中间件。但是它跟 Express 的 next 函数本质的区别在于，「Koa 的 「「next」」 函数返回的是一个 Promise」，在这个 Promise 进入完成状态（Fulfilled）后，就会去执行中间件中第二阶段的代码。</li> <li>那么我们不禁要问：这样把中间件的执行拆分为两个阶段，到底有什么好处吗？我们来通过一个非常经典的例子来感受一下：日志记录中间件（包括响应时间的计算）</li></ul> <h2 id="实战-日志记录中间件"><a href="#实战-日志记录中间件" class="header-anchor">#</a> 实战：日志记录中间件</h2> <blockquote><p>让我们来实现一个简单的日志记录中间件 <code>logger</code> ，用于记录每次请求的方法、URL、状态码和响应时间。创建 <code>src/logger.ts</code> ，代码如下：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/logger.ts</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Context <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'koa'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">logger</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">async</span> <span class="token punctuation">(</span>ctx<span class="token operator">:</span> Context<span class="token punctuation">,</span> <span class="token function-variable function">next</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Promise<span class="token operator">&lt;</span><span class="token keyword">void</span><span class="token operator">&gt;</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> start <span class="token operator">=</span> Date<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">await</span> <span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> ms <span class="token operator">=</span> Date<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> start<span class="token punctuation">;</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>ctx<span class="token punctuation">.</span>method<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>ctx<span class="token punctuation">.</span>url<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>ctx<span class="token punctuation">.</span>status<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> - </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>ms<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">ms</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>严格意义上讲，这里的 logger 是一个「中间件工厂函数」（Factory），调用这个工厂函数后返回的结果才是真正的 Koa 中间件。之所以写成一个工厂函数，是因为我们可以通过给工厂函数传参的方式来更好地控制中间件的行为（当然这里的 logger 比较简单，就没有任何参数）。</li> <li>在这个中间件的第一阶段，我们通过 Date.now() 先获取请求进入的时间，然后通过 await next() 让出执行权，等待下游中间件运行结束后，再在第二阶段通过计算 Date.now() 的差值来得出处理请求所用的时间。</li></ul> <blockquote><p>这里通过两个 Date.now() 之间的差值来计算运行时间其实是不精确的，为了获取更准确的时间，建议使用 process.hrtime() 。</p></blockquote> <p>然后我们在 <code>src/server.ts</code> 中把刚才的 <code>logger</code> 中间件通过 <code>app.use</code> 注册进去，代码如下：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/server.ts</span>
+<span class="token comment">// ...</span>
+
+<span class="token keyword">import</span> <span class="token punctuation">{</span> logger <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./logger'</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 初始化 Koa 应用实例</span>
+<span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Koa</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 注册中间件</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">logger</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">cors</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">bodyParser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// ...</span>
+</code></pre></div><p>这时候再访问我们的服务器（通过 <code>Curl</code> 或者其他请求工具），应该可以看到输出日志：</p> <p><img src="https://s.poetries.top/gitee/2020/08/60.png" alt=""></p> <blockquote><p>关于 Koa 框架本身的内容基本讲完了，但是对于一个比较完整的 Web 服务器来说，我们还需要更多的“武器装备”才能应对日常的业务逻辑。在接下来的部分，我们将通过社区的优秀组件来解决两个关键问题：路由和数据库，并演示如何结合 Koa 框架进行使用。</p></blockquote> <h2 id="实现路由配置"><a href="#实现路由配置" class="header-anchor">#</a> 实现路由配置</h2> <blockquote><p>由于 Koa 只是一个中间件框架，所以路由的实现需要独立的 npm 包。首先安装 <code>@koa/router</code> 及其 TypeScript 类型定义：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code>$ npm install @koa<span class="token operator">/</span>router
+$ npm install @types<span class="token operator">/</span>koa__router <span class="token operator">-</span><span class="token constant">D</span>
+</code></pre></div><blockquote><p>有些教程使用 koa-router ，但由于 koa-router 目前处于几乎无人维护的状态，所以我们这里使用维护更积极的 Fork 版本 @koa/router</p></blockquote> <h3 id="路由规划"><a href="#路由规划" class="header-anchor">#</a> 路由规划</h3> <p>在这篇教程中，我们将实现以下路由：</p> <ul><li>GET /users ：查询所有的用户</li> <li>GET /users/:id ：查询单个用户</li> <li>PUT /users/:id ：更新单个用户</li> <li>DELETE /users/:id ：删除单个用户</li> <li>POST /users/login ：登录（获取 JWT Token）</li> <li>POST /users/register ：注册用户</li></ul> <h3 id="实现-controller"><a href="#实现-controller" class="header-anchor">#</a> 实现 Controller</h3> <blockquote><p>在 src 中创建 controllers 目录，用于存放控制器有关的代码。首先是 AuthController ，创建 src/controllers/auth.ts ，代码如下：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/controllers/auth.ts</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Context <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'koa'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">AuthController</span> <span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">login</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token string">'Login controller'</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">register</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token string">'Register controller'</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>然后创建 src/controllers/user.ts，代码如下</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/controllers/user.ts</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Context <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'koa'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">UserController</span> <span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">listUsers</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token string">'ListUsers controller'</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">showUserDetail</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">ShowUserDetail controller with ID = </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>ctx<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">updateUser</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">UpdateUser controller with ID = </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>ctx<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">deleteUser</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">DeleteUser controller with ID = </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>ctx<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>注意到在后面三个 Controller 中，我们通过 ctx.params 获取到路由参数 id 。</p> <h3 id="实现路由"><a href="#实现路由" class="header-anchor">#</a> 实现路由</h3> <p>然后我们创建 src/routes.ts，用于把控制器挂载到对应的路由上面：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/routes.ts</span>
+<span class="token keyword">import</span> Router <span class="token keyword">from</span> <span class="token string">'@koa/router'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> AuthController <span class="token keyword">from</span> <span class="token string">'./controllers/auth'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> UserController <span class="token keyword">from</span> <span class="token string">'./controllers/user'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> router <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Router</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// auth 相关的路由</span>
+router<span class="token punctuation">.</span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string">'/auth/login'</span><span class="token punctuation">,</span> AuthController<span class="token punctuation">.</span>login<span class="token punctuation">)</span><span class="token punctuation">;</span>
+router<span class="token punctuation">.</span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string">'/auth/register'</span><span class="token punctuation">,</span> AuthController<span class="token punctuation">.</span>register<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// users 相关的路由</span>
+router<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'/users'</span><span class="token punctuation">,</span> UserController<span class="token punctuation">.</span>listUsers<span class="token punctuation">)</span><span class="token punctuation">;</span>
+router<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'/users/:id'</span><span class="token punctuation">,</span> UserController<span class="token punctuation">.</span>showUserDetail<span class="token punctuation">)</span><span class="token punctuation">;</span>
+router<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">'/users/:id'</span><span class="token punctuation">,</span> UserController<span class="token punctuation">.</span>updateUser<span class="token punctuation">)</span><span class="token punctuation">;</span>
+router<span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span><span class="token string">'/users/:id'</span><span class="token punctuation">,</span> UserController<span class="token punctuation">.</span>deleteUser<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> router<span class="token punctuation">;</span>
+</code></pre></div><blockquote><p>可以看到 @koa/router 的使用方式基本上与 Express Router 保持一致。</p></blockquote> <h3 id="注册路由"><a href="#注册路由" class="header-anchor">#</a> 注册路由</h3> <p>最后，我们需要将 router 注册为中间件。打开 src/server.ts，修改代码如下：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/server.ts</span>
+<span class="token comment">// ...</span>
+
+<span class="token keyword">import</span> router <span class="token keyword">from</span> <span class="token string">'./routes'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> logger <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./logger'</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 初始化 Koa 应用实例</span>
+<span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Koa</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 注册中间件</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">logger</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">cors</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">bodyParser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 响应用户请求</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>router<span class="token punctuation">.</span><span class="token function">routes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>router<span class="token punctuation">.</span><span class="token function">allowedMethods</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 运行服务器</span>
+app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><blockquote><p>可以看到，这里我们调用 router 对象的 routes 方法获取到对应的 Koa 中间件，还调用了 allowedMethods 方法注册了 HTTP 方法检测的中间件，这样当用户通过不正确的 HTTP 方法访问 API 时，就会自动返回 405 Method Not Allowed 状态码。</p></blockquote> <p>我们通过 Curl 来测试路由（也可以自行使用 Postman）：</p> <div class="language- extra-class"><pre class="language-text"><code>$ curl localhost:3000/hello
+Not Found
+$ curl localhost:3000/auth/register
+Method Not Allowed
+$ curl -X POST localhost:3000/auth/register
+Register controller
+$ curl -X POST localhost:3000/auth/login
+Login controller
+$ curl localhost:3000/users
+ListUsers controller
+$ curl localhost:3000/users/123
+ShowUserDetail controller with ID = 123
+$ curl -X PUT localhost:3000/users/123
+UpdateUser controller with ID = 123
+$ curl -X DELETE localhost:3000/users/123
+DeleteUser controller with ID = 123
+</code></pre></div><p>同时可以看到服务器的输出日志如下：</p> <p><img src="https://s.poetries.top/gitee/2020/08/61.png" alt=""></p> <p>路由已经接通，接下来就让我们来接入真实的数据吧！</p> <h2 id="接入-mysql-数据库"><a href="#接入-mysql-数据库" class="header-anchor">#</a> 接入 MySQL 数据库</h2> <blockquote><p>从这一步开始，我们将正式接入数据库。Koa 本身是一个中间件框架，理论上可以接入任何类型的数据库，这里我们选择流行的关系型数据库 MySQL。并且，由于我们使用了 TypeScript 开发，因此这里使用为 TS 量身打造的 ORM[12] 库 TypeORM。</p></blockquote> <h3 id="数据库的准备工作"><a href="#数据库的准备工作" class="header-anchor">#</a> 数据库的准备工作</h3> <p>首先，请安装和配置好 MySQL 数据库，可以通过两种方式：</p> <ul><li>官网下载安装包，这里是下载地址[13]</li> <li>使用 MySQL Docker 镜像</li> <li>在确保 MySQL 实例运行之后，我们打开终端，通过命令行连接数据库：</li></ul> <div class="language- extra-class"><pre class="language-text"><code>$ mysql -u root -p
+</code></pre></div><blockquote><p>输入预先设置好的根帐户密码之后，就进入了 MySQL 的交互式执行客户端，然后运行以下命令：</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>--- 创建数据库
+CREATE DATABASE koa;
+
+--- 创建用户并授予权限
+CREATE USER 'user'@'localhost' IDENTIFIED BY 'pass';
+GRANT ALL PRIVILEGES ON koa.* TO 'user'@'localhost';
+
+--- 处理 MySQL 8.0 版本的认证协议问题
+ALTER USER 'user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'pass';
+flush privileges;
+</code></pre></div><p>TypeORM 的配置和连接
+首先安装相关的 npm 包，分别是 MySQL 驱动、TypeORM 及 reflect-metadata（反射 API 库，用于 TypeORM 推断模型的元数据）：</p> <div class="language- extra-class"><pre class="language-text"><code>$ npm install mysql typeorm reflect-metadata
+</code></pre></div><p>然后在项目根目录创建 ormconfig.json ，TypeORM 会读取这个数据库配置进行连接，代码如下：</p> <div class="language- extra-class"><pre class="language-text"><code>// ormconfig.json
+{
+  "type": "mysql",
+  "host": "localhost",
+  "port": 3306,
+  "username": "user",
+  "password": "pass",
+  "database": "koa",
+  "synchronize": true,
+  "entities": ["src/entity/*.ts"],
+  "cli": {
+    "entitiesDir": "src/entity"
+  }
+}
+</code></pre></div><p><strong>这里有一些需要解释的字段：</strong></p> <ul><li>database 就是我们刚刚创建的 koa 数据库</li> <li>synchronize 设为 true 能够让我们每次修改模型定义后都能自动同步到数据库*（如果你接触过其他的 ORM 库，其实就是自动数据迁移）*</li> <li>entities 字段定义了模型文件的路径，我们马上就来创建
+接着修改 src/server.ts，在其中连接数据库，代码如下：</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/server.ts</span>
+<span class="token keyword">import</span> Koa <span class="token keyword">from</span> <span class="token string">'koa'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> cors <span class="token keyword">from</span> <span class="token string">'@koa/cors'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> bodyParser <span class="token keyword">from</span> <span class="token string">'koa-bodyparser'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> createConnection <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'typeorm'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token string">'reflect-metadata'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> router <span class="token keyword">from</span> <span class="token string">'./routes'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> logger <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./logger'</span><span class="token punctuation">;</span>
+
+<span class="token function">createConnection</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 初始化 Koa 应用实例</span>
+    <span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Koa</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 注册中间件</span>
+    app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">logger</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">cors</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">bodyParser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 响应用户请求</span>
+    app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>router<span class="token punctuation">.</span><span class="token function">routes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>router<span class="token punctuation">.</span><span class="token function">allowedMethods</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 运行服务器</span>
+    app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">catch</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">err</span><span class="token operator">:</span> string</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'TypeORM connection error:'</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="创建数据模型定义"><a href="#创建数据模型定义" class="header-anchor">#</a> 创建数据模型定义</h3> <blockquote><p>在 src 目录下创建 entity 目录，用于存放数据模型定义文件。在其中创建 user.ts ，代表用户模型，代码如下：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/entity/user.ts</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Entity<span class="token punctuation">,</span> Column<span class="token punctuation">,</span> PrimaryGeneratedColumn <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'typeorm'</span><span class="token punctuation">;</span>
+
+@<span class="token function">Entity</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token punctuation">{</span>
+  @<span class="token function">PrimaryGeneratedColumn</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token literal-property property">id</span><span class="token operator">:</span> number<span class="token punctuation">;</span>
+
+  @<span class="token function">Column</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token literal-property property">name</span><span class="token operator">:</span> string<span class="token punctuation">;</span>
+
+  @<span class="token function">Column</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">select</span><span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token literal-property property">password</span><span class="token operator">:</span> string<span class="token punctuation">;</span>
+
+  @<span class="token function">Column</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token literal-property property">email</span><span class="token operator">:</span> string<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>可以看到，用户模型有四个字段，其含义很容易理解。而 TypeORM 则是通过装饰器[14]这种优雅的方式来将我们的 User 类映射到数据库中的表。这里我们使用了三个装饰器：</p></blockquote> <ul><li><code>Entity</code>用于装饰整个类，使其变成一个数据库模型</li> <li><code>Column</code> 用于装饰类的某个属性，使其对应于数据库表中的一列，可提供一系列选项参数，例如我们给 password 设置了 select: false ，使得这个字段在查询时默认不被选中</li> <li><code>PrimaryGeneratedColumn</code> 则是装饰主列，它的值将自动生成</li></ul> <h3 id="在-controller-中操作数据库"><a href="#在-controller-中操作数据库" class="header-anchor">#</a> 在 Controller 中操作数据库</h3> <blockquote><p>然后就可以在 Controller 中进行数据的增删改查操作了。首先我们打开 src/controllers/user.ts ，实现所有 Controller 的逻辑，代码如下：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/controllers/user.ts</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Context <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'koa'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> getManager <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'typeorm'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token punctuation">{</span> User <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'../entity/user'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">UserController</span> <span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">listUsers</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> userRepository <span class="token operator">=</span> <span class="token function">getManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getRepository</span><span class="token punctuation">(</span>User<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> users <span class="token operator">=</span> <span class="token keyword">await</span> userRepository<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">200</span><span class="token punctuation">;</span>
+    ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> users<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">showUserDetail</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> userRepository <span class="token operator">=</span> <span class="token function">getManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getRepository</span><span class="token punctuation">(</span>User<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> user <span class="token operator">=</span> <span class="token keyword">await</span> userRepository<span class="token punctuation">.</span><span class="token function">findOne</span><span class="token punctuation">(</span><span class="token operator">+</span>ctx<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">200</span><span class="token punctuation">;</span>
+      ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> user<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">404</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">updateUser</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> userRepository <span class="token operator">=</span> <span class="token function">getManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getRepository</span><span class="token punctuation">(</span>User<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">await</span> userRepository<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token operator">+</span>ctx<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token punctuation">,</span> ctx<span class="token punctuation">.</span>request<span class="token punctuation">.</span>body<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> updatedUser <span class="token operator">=</span> <span class="token keyword">await</span> userRepository<span class="token punctuation">.</span><span class="token function">findOne</span><span class="token punctuation">(</span><span class="token operator">+</span>ctx<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>updatedUser<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">200</span><span class="token punctuation">;</span>
+      ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> updatedUser<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">404</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">deleteUser</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> userRepository <span class="token operator">=</span> <span class="token function">getManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getRepository</span><span class="token punctuation">(</span>User<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">await</span> userRepository<span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span><span class="token operator">+</span>ctx<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">204</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>TypeORM 中操作数据模型主要是通过 Repository 实现的，在 Controller 中，可以通过 getManager().getRepository(Model) 来获取到，之后 Repository 的查询 API 就与其他的库很类似了。</p></blockquote> <ul><li>获取到了请求体的数据，这是我们在第一步就配置好的 bodyParser 中间件在 Context 对象中添加的。</li> <li>然后我们修改 AuthController ，实现具体的注册逻辑。由于密码不能明文保存在数据库中，需要使用非对称算法进行加密，这里我们使用曾经获得过密码加密大赛冠军的 Argon2[17] 算法。安装对应的 npm 包：</li></ul> <div class="language- extra-class"><pre class="language-text"><code>npm install argon2
+</code></pre></div><blockquote><p>然后实现具体的 register Controller，修改 src/controllers/auth.ts，代码如下：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/controllers/auth.ts</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Context <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'koa'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token operator">*</span> <span class="token keyword">as</span> argon2 <span class="token keyword">from</span> <span class="token string">'argon2'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> getManager <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'typeorm'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token punctuation">{</span> User <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'../entity/user'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">AuthController</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ...</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">register</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> userRepository <span class="token operator">=</span> <span class="token function">getManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getRepository</span><span class="token punctuation">(</span>User<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">const</span> newUser <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    newUser<span class="token punctuation">.</span>name <span class="token operator">=</span> ctx<span class="token punctuation">.</span>request<span class="token punctuation">.</span>body<span class="token punctuation">.</span>name<span class="token punctuation">;</span>
+    newUser<span class="token punctuation">.</span>email <span class="token operator">=</span> ctx<span class="token punctuation">.</span>request<span class="token punctuation">.</span>body<span class="token punctuation">.</span>email<span class="token punctuation">;</span>
+    newUser<span class="token punctuation">.</span>password <span class="token operator">=</span> <span class="token keyword">await</span> argon2<span class="token punctuation">.</span><span class="token function">hash</span><span class="token punctuation">(</span>ctx<span class="token punctuation">.</span>request<span class="token punctuation">.</span>body<span class="token punctuation">.</span>password<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 保存到数据库</span>
+    <span class="token keyword">const</span> user <span class="token operator">=</span> <span class="token keyword">await</span> userRepository<span class="token punctuation">.</span><span class="token function">save</span><span class="token punctuation">(</span>newUser<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">201</span><span class="token punctuation">;</span>
+    ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> user<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>确保服务器在运行之后，我们就可以开始测试一波了。首先是注册用户（这里我用 Postman 演示，直观一些）：</p> <p><img src="https://s.poetries.top/gitee/2020/08/62.png" alt=""></p> <p>你可以继续注册几个用户，然后继续访问 /users 相关的路由，应该可以成功地获取、修改和删除相应的数据了！</p> <h2 id="实现-jwt-鉴权"><a href="#实现-jwt-鉴权" class="header-anchor">#</a> 实现 JWT 鉴权</h2> <blockquote><p>JSON Web Token（JWT）是一种流行的 RESTful API 鉴权方案。这里我们将手把手带你学会如何在 Koa 框架中使用 JWT 鉴权，但是不会过多讲解其原理（可参考这篇文章[18]进行学习）。</p></blockquote> <p>首先安装相关的 npm 包：</p> <div class="language- extra-class"><pre class="language-text"><code>npm install koa-jwt jsonwebtoken
+npm install @types/jsonwebtoken -D
+</code></pre></div><blockquote><p>创建 src/constants.ts ，用于存放 JWT Secret 常量，代码如下：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/constants.ts</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> <span class="token constant">JWT_SECRET</span> <span class="token operator">=</span> <span class="token string">'secret'</span><span class="token punctuation">;</span>
+</code></pre></div><p>在实际开发中，请替换成一个足够复杂的字符串，并且最好通过环境变量的方式注入</p> <h3 id="重新规划路由"><a href="#重新规划路由" class="header-anchor">#</a> 重新规划路由</h3> <blockquote><p>有些路由我们希望只有已登录的用户才有权查看（受保护的路由），而另一些路由则是所有请求都可以访问（不受保护的路由）。在 Koa 的洋葱模型中，我们可以这样实现：</p></blockquote> <p><img src="https://s.poetries.top/gitee/2020/08/63.png" alt=""></p> <p>所有请求都可以直接访问未受保护的路由，但是受保护的路由就放在 JWT 中间件的后面（或者从洋葱模型的角度看是“里面”），这样对于没有携带 JWT Token 的请求就直接返回，而不会继续传递下去。</p> <p>想法明确之后，打开 src/routes.ts 路由文件，修改代码如下：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/routes.ts</span>
+<span class="token keyword">import</span> Router <span class="token keyword">from</span> <span class="token string">'@koa/router'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> AuthController <span class="token keyword">from</span> <span class="token string">'./controllers/auth'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> UserController <span class="token keyword">from</span> <span class="token string">'./controllers/user'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> unprotectedRouter <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Router</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// auth 相关的路由</span>
+unprotectedRouter<span class="token punctuation">.</span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string">'/auth/login'</span><span class="token punctuation">,</span> AuthController<span class="token punctuation">.</span>login<span class="token punctuation">)</span><span class="token punctuation">;</span>
+unprotectedRouter<span class="token punctuation">.</span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string">'/auth/register'</span><span class="token punctuation">,</span> AuthController<span class="token punctuation">.</span>register<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> protectedRouter <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Router</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// users 相关的路由</span>
+protectedRouter<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'/users'</span><span class="token punctuation">,</span> UserController<span class="token punctuation">.</span>listUsers<span class="token punctuation">)</span><span class="token punctuation">;</span>
+protectedRouter<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'/users/:id'</span><span class="token punctuation">,</span> UserController<span class="token punctuation">.</span>showUserDetail<span class="token punctuation">)</span><span class="token punctuation">;</span>
+protectedRouter<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">'/users/:id'</span><span class="token punctuation">,</span> UserController<span class="token punctuation">.</span>updateUser<span class="token punctuation">)</span><span class="token punctuation">;</span>
+protectedRouter<span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span><span class="token string">'/users/:id'</span><span class="token punctuation">,</span> UserController<span class="token punctuation">.</span>deleteUser<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token punctuation">{</span> protectedRouter<span class="token punctuation">,</span> unprotectedRouter <span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><blockquote><p>上面我们分别实现了 protectedRouter 和 unprotectedRouter ，分别对应于需要 JWT 中间件保护的路由和不需要保护的路由。</p></blockquote> <h3 id="注册-jwt-中间件"><a href="#注册-jwt-中间件" class="header-anchor">#</a> 注册 JWT 中间件</h3> <blockquote><p>接着便是注册 JWT 中间件，并分别在其前后注册不需要保护的路由 unprotectedRouter 和需要保护的路由 protectedRouter。修改服务器文件 src/server.ts ，代码如下：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/server.ts</span>
+<span class="token comment">// ...</span>
+<span class="token keyword">import</span> jwt <span class="token keyword">from</span> <span class="token string">'koa-jwt'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token string">'reflect-metadata'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token punctuation">{</span> protectedRouter<span class="token punctuation">,</span> unprotectedRouter <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./routes'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> logger <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./logger'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> <span class="token constant">JWT_SECRET</span> <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./constants'</span><span class="token punctuation">;</span>
+
+<span class="token function">createConnection</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ...</span>
+
+    <span class="token comment">// 无需 JWT Token 即可访问</span>
+    app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>unprotectedRouter<span class="token punctuation">.</span><span class="token function">routes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>unprotectedRouter<span class="token punctuation">.</span><span class="token function">allowedMethods</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 注册 JWT 中间件</span>
+    app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">jwt</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">secret</span><span class="token operator">:</span> <span class="token constant">JWT_SECRET</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">unless</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">method</span><span class="token operator">:</span> <span class="token string">'GET'</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 需要 JWT Token 才可访问</span>
+    app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>protectedRouter<span class="token punctuation">.</span><span class="token function">routes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>protectedRouter<span class="token punctuation">.</span><span class="token function">allowedMethods</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// ...</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token comment">// ...</span>
+</code></pre></div><p>对应刚才“洋葱模型”的设计图，是不是感觉很直观？</p> <blockquote><p>在 JWT 中间件注册完毕后，如果用户请求携带了有效的 Token，后面的 protectedRouter 就可以通过 ctx.state.user 获取到 Token 的内容（更精确的说法是 Payload，负载，一般是用户的关键信息，例如 ID）了；反之，如果 Token 缺失或无效，那么 JWT 中间件会直接自动返回 401 错误。关于 koa-jwt 的更多使用细节，请参考其文档[19]</p></blockquote> <h3 id="在-login-中签发-jwt-token"><a href="#在-login-中签发-jwt-token" class="header-anchor">#</a> 在 Login 中签发 JWT Token</h3> <blockquote><p>我们需要提供一个 API 端口让用户可以获取到 JWT Token，最合适的当然是登录接口 /auth/login。打开 src/controllers/auth.ts ，在 login 控制器中实现签发 JWT Token 的逻辑，代码如下：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/controllers/auth.ts</span>
+<span class="token comment">// ...</span>
+<span class="token keyword">import</span> jwt <span class="token keyword">from</span> <span class="token string">'jsonwebtoken'</span><span class="token punctuation">;</span>
+
+<span class="token comment">// ...</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> <span class="token constant">JWT_SECRET</span> <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'../constants'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">AuthController</span> <span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">login</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> userRepository <span class="token operator">=</span> <span class="token function">getManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getRepository</span><span class="token punctuation">(</span>User<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">const</span> user <span class="token operator">=</span> <span class="token keyword">await</span> userRepository
+      <span class="token punctuation">.</span><span class="token function">createQueryBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> ctx<span class="token punctuation">.</span>request<span class="token punctuation">.</span>body<span class="token punctuation">.</span>name <span class="token punctuation">}</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">addSelect</span><span class="token punctuation">(</span><span class="token string">'User.password'</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">getOne</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">401</span><span class="token punctuation">;</span>
+      ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">'用户名不存在'</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">await</span> argon2<span class="token punctuation">.</span><span class="token function">verify</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span>password<span class="token punctuation">,</span> ctx<span class="token punctuation">.</span>request<span class="token punctuation">.</span>body<span class="token punctuation">.</span>password<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">200</span><span class="token punctuation">;</span>
+      ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token literal-property property">token</span><span class="token operator">:</span> jwt<span class="token punctuation">.</span><span class="token function">sign</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">id</span><span class="token operator">:</span> user<span class="token punctuation">.</span>id <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token constant">JWT_SECRET</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">401</span><span class="token punctuation">;</span>
+      ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">'密码错误'</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// ...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>在 login 中，我们首先根据用户名（请求体中的 name 字段）查询对应的用户，如果该用户不存在，则直接返回 401；存在的话再通过 argon2.verify 来验证请求体中的明文密码 password 是否和数据库中存储的加密密码是否一致，如果一致则通过 jwt.sign 签发 Token，如果不一致则还是返回 401。</li> <li>这里的 Token 负载就是标识用户 ID 的对象 { id: user.id } ，这样后面鉴权成功后就可以通过 ctx.user.id 来获取用户 ID。</li></ul> <h3 id="在-user-控制器中添加访问控制"><a href="#在-user-控制器中添加访问控制" class="header-anchor">#</a> 在 User 控制器中添加访问控制</h3> <blockquote><p>Token 的中间件和签发都搞定之后，最后一步就是在合适的地方校验用户的 Token，确认其是否有足够的权限。最典型的场景便是，在更新或删除用户时，我们要「确保是用户本人在操作」。打开 src/controllers/user.ts ，代码如下：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/controllers/user.ts</span>
+<span class="token comment">// ...</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">UserController</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ...</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">updateUser</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> userId <span class="token operator">=</span> <span class="token operator">+</span>ctx<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>userId <span class="token operator">!==</span> <span class="token operator">+</span>ctx<span class="token punctuation">.</span>state<span class="token punctuation">.</span>user<span class="token punctuation">.</span>id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">403</span><span class="token punctuation">;</span>
+      ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">'无权进行此操作'</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">const</span> userRepository <span class="token operator">=</span> <span class="token function">getManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getRepository</span><span class="token punctuation">(</span>User<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">await</span> userRepository<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>userId<span class="token punctuation">,</span> ctx<span class="token punctuation">.</span>request<span class="token punctuation">.</span>body<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> updatedUser <span class="token operator">=</span> <span class="token keyword">await</span> userRepository<span class="token punctuation">.</span><span class="token function">findOne</span><span class="token punctuation">(</span>userId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// ...</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">deleteUser</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> userId <span class="token operator">=</span> <span class="token operator">+</span>ctx<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>userId <span class="token operator">!==</span> <span class="token operator">+</span>ctx<span class="token punctuation">.</span>state<span class="token punctuation">.</span>user<span class="token punctuation">.</span>id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">403</span><span class="token punctuation">;</span>
+      ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">'无权进行此操作'</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">const</span> userRepository <span class="token operator">=</span> <span class="token function">getManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getRepository</span><span class="token punctuation">(</span>User<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">await</span> userRepository<span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span>userId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">204</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>两个 Controller 的鉴权逻辑基本相同，我们通过比较 ctx.params.id 和 ctx.state.user.id 是否相同，如果不相同则返回 403 Forbidden 错误，相同则继续执行相应的数据库操作。</p></blockquote> <p>代码写完之后，我们用刚才注册的一个用户信息去访问登录 API：</p> <p><img src="https://s.poetries.top/gitee/2020/08/64.png" alt=""></p> <blockquote><p>成功地获取到了 JWT Token！然后我们复制获取到的 Token，在接下来测试受保护的路由时，我们需要添加一个 Authorization 头部，值为 Bearer &lt;JWT_TOKEN&gt; ，如下图所示：</p></blockquote> <p><img src="https://s.poetries.top/gitee/2020/08/65.png" alt=""></p> <p>然后就可以测试受保护的路由了！这里由于篇幅限制就省略了。</p> <h2 id="错误处理"><a href="#错误处理" class="header-anchor">#</a> 错误处理</h2> <p>最后，我们来简单地聊一下 Koa 中的错误处理。由于 Koa 采用了 async 函数和 Promise 作为异步编程的方案，所以错误处理自然也很简单了——直接用 JavaScript 自带的 try-catch 语法就可以轻松搞定。</p> <h3 id="实现自定义错误-异常"><a href="#实现自定义错误-异常" class="header-anchor">#</a> 实现自定义错误（异常）</h3> <blockquote><p>首先，让我们来实现一些自定义的错误（或者异常，本文不作区分）类。创建 <code>src/exceptions.ts</code> ，代码如下：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/exceptions.ts</span>
+<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">BaseException</span> <span class="token keyword">extends</span> <span class="token class-name">Error</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 状态码</span>
+  <span class="token literal-property property">status</span><span class="token operator">:</span> number<span class="token punctuation">;</span>
+  <span class="token comment">// 提示信息</span>
+  <span class="token literal-property property">message</span><span class="token operator">:</span> string<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">NotFoundException</span> <span class="token keyword">extends</span> <span class="token class-name">BaseException</span> <span class="token punctuation">{</span>
+  status <span class="token operator">=</span> <span class="token number">404</span><span class="token punctuation">;</span>
+
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">msg<span class="token operator">?</span><span class="token operator">:</span> string</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>message <span class="token operator">=</span> msg <span class="token operator">||</span> <span class="token string">'无此内容'</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">UnauthorizedException</span> <span class="token keyword">extends</span> <span class="token class-name">BaseException</span> <span class="token punctuation">{</span>
+  status <span class="token operator">=</span> <span class="token number">401</span><span class="token punctuation">;</span>
+
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">msg<span class="token operator">?</span><span class="token operator">:</span> string</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>message <span class="token operator">=</span> msg <span class="token operator">||</span> <span class="token string">'尚未登录'</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">ForbiddenException</span> <span class="token keyword">extends</span> <span class="token class-name">BaseException</span> <span class="token punctuation">{</span>
+  status <span class="token operator">=</span> <span class="token number">403</span><span class="token punctuation">;</span>
+
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">msg<span class="token operator">?</span><span class="token operator">:</span> string</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>message <span class="token operator">=</span> msg <span class="token operator">||</span> <span class="token string">'权限不足'</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>这里的错误类型参考了 Nest.js[20] 的设计。出于学习目的，这里作了简化，并且只实现了我们需要用到的错误。</p> <h3 id="在-controller-中使用自定义错误"><a href="#在-controller-中使用自定义错误" class="header-anchor">#</a> 在 Controller 中使用自定义错误</h3> <blockquote><p>接着我们便可以在 Controller 中使用刚才的自定义错误了。打开 src/controllers/auth.ts，修改代码如下：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/controllers/auth.ts</span>
+<span class="token comment">// ...</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> UnauthorizedException <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'../exceptions'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">AuthController</span> <span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">login</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ...</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">UnauthorizedException</span><span class="token punctuation">(</span><span class="token string">'用户名不存在'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">await</span> argon2<span class="token punctuation">.</span><span class="token function">verify</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span>password<span class="token punctuation">,</span> ctx<span class="token punctuation">.</span>request<span class="token punctuation">.</span>body<span class="token punctuation">.</span>password<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">200</span><span class="token punctuation">;</span>
+      ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token literal-property property">token</span><span class="token operator">:</span> jwt<span class="token punctuation">.</span><span class="token function">sign</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">id</span><span class="token operator">:</span> user<span class="token punctuation">.</span>id <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token constant">JWT_SECRET</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">UnauthorizedException</span><span class="token punctuation">(</span><span class="token string">'密码错误'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// ...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>可以看到，我们将直接手动设置状态码和响应体的代码改成了简单的错误抛出，代码清晰了很多。</p> <blockquote><p>同样地，修改 UserController 相关的逻辑。修改 src/controllers/user.ts，代码如下：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// src/controllers/user.ts</span>
+<span class="token comment">// ...</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> NotFoundException<span class="token punctuation">,</span> ForbiddenException <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'../exceptions'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span> <span class="token class-name">UserController</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ...</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">showUserDetail</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> userRepository <span class="token operator">=</span> <span class="token function">getManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getRepository</span><span class="token punctuation">(</span>User<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> user <span class="token operator">=</span> <span class="token keyword">await</span> userRepository<span class="token punctuation">.</span><span class="token function">findOne</span><span class="token punctuation">(</span><span class="token operator">+</span>ctx<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      ctx<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token number">200</span><span class="token punctuation">;</span>
+      ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> user<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">NotFoundException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">updateUser</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> userId <span class="token operator">=</span> <span class="token operator">+</span>ctx<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>userId <span class="token operator">!==</span> <span class="token operator">+</span>ctx<span class="token punctuation">.</span>state<span class="token punctuation">.</span>user<span class="token punctuation">.</span>id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">ForbiddenException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// ...</span>
+  <span class="token punctuation">}</span>
+ <span class="token comment">// ...</span>
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">async</span> <span class="token function">deleteUser</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">ctx</span><span class="token operator">:</span> Context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> userId <span class="token operator">=</span> <span class="token operator">+</span>ctx<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>userId <span class="token operator">!==</span> <span class="token operator">+</span>ctx<span class="token punctuation">.</span>state<span class="token punctuation">.</span>user<span class="token punctuation">.</span>id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">ForbiddenException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// ...</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="添加错误处理中间件"><a href="#添加错误处理中间件" class="header-anchor">#</a> 添加错误处理中间件</h3> <blockquote><p>最后，我们需要添加错误处理中间件来捕获在 Controller 中抛出的错误。打开 src/server.ts ，实现错误处理中间件，代码如下：</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>// src/server.ts
+// ...
+
+createConnection()
+  .then(() =&gt; {
+    // ...
+
+    // 注册中间件
+    app.use(logger());
+    app.use(cors());
+    app.use(bodyParser());
+
+    app.use(async (ctx, next) =&gt; {
+      try {
+        await next();
+      } catch (err) {
+        // 只返回 JSON 格式的响应
+        ctx.status = err.status || 500;
+        ctx.body = { message: err.message };
+      }
+    });
+
+    // ...
+  })
+  // ...
+</code></pre></div><p>可以看到，在这个错误处理中间件中，我们把返回的响应数据转换成 JSON 格式（而不是之前的 Plain Text），这样看上去更统一一些。</p> <p>至此，这篇教程就结束了。内容很多，希望对你有一定的帮助。我们的用户系统已经能够处理大部分情形，但是对于一些边际情况的处理依然很糟糕（能想到有哪些吗？）。不过话说回来，相信你已经确定 Koa 是一个很棒的框架了吧？</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

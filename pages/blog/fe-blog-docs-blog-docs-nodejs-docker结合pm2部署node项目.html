@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>docker结合pm2部署node项目 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>docker结合pm2部署node项目</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>docker结合pm2部署node项目</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、下载node镜像"><a href="#一、下载node镜像" class="header-anchor">#</a> 一、下载node镜像</h2> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">docker</span> pull <span class="token function">node</span>
+</code></pre></div><p>下载完后<code>docker images</code>查看一下，稍后用到</p> <h2 id="二、创建dockerfile"><a href="#二、创建dockerfile" class="header-anchor">#</a> 二、创建Dockerfile</h2> <div class="language-bash extra-class"><pre class="language-bash"><code>FROM <span class="token function">node</span>
+RUN <span class="token function">mkdir</span> -p /home/Service
+WORKDIR /home/Service    <span class="token comment"># Bundle app source</span>
+COPY <span class="token builtin class-name">.</span> /home/Service
+RUN <span class="token function">npm</span> <span class="token function">install</span>
+EXPOSE <span class="token number">8888</span>
+CMD <span class="token function">npm</span> start   
+ <span class="token comment">## 如果想运行多条指令可以这样：</span>
+<span class="token comment">## CMD git pull &amp;&amp; npm install &amp;&amp; npm start</span>
+</code></pre></div><h3 id="_2-1-from"><a href="#_2-1-from" class="header-anchor">#</a> 2.1 FROM</h3> <div class="language- extra-class"><pre class="language-text"><code>FROM node
+</code></pre></div><blockquote><p><code>FROM</code>是构建镜像的基础源镜像，<code>node</code> 这个是镜像的名称，也就是我们一开始从国内服务器上拉下来的那个<code>Image</code>。如果本地没有<code>Docker</code> 会自己<code>pull</code>镜像</p></blockquote> <h3 id="_2-2-run"><a href="#_2-2-run" class="header-anchor">#</a> 2.2 RUN</h3> <p>后面跟的是在这个新容器中执行的命令</p> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment">#在容器中创建一个目录</span>
+RUN <span class="token function">mkdir</span> -p /home/Service
+</code></pre></div><h3 id="_2-3-workdir"><a href="#_2-3-workdir" class="header-anchor">#</a> 2.3 WORKDIR</h3> <p>容器的工作目录</p> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment">#将容器的工作目录定位到 /home/Service中</span>
+WORKDIR /home/Service
+</code></pre></div><h3 id="_2-4-copy"><a href="#_2-4-copy" class="header-anchor">#</a> 2.4 COPY</h3> <p>将本地的东西拷贝到容器的指定目录下</p> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment">#把本机当前目录下的所有文件拷贝到Image的/home/Service文件夹下</span>
+COPY <span class="token builtin class-name">.</span> /home/Service  
+RUN <span class="token function">npm</span> <span class="token function">install</span>
+</code></pre></div><h3 id="_2-5-expose"><a href="#_2-5-expose" class="header-anchor">#</a> 2.5 EXPOSE</h3> <p>将容器内的某个端口导出给主机，用于我们访问</p> <div class="language- extra-class"><pre class="language-text"><code>EXPOSE 8888
+</code></pre></div><h3 id="_2-6-cmd"><a href="#_2-6-cmd" class="header-anchor">#</a> 2.6 CMD</h3> <ul><li>首先：每个<code>Dockerfile</code>中只能写一个<code>CMD</code>，写多了，后面的会覆盖前面的。</li> <li>然后：<code>CMD</code>后面跟的命令是每次容器启动的时候执行的命令。</li> <li>最后：命令格式可以是数组格式，也可是直接命令行方式，多条命令的时候用 "<code>&amp;&amp;</code>"链接。</li></ul> <div class="language- extra-class"><pre class="language-text"><code>CMD [ "npm", "start" ]
+</code></pre></div><h2 id="三、构建image"><a href="#三、构建image" class="header-anchor">#</a> 三、构建Image</h2> <blockquote><p>在你<code>Dockerfile</code>文件所在的目录下运行下面的命令来构建一个<code>Image</code></p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>docker build -t mynodeapp .
+</code></pre></div><blockquote><p>点就是指当前目录下的<code>Dockerfile</code></p></blockquote> <p>构建完后查看一下我们的镜像</p> <p><img src="https://s.poetries.top/gitee/20191001/42.png" alt=""></p> <p><strong>运行镜像</strong></p> <div class="language- extra-class"><pre class="language-text"><code>docker run -d -p 8880:8888 mynodeapp
+</code></pre></div><ul><li><code>-d</code> :表明容器会在后台运行，</li> <li><code>-p</code> :表示端口映射，把本机的<code>8880</code>端口映射到<code>container</code>的<code>8888</code>端口，这样外网就能通过本机的<code>8880</code>端口访问我们的<code>web</code>了。</li> <li>后面的<code>mynodeapp</code>是我们镜像的名字</li></ul> <blockquote><p>通过<code>docker ps</code> 查看我们刚运行的<code>Container</code>的<code>ID</code></p></blockquote> <p>我们先通过<code>curl</code> 看能不能访问我们的<code>web</code>。</p> <div class="language- extra-class"><pre class="language-text"><code>curl -i localhost:8880
+</code></pre></div><p>如果返回相应的HTTP信息，表示成功</p> <h2 id="四、结合pm2部署"><a href="#四、结合pm2部署" class="header-anchor">#</a> 四、结合pm2部署</h2> <blockquote><p>部署参考 http://blog.poetries.top/2018/11/18/react-ssr-next-deploy/</p></blockquote> <blockquote><p>使用命令<code>pm2 start app.js</code> 之后, <code>pm2</code> 默认在后台运行, 如果使用了<code>Docker</code>后,容器运行并立即退出,需要手动给“<code>pm2</code>”指定参数 <code>--no-daemon</code></p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># 在Dockerfile中：</span>
+
+--no-daemon // run pm2 daemon <span class="token keyword">in</span> the foreground <span class="token keyword">if</span> it doesn't exist already
+
+CMD pm2 start app.js --no-daemon // 设置启动方式
+
+<span class="token comment">#  或者 使用   pm2-docker</span>
+CMD pm2-docker start app.js
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

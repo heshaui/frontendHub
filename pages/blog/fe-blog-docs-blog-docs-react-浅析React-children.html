@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浅析React children - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>浅析React children</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>浅析React children</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、子组件"><a href="#一、子组件" class="header-anchor">#</a> 一、子组件</h2> <blockquote><p>我们有一个组件 <code>&lt;Grid /&gt;</code> 包含了几个组件 <code>&lt;Row /&gt;</code> 。你可能会这么使用它</p></blockquote> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Grid</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Row</span> <span class="token punctuation">/&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Row</span> <span class="token punctuation">/&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Row</span> <span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Grid</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><blockquote><p>这三个 <code>Row</code> 组件都成为了 <code>Grid</code> 的 <code>props.children</code> 。使用一个表达式容器，父组件就能够渲染它们的子组件</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">Grid</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token operator">&lt;</span>div<span class="token operator">&gt;</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>children<span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>父组件也能够决定不渲染任何的子组件或者在渲染之前对它们进行操作。例如，这个 <code>&lt;Fullstop /&gt;</code> 组件就没有渲染它的子组件</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">Fullstop</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token operator">&lt;</span>h1<span class="token operator">&gt;</span>Hello world<span class="token operator">!</span><span class="token operator">&lt;</span><span class="token operator">/</span>h1<span class="token operator">&gt;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="二、任何东西都能是一个child"><a href="#二、任何东西都能是一个child" class="header-anchor">#</a> 二、任何东西都能是一个child</h2> <blockquote><p><code>React</code>中的<code>Children</code>不一定是组件，它们可以使任何东西。例如，我们能够将上面的文字作为<code>children</code>传递我们的 <code>&lt;Grid /&gt;</code>组件</p></blockquote> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Grid</span><span class="token punctuation">&gt;</span></span>Hello world!<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Grid</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><ul><li><code>JSX</code>将会自动删除每行开头和结尾的空格，以及空行。它还会把字符串中间的空白行压缩为一个空格</li> <li>你也可以将多种类型的<code>children</code>完美的结合在一起：</li></ul> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Grid</span><span class="token punctuation">&gt;</span></span>
+  Here is a row:
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Row</span> <span class="token punctuation">/&gt;</span></span>
+  Here is another row:
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Row</span> <span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Grid</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><h2 id="三、child-的功能"><a href="#三、child-的功能" class="header-anchor">#</a> 三、child 的功能</h2> <ul><li>我们能够传递任何的JavaScript表达式作为children，包括函数</li></ul> <blockquote><p>为了说明这种情况，以下是一个组件，它将执行一个传递过来的作为child的函数</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">Executioner</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// See how we're calling the child as a function?</span>
+    <span class="token comment">//                        ↓</span>
+    <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span><span class="token function">children</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>你会像这样的使用这个组件</p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Executioner</span><span class="token punctuation">&gt;</span></span>
+  {() =&gt; <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">&gt;</span></span>Hello World!<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">&gt;</span></span>}
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Executioner</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><h2 id="四、操作children"><a href="#四、操作children" class="header-anchor">#</a> 四、操作children</h2> <blockquote><p>从本质上来讲， <code>props.children</code> 可以使任何的类型，比如数组、函数、对象等</p></blockquote> <blockquote><p>React提供了一系列的函数助手来使得操作children更加方便</p></blockquote> <h3 id="_4-1-循环"><a href="#_4-1-循环" class="header-anchor">#</a> 4.1 循环</h3> <blockquote><p>两个最显眼的函数助手就是 <code>React.Children.map</code> 以及 <code>React.Children.forEach</code>。它们在对应数组的情况下能起作用，除此之外，当函数、对象或者任何东西作为<code>children</code>传递时，它们也会起作用</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">IgnoreFirstChild</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> children <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>children
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>div<span class="token operator">&gt;</span>
+        <span class="token punctuation">{</span>React<span class="token punctuation">.</span>Children<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>children<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">child<span class="token punctuation">,</span> i</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+          <span class="token comment">// Ignore the first child</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">return</span>
+          <span class="token keyword">return</span> child
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+      <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p><code>&lt;IgnoreFirstChild /&gt;</code> 组件在这里会遍历所有的<code>children</code>，忽略第一个<code>child</code>然后返回其他的</p></blockquote> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>IgnoreFirstChild</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">&gt;</span></span>First<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">&gt;</span></span>Second<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">&gt;</span></span> // &lt;- Only this is rendered
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>IgnoreFirstChild</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><blockquote><p>在这种情况下，我们也可以使用``this.props.children.map<code>的方法。但将一个函数作为child传递过来将会发生什么呢？</code>this.props.children` 会是一个函数而不是一个数组，接着我们就会产生一个error</p></blockquote> <blockquote><p>然而使用 <code>React.Children.map</code>函数，无论什么都不会报错</p></blockquote> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>IgnoreFirstChild</span><span class="token punctuation">&gt;</span></span>
+  {() =&gt; <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">&gt;</span></span>First<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">&gt;</span></span>} // &lt;- Ignored 💪
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>IgnoreFirstChild</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><h3 id="_4-2-计数"><a href="#_4-2-计数" class="header-anchor">#</a> 4.2 计数</h3> <blockquote><p>因为<code>this.props.children</code> 可以是任何类型的，检查一个组件有多少个<code>children</code>是非常困难的。天真的使用 <code>this.props.children.length</code> ，当传递了字符串或者函数时程序便会中断。假设我们有个child："Hello World!" ，但是使用 <code>.length</code> 的方法将会显示为12。</p></blockquote> <p>这就是为什么我们有 <code>React.Children.count</code> 方法的原因</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">ChildrenCounter</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token operator">&lt;</span>p<span class="token operator">&gt;</span>React<span class="token punctuation">.</span>Children<span class="token punctuation">.</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>children<span class="token punctuation">)</span><span class="token operator">&lt;</span><span class="token operator">/</span>p<span class="token operator">&gt;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>无论时什么类型它都会返回<code>children</code>的数量</p></blockquote> <div class="language-html extra-class"><pre class="language-html"><code>// Renders "1"
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ChildrenCounter</span><span class="token punctuation">&gt;</span></span>
+  Second!
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ChildrenCounter</span><span class="token punctuation">&gt;</span></span>
+
+// Renders "2"
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ChildrenCounter</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>First<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ChildComponent</span> <span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ChildrenCounter</span><span class="token punctuation">&gt;</span></span>
+
+// Renders "3"
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ChildrenCounter</span><span class="token punctuation">&gt;</span></span>
+  {() =&gt; <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">&gt;</span></span>First!<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">&gt;</span></span>}
+  Second!
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>Third!<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ChildrenCounter</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><h3 id="_4-3-转换为数组"><a href="#_4-3-转换为数组" class="header-anchor">#</a> 4.3 转换为数组</h3> <blockquote><p>如果以上的方法你都不适合，你能将<code>children</code>转换为数组通过 <code>React.Children.toArray</code> 方法。如果你需要对它们进行排序，这个方法是非常有用的</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">Sort</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> children <span class="token operator">=</span> React<span class="token punctuation">.</span>Children<span class="token punctuation">.</span><span class="token function">toArray</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>children<span class="token punctuation">)</span>
+    <span class="token comment">// Sort and render the children</span>
+    <span class="token keyword">return</span> <span class="token operator">&lt;</span>p<span class="token operator">&gt;</span><span class="token punctuation">{</span>children<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">' '</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span>p<span class="token operator">&gt;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Sort</span><span class="token punctuation">&gt;</span></span>
+  // We use expression containers to make sure our strings
+  // are passed as three children, not as one string
+  {'bananas'}{'oranges'}{'apples'}
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Sort</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p>上例会渲染为三个排好序的字符串</p> <h3 id="_4-4-执行单一child"><a href="#_4-4-执行单一child" class="header-anchor">#</a> 4.4 执行单一child</h3> <blockquote><p>如果你回过来想刚才的 <code>&lt;Executioner /&gt;</code> 组件，它只能在传递单一<code>child</code>的情况下使用，而且<code>child</code>必须为函数</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">Executioner</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span><span class="token function">children</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>我们可以试着去强制执行 <code>propTypes</code> ，就像下面这样</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code>Executioner<span class="token punctuation">.</span>propTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">children</span><span class="token operator">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>func<span class="token punctuation">.</span>isRequired<span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>这会使控制台打印出一条消息，部分的开发者将会把它忽视。相反的，我们可以使用在 <code>render</code> 里面使用 <code>React.Children.only</code></p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">Executioner</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> React<span class="token punctuation">.</span>Children<span class="token punctuation">.</span><span class="token function">only</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>children<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>这样只会返回一个<code>child</code>。如果不止一个<code>child</code>，它就会抛出错误，让整个程序陷入中断——完美的避开了试图破坏组件的懒惰的开发者</p> <h2 id="五、编辑children"><a href="#五、编辑children" class="header-anchor">#</a> 五、编辑children</h2> <blockquote><p>我们可以将任意的组件呈现为<code>children</code>，但是任然可以用父组件去控制它们，而不是用渲染的组件。为了说明这点，让我们举例一个 能够拥有很多 <code>RadioButton</code> 组件的 <code>RadiaGroup</code> 组件</p></blockquote> <blockquote><p><code>RadioButtons</code> 不会从 <code>RadioGroup</code> 本身上进行渲染，它们只是作为<code>children</code>使用。这意味着我们将会有这样的代码</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span><span class="token punctuation">(</span>
+    <span class="token operator">&lt;</span>RadioGroup<span class="token operator">&gt;</span>
+      <span class="token operator">&lt;</span>RadioButton value<span class="token operator">=</span><span class="token string">"first"</span><span class="token operator">&gt;</span>First<span class="token operator">&lt;</span><span class="token operator">/</span>RadioButton<span class="token operator">&gt;</span>
+      <span class="token operator">&lt;</span>RadioButton value<span class="token operator">=</span><span class="token string">"second"</span><span class="token operator">&gt;</span>Second<span class="token operator">&lt;</span><span class="token operator">/</span>RadioButton<span class="token operator">&gt;</span>
+      <span class="token operator">&lt;</span>RadioButton value<span class="token operator">=</span><span class="token string">"third"</span><span class="token operator">&gt;</span>Third<span class="token operator">&lt;</span><span class="token operator">/</span>RadioButton<span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span><span class="token operator">/</span>RadioGroup<span class="token operator">&gt;</span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>这段代码有一个问题。<code>input</code> 没有被分组</li> <li>为了把 <code>input</code> 标签弄到同组，必须拥有相同的<code>name</code> 属性。当然我们可以直接给每个<code>RadioButton</code> 的<code>name</code> 赋值</li></ul> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>RadioGroup</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>RadioButton</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>g1<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>first<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>First<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>RadioButton</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>RadioButton</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>g1<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>second<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>Second<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>RadioButton</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>RadioButton</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>g1<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>third<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>Third<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>RadioButton</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>RadioGroup</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><h3 id="_5-1-改变children的属性"><a href="#_5-1-改变children的属性" class="header-anchor">#</a> 5.1 改变children的属性</h3> <blockquote><p>在<code>RadioGroup</code> 中我们将会添加一个叫做 <code>renderChildren</code> 的方法，在这里我们编辑<code>children</code>的属性</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">RadioGroup</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment">// Bind the method to the component context</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>renderChildren <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">renderChildren</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">renderChildren</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// TODO: Change the name prop of all children</span>
+    <span class="token comment">// to this.props.name</span>
+    <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>children
+  <span class="token punctuation">}</span>
+
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>div className<span class="token operator">=</span><span class="token string">"group"</span><span class="token operator">&gt;</span>
+        <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">renderChildren</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+      <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>让我们开始遍历<code>children</code>获得每个<code>child</code></p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">renderChildren</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> React<span class="token punctuation">.</span>Children<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>children<span class="token punctuation">,</span> <span class="token parameter">child</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token comment">// TODO: Change the name prop to this.props.name</span>
+    <span class="token keyword">return</span> child
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>我们如何编辑它们的属性呢？</p> <h3 id="_5-2-react-cloneelement克隆元素"><a href="#_5-2-react-cloneelement克隆元素" class="header-anchor">#</a> 5.2 React.cloneElement克隆元素</h3> <blockquote><p><code>React.cloneElement</code> 会克隆一个元素。我们将想要克隆的元素当作第一个参数，然后将想要设置的属性以对象的方式作为第二个参数。</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> cloned <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">cloneElement</span><span class="token punctuation">(</span>element<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  <span class="token keyword">new</span><span class="token operator">:</span> <span class="token string">'yes!'</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p><strong>React.cloneElement参数</strong></p> <div class="language- extra-class"><pre class="language-text"><code>React.cloneElement(
+  element,
+  [props],
+  [...children]
+)
+</code></pre></div><ul><li>第一个参数：element</li> <li>必须是一个存在的React组件或者原生DOM，以下都可以</li></ul> <div class="language-html extra-class"><pre class="language-html"><code>React.cloneElement(<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token punctuation">/&gt;</span></span>)
+React.cloneElement(<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Child</span> <span class="token punctuation">/&gt;</span></span>)
+</code></pre></div><blockquote><p>但我们通常发现用的最多的是搭配<code>React.Children.map</code>和<code>this.props.children</code>使用，如下</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code>React<span class="token punctuation">.</span>Children<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>children<span class="token punctuation">,</span><span class="token parameter">child</span><span class="token operator">=&gt;</span><span class="token punctuation">{</span>
+    React<span class="token punctuation">.</span><span class="token function">cloneElement</span><span class="token punctuation">(</span>child<span class="token punctuation">,</span><span class="token punctuation">{</span><span class="token operator">...</span>props<span class="token punctuation">}</span><span class="token punctuation">,</span>children<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><blockquote><p>这正是我们的 <code>RadioGroup</code> 所需的。我们克隆所有的<code>child</code>并且设置<code>name</code> 属性</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">renderChildren</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> React<span class="token punctuation">.</span>Children<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>children<span class="token punctuation">,</span> <span class="token parameter">child</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> React<span class="token punctuation">.</span><span class="token function">cloneElement</span><span class="token punctuation">(</span>child<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>name
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>最后一步就是传递一个唯一的 <code>name</code> 给<code>RadioGroup</code></p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token operator">&lt;</span>RadioGroup name<span class="token operator">=</span><span class="token string">"g1"</span><span class="token operator">&gt;</span>
+  <span class="token operator">&lt;</span>RadioButton value<span class="token operator">=</span><span class="token string">"first"</span><span class="token operator">&gt;</span>First<span class="token operator">&lt;</span><span class="token operator">/</span>RadioButton<span class="token operator">&gt;</span>
+  <span class="token operator">&lt;</span>RadioButton value<span class="token operator">=</span><span class="token string">"second"</span><span class="token operator">&gt;</span>Second<span class="token operator">&lt;</span><span class="token operator">/</span>RadioButton<span class="token operator">&gt;</span>
+  <span class="token operator">&lt;</span>RadioButton value<span class="token operator">=</span><span class="token string">"third"</span><span class="token operator">&gt;</span>Third<span class="token operator">&lt;</span><span class="token operator">/</span>RadioButton<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>RadioGroup<span class="token operator">&gt;</span>
+</code></pre></div><blockquote><p>没有手动添加 <code>name</code> 属性给所有的 <code>RadioButton</code> ，我们只是告诉了 <code>RadioGroup</code> 所需的<code>name</code>而已。</p></blockquote></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

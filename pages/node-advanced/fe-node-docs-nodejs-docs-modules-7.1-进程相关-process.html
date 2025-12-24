@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>进程相关 process - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>进程相关 process</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>进程相关 process</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="模块概览"><a href="#模块概览" class="header-anchor">#</a> 模块概览</h2> <p>process是node的全局模块，作用比较直观。可以通过它来获得node进程相关的信息，比如运行node程序时的命令行参数。或者设置进程相关信息，比如设置环境变量。</p> <h2 id="环境变量-process-env"><a href="#环境变量-process-env" class="header-anchor">#</a> 环境变量：process.env</h2> <p>使用频率很高，node服务运行时，时常会判断当前服务运行的环境，如下所示</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">if</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">===</span> <span class="token string">'production'</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'生产环境'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token keyword">else</span><span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'非生产环境'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>运行命令 <code>NODE_ENV=production node env.js</code>，输出如下</p> <div class="language-bash extra-class"><pre class="language-bash"><code>非生产环境
+</code></pre></div><h2 id="异步-process-nexttick-fn"><a href="#异步-process-nexttick-fn" class="header-anchor">#</a> 异步：process.nextTick(fn)</h2> <p>使用频率同样很高，通常用在异步的场景，来个简单的栗子：</p> <div class="language-js extra-class"><pre class="language-js"><code>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'海贼王'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+process<span class="token punctuation">.</span><span class="token function">nextTick</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'火影忍者'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'死神'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 输出如下</span>
+<span class="token comment">// 海贼王</span>
+<span class="token comment">// 死神</span>
+<span class="token comment">// 火影忍者</span>
+</code></pre></div><p>process.nextTick(fn) 咋看跟 setTimeout(fn, 0) 很像，但实际有实现及性能上的差异，我们先记住几个点：</p> <ul><li>process.nextTick(fn) 将 fn 放到 node 事件循环的 下一个tick 里；</li> <li>process.nextTick(fn) 比 setTimetout(fn, 0) 性能高；</li></ul> <p>这里不打算深入讨论，感兴趣的可以点击<a href="https://cnodejs.org/topic/4f16442ccae1f4aa2700109b" target="_blank" rel="noopener noreferrer">这里<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>进行了解。</p> <h2 id="获取命令行参数-process-argv"><a href="#获取命令行参数-process-argv" class="header-anchor">#</a> 获取命令行参数：process.argv</h2> <p>process.argv 返回一个数组，数组元素分别如下：</p> <ul><li>元素1：node</li> <li>元素2：可执行文件的绝对路径</li> <li>元素x：其他，比如参数等</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// print process.argv</span>
+process<span class="token punctuation">.</span>argv<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">val<span class="token punctuation">,</span> index<span class="token punctuation">,</span> array</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'参数'</span> <span class="token operator">+</span> index <span class="token operator">+</span> <span class="token string">': '</span> <span class="token operator">+</span> val<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>运行命令 <code>NODE_ENV=dev node argv.js --env production</code>，输出如下。（不包含环境变量）</p> <div class="language-bash extra-class"><pre class="language-bash"><code>参数0: /Users/a/.nvm/versions/node/v6.1.0/bin/node
+参数1: /Users/a/Documents/git-code/nodejs-learning-guide/examples/2016.11.22-node-process/argv.js
+参数2: --env
+参数3: production
+</code></pre></div><h2 id="获取node-specific参数-process-execargv"><a href="#获取node-specific参数-process-execargv" class="header-anchor">#</a> 获取node specific参数：process.execArgv</h2> <p>跟 process.argv 看着像，但差异很大。它会返回 node specific 的参数（也就是运行node程序特有的参数啦，比如 --harmony）。这部分参数不会出现在 process.argv 里。</p> <p>我们来看个例子，相当直观。输入命令 <code>node --harmony execArgv.js --nick chyingp</code>， execArgv.js 代码如下：</p> <div class="language-js extra-class"><pre class="language-js"><code>process<span class="token punctuation">.</span>execArgv<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">val<span class="token punctuation">,</span> index<span class="token punctuation">,</span> array</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>index <span class="token operator">+</span> <span class="token string">': '</span> <span class="token operator">+</span> val<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 输出：</span>
+<span class="token comment">// 0: --harmony</span>
+
+process<span class="token punctuation">.</span>argv<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">val<span class="token punctuation">,</span> index<span class="token punctuation">,</span> array</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>index <span class="token operator">+</span> <span class="token string">': '</span> <span class="token operator">+</span> val<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 输出：</span>
+<span class="token comment">// 0: /Users/a/.nvm/versions/node/v6.1.0/bin/node</span>
+<span class="token comment">// 1: /Users/a/Documents/git-code/nodejs-learning-guide/examples/2016.11.22-node-process/execArgv.js</span>
+<span class="token comment">// 2: --nick</span>
+<span class="token comment">// 3: chyingp</span>
+</code></pre></div><h2 id="当前工作路径-process-cwd-vs-process-chdir-directory"><a href="#当前工作路径-process-cwd-vs-process-chdir-directory" class="header-anchor">#</a> 当前工作路径：process.cwd() vs process.chdir(directory)</h2> <ul><li>process.cwd()：返回当前工作路径</li> <li>process.chdir(directory)：切换当前工作路径</li></ul> <p>工作路径的用途不用过多解释了，直接上代码</p> <div class="language-js extra-class"><pre class="language-js"><code>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Starting directory: '</span> <span class="token operator">+</span> process<span class="token punctuation">.</span><span class="token function">cwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">try</span> <span class="token punctuation">{</span>
+  process<span class="token punctuation">.</span><span class="token function">chdir</span><span class="token punctuation">(</span><span class="token string">'/tmp'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'New directory: '</span> <span class="token operator">+</span> process<span class="token punctuation">.</span><span class="token function">cwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">catch</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'chdir: '</span> <span class="token operator">+</span> err<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>输出如下：</p> <div class="language-bash extra-class"><pre class="language-bash"><code>Starting directory: /Users/a/Documents/git-code/nodejs-learning-guide/examples/2016.11.22-node-process
+New directory: /private/tmp
+</code></pre></div><h2 id="ipc相关"><a href="#ipc相关" class="header-anchor">#</a> IPC相关</h2> <ul><li>process.connected：如果当前进程是子进程，且与父进程之间通过IPC通道连接着，则为true；</li> <li>process.disconnect()：断开与父进程之间的IPC通道，此时会将 process.connected 置为false；</li></ul> <p>首先是 connected.js，通过 fork 创建子进程（父子进程之间创建了IPC通道）</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> child_process <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'child_process'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+child_process<span class="token punctuation">.</span><span class="token function">fork</span><span class="token punctuation">(</span><span class="token string">'./connectedChild.js'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">stdio</span><span class="token operator">:</span> <span class="token string">'inherit'</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>然后，在 connectedChild.js 里面。</p> <div class="language-js extra-class"><pre class="language-js"><code>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span> <span class="token string">'process.connected: '</span> <span class="token operator">+</span> process<span class="token punctuation">.</span>connected <span class="token punctuation">)</span><span class="token punctuation">;</span>
+process<span class="token punctuation">.</span><span class="token function">disconnect</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span> <span class="token string">'process.connected: '</span> <span class="token operator">+</span> process<span class="token punctuation">.</span>connected <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 输出：</span>
+<span class="token comment">// process.connected: true</span>
+<span class="token comment">// process.connected: false</span>
+</code></pre></div><h2 id="其他"><a href="#其他" class="header-anchor">#</a> 其他</h2> <p>process.config：跟node的编译配置参数有关</p> <h2 id="标准输入-标准输出-标准错误输出-process-stdin、process-stdout"><a href="#标准输入-标准输出-标准错误输出-process-stdin、process-stdout" class="header-anchor">#</a> 标准输入/标准输出/标准错误输出：process.stdin、process.stdout</h2> <p>process.stdin、process.stdout、process.stderr 分别代表进程的标准输入、标准输出、标准错误输出。看官网的例子</p> <div class="language-js extra-class"><pre class="language-js"><code>process<span class="token punctuation">.</span>stdin<span class="token punctuation">.</span><span class="token function">setEncoding</span><span class="token punctuation">(</span><span class="token string">'utf8'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+process<span class="token punctuation">.</span>stdin<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'readable'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">var</span> chunk <span class="token operator">=</span> process<span class="token punctuation">.</span>stdin<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>chunk <span class="token operator">!==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    process<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">data: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>chunk<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+process<span class="token punctuation">.</span>stdin<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'end'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  process<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">'end'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>执行程序，可以看到，程序通过 process.stdin 读取用户输入的同时，通过 process.stdout 将内容输出到控制台</p> <div class="language-bash extra-class"><pre class="language-bash"><code>hello
+data: hello
+world
+data: world
+</code></pre></div><p>process.stderr也差不多，读者可以自己试下。</p> <h2 id="用户组-用户-相关"><a href="#用户组-用户-相关" class="header-anchor">#</a> 用户组/用户 相关</h2> <p>process.seteuid(id)：
+process.geteuid()：获得当前用户的id。（POSIX平台上才有效）</p> <p>process.getgid(id)
+process.getgid()：获得当前群组的id。（POSIX平台上才有效，群组、有效群组 的区别，请自行谷歌）</p> <p>process.setegid(id)
+process.getegid()：获得当前有效群组的id。（POSIX平台上才有效）</p> <p>process.setroups(groups)：
+process.getgroups()：获得附加群组的id。（POSIX平台上才有效，</p> <p>process.setgroups(groups)：
+process.setgroups(groups)：</p> <p>process.initgroups(user, extra_group)：</p> <h2 id="当前进程信息"><a href="#当前进程信息" class="header-anchor">#</a> 当前进程信息</h2> <ul><li>process.pid：返回进程id。</li> <li>process.title：可以用它来修改进程的名字，当你用<code>ps</code>命令，同时有多个node进程在跑的时候，作用就出来了。</li></ul> <h2 id="运行情况-资源占用情况"><a href="#运行情况-资源占用情况" class="header-anchor">#</a> 运行情况/资源占用情况</h2> <ul><li>process.uptime()：当前node进程已经运行了多长时间（单位是秒）。</li> <li>process.memoryUsage()：返回进程占用的内存，单位为字节。输出内容大致如下：</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token punctuation">{</span> 
+    <span class="token literal-property property">rss</span><span class="token operator">:</span> <span class="token number">19181568</span><span class="token punctuation">,</span> 
+    <span class="token literal-property property">heapTotal</span><span class="token operator">:</span> <span class="token number">8384512</span><span class="token punctuation">,</span> <span class="token comment">// V8占用的内容</span>
+    <span class="token literal-property property">heapUsed</span><span class="token operator">:</span> <span class="token number">4218408</span> <span class="token comment">// V8实际使用了的内存</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>process.cpuUsage([previousValue])：CPU使用时间耗时，单位为毫秒。user表示用户程序代码运行占用的时间，system表示系统占用时间。如果当前进程占用多个内核来执行任务，那么数值会比实际感知的要大。官方例子如下：</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> startUsage <span class="token operator">=</span> process<span class="token punctuation">.</span><span class="token function">cpuUsage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// { user: 38579, system: 6986 }</span>
+
+<span class="token comment">// spin the CPU for 500 milliseconds</span>
+<span class="token keyword">const</span> now <span class="token operator">=</span> Date<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">while</span> <span class="token punctuation">(</span>Date<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> now <span class="token operator">&lt;</span> <span class="token number">500</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span><span class="token function">cpuUsage</span><span class="token punctuation">(</span>startUsage<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// { user: 514883, system: 11226 }</span>
+</code></pre></div><ul><li>process.hrtime()：一般用于做性能基准测试。返回一个数组，数组里的值为 [[seconds, nanoseconds] （1秒等10的九次方毫微秒）。
+注意，这里返回的值，是相对于过去一个随机的时间，所以本身没什么意义。仅当你将上一次调用返回的值做为参数传入，才有实际意义。</li></ul> <p>把官网的例子稍做修改：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> time <span class="token operator">=</span> process<span class="token punctuation">.</span><span class="token function">hrtime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">setInterval</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">var</span> diff <span class="token operator">=</span> process<span class="token punctuation">.</span><span class="token function">hrtime</span><span class="token punctuation">(</span>time<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Benchmark took </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>diff<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">*</span> <span class="token number">1e9</span> <span class="token operator">+</span> diff<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> nanoseconds</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>输出大概如下：</p> <div class="language-bash extra-class"><pre class="language-bash"><code>Benchmark took <span class="token number">1006117293</span> nanoseconds
+Benchmark took <span class="token number">2049182207</span> nanoseconds
+Benchmark took <span class="token number">3052562935</span> nanoseconds
+Benchmark took <span class="token number">4053410161</span> nanoseconds
+Benchmark took <span class="token number">5056050224</span> nanoseconds
+</code></pre></div><h2 id="node可执行程序相关信息"><a href="#node可执行程序相关信息" class="header-anchor">#</a> node可执行程序相关信息</h2> <ol><li>process.version：返回当前node的版本，比如'v6.1.0'。</li> <li>process.versions：返回node的版本，以及依赖库的版本，如下所示。</li></ol> <div class="language-js extra-class"><pre class="language-js"><code><span class="token punctuation">{</span> <span class="token literal-property property">http_parser</span><span class="token operator">:</span> <span class="token string">'2.7.0'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">node</span><span class="token operator">:</span> <span class="token string">'6.1.0'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">v8</span><span class="token operator">:</span> <span class="token string">'5.0.71.35'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">uv</span><span class="token operator">:</span> <span class="token string">'1.9.0'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">zlib</span><span class="token operator">:</span> <span class="token string">'1.2.8'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">ares</span><span class="token operator">:</span> <span class="token string">'1.10.1-DEV'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">icu</span><span class="token operator">:</span> <span class="token string">'56.1'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">modules</span><span class="token operator">:</span> <span class="token string">'48'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">openssl</span><span class="token operator">:</span> <span class="token string">'1.0.2h'</span> <span class="token punctuation">}</span>
+</code></pre></div><ol start="3"><li>process.release：返回当前node发行版本的相关信息，大部分时候不会用到。具体字段含义可以看<a href="https://nodejs.org/api/process.html#process_process_release" target="_blank" rel="noopener noreferrer">这里<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>。</li></ol> <div class="language-js extra-class"><pre class="language-js"><code><span class="token punctuation">{</span>
+  <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'node'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">lts</span><span class="token operator">:</span> <span class="token string">'Argon'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">sourceUrl</span><span class="token operator">:</span> <span class="token string">'https://nodejs.org/download/release/v4.4.5/node-v4.4.5.tar.gz'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">headersUrl</span><span class="token operator">:</span> <span class="token string">'https://nodejs.org/download/release/v4.4.5/node-v4.4.5-headers.tar.gz'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">libUrl</span><span class="token operator">:</span> <span class="token string">'https://nodejs.org/download/release/v4.4.5/win-x64/node.lib'</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ol start="4"><li>process.config：返回当前 node版本 编译时的参数，同样很少会用到，一般用来查问题。</li> <li>process.execPath：node可执行程序的绝对路径，比如 '/usr/local/bin/node'</li></ol> <h2 id="进程运行所在环境"><a href="#进程运行所在环境" class="header-anchor">#</a> 进程运行所在环境</h2> <ul><li>process.arch：返回当前系统的处理器架构（字符串），比如'arm', 'ia32', or 'x64'。</li> <li>process.platform：返回关于平台描述的字符串，比如 darwin、win32 等。</li></ul> <h2 id="警告信息-process-emitwarning-warning"><a href="#警告信息-process-emitwarning-warning" class="header-anchor">#</a> 警告信息:process.emitWarning(warning);</h2> <p>v6.0.0新增的接口，可以用来抛出警告信息。最简单的例子如下，只有警告信息</p> <div class="language-js extra-class"><pre class="language-js"><code>process<span class="token punctuation">.</span><span class="token function">emitWarning</span><span class="token punctuation">(</span><span class="token string">'Something happened!'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// (node:50215) Warning: Something happened!</span>
+</code></pre></div><p>可以给警告信息加个名字，便于分类</p> <div class="language-js extra-class"><pre class="language-js"><code>process<span class="token punctuation">.</span><span class="token function">emitWarning</span><span class="token punctuation">(</span><span class="token string">'Something Happened!'</span><span class="token punctuation">,</span> <span class="token string">'CustomWarning'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// (node:50252) CustomWarning: Something Happened!</span>
+</code></pre></div><p>可以对其进行监听</p> <div class="language-js extra-class"><pre class="language-js"><code>process<span class="token punctuation">.</span><span class="token function">emitWarning</span><span class="token punctuation">(</span><span class="token string">'Something Happened!'</span><span class="token punctuation">,</span> <span class="token string">'CustomWarning'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+process<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'warning'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">warning</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">warn</span><span class="token punctuation">(</span>warning<span class="token punctuation">.</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  console<span class="token punctuation">.</span><span class="token function">warn</span><span class="token punctuation">(</span>warning<span class="token punctuation">.</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  console<span class="token punctuation">.</span><span class="token function">warn</span><span class="token punctuation">(</span>warning<span class="token punctuation">.</span>stack<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">/*
+(node:50314) CustomWarning: Something Happened!
+CustomWarning
+Something Happened!
+CustomWarning: Something Happened!
+    at Object.&lt;anonymous&gt; (/Users/a/Documents/git-code/nodejs-learning-guide/examples/2016.11.22-node-process/emitWarning.js:3:9)
+    at Module._compile (module.js:541:32)
+    at Object.Module._extensions..js (module.js:550:10)
+    at Module.load (module.js:456:32)
+    at tryModuleLoad (module.js:415:12)
+    at Function.Module._load (module.js:407:3)
+    at Function.Module.runMain (module.js:575:10)
+    at startup (node.js:160:18)
+    at node.js:445:3
+*/</span>    
+</code></pre></div><p>也可以直接给个Error对象</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> myWarning <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span><span class="token string">'Warning! Something happened!'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+myWarning<span class="token punctuation">.</span>name <span class="token operator">=</span> <span class="token string">'CustomWarning'</span><span class="token punctuation">;</span>
+
+process<span class="token punctuation">.</span><span class="token function">emitWarning</span><span class="token punctuation">(</span>myWarning<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="向进程发送信号-process-kill-pid-signal"><a href="#向进程发送信号-process-kill-pid-signal" class="header-anchor">#</a> 向进程发送信号：process.kill(pid, signal)</h2> <p>process.kill() 这个方法名可能会让初学者感到困惑，其实它并不是用来杀死进程的，而是用来向进程发送信号。举个例子：</p> <div class="language-js extra-class"><pre class="language-js"><code>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'hello'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+process<span class="token punctuation">.</span><span class="token function">kill</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>pid<span class="token punctuation">,</span> <span class="token string">'SIGHUP'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'world'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>输出如下，可以看到，最后一行代码并没有执行，因为向当前进程发送 SIGHUP 信号，进程退出所致。</p> <div class="language-bash extra-class"><pre class="language-bash"><code>hello
+<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>    <span class="token number">50856</span> hangup     <span class="token function">node</span> kill.js
+</code></pre></div><p>可以通过监听 SIGHUP 事件，来阻止它的默认行为。</p> <div class="language-js extra-class"><pre class="language-js"><code>process<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'SIGHUP'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Got SIGHUP signal.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'hello'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+process<span class="token punctuation">.</span><span class="token function">kill</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>pid<span class="token punctuation">,</span> <span class="token string">'SIGHUP'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'world'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>测试结果比较意外，输出如下：（osx 10.11.4），SIGHUP 事件回调里的内容并没有输出。</p> <div class="language-bash extra-class"><pre class="language-bash"><code>hello
+world
+</code></pre></div><p>猜测是因为写标准输出被推到下一个事件循环导致（类似process.exit()小节提到的），再试下</p> <div class="language-js extra-class"><pre class="language-js"><code>process<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'SIGHUP'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Got SIGHUP signal.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Exiting.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'hello'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+process<span class="token punctuation">.</span><span class="token function">kill</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>pid<span class="token punctuation">,</span> <span class="token string">'SIGHUP'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'world'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>输出如下（其实并不能说明什么。。。知道真相的朋友请举手。。。）</p> <div class="language-bash extra-class"><pre class="language-bash"><code>hello
+world
+Exiting.
+Got SIGHUP signal.
+</code></pre></div><h2 id="终止进程-process-exit-exitcode-、process-exitcode"><a href="#终止进程-process-exit-exitcode-、process-exitcode" class="header-anchor">#</a> 终止进程：process.exit([exitCode])、process.exitCode</h2> <ol><li>process.exit([exitCode]) 可以用来立即退出进程。即使当前有操作没执行完，比如 process.exit() 的代码逻辑，或者未完成的异步逻辑。</li> <li>写数据到 process.stdout 之后，立即调用 process.exit() 是不保险的，因为在node里面，往 stdout 写数据是非阻塞的，可以跨越多个事件循环。于是，可能写到一半就跪了。比较保险的做法是，通过process.exitCode设置退出码，然后等进程自动退出。</li> <li>如果程序出现异常，必须退出不可，那么，可以抛出一个未被捕获的error，来终止进程，这个比 process.exit() 安全。</li></ol> <p>来段官网的例子镇楼：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// How to properly set the exit code while letting</span>
+<span class="token comment">// the process exit gracefully.</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">someConditionNotMet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">printUsageToStdout</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  process<span class="token punctuation">.</span>exitCode <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>备注：整个 process.exit() 的接口说明，都在告诉我们 process.exit() 这个接口有多不可靠。。。还用吗。。。</p> <h2 id="事件"><a href="#事件" class="header-anchor">#</a> 事件</h2> <ul><li>beforeExit：进程退出之前触发，参数为 exitCode。（此时eventLoop已经空了）如果是显式调用 process.exit()退出，或者未捕获的异常导致退出，那么 beforeExit 不会触发。（我要，这事件有何用。。。）</li> <li>exit：</li></ul> <h2 id="todo-待进一步验证"><a href="#todo-待进一步验证" class="header-anchor">#</a> TODO 待进一步验证</h2> <ol><li>官方文档里，对于 process.nextTick(fn) 有如下描述，如何构造用例进行测试？</li></ol> <blockquote><p>It runs before any additional I/O events (including timers) fire in subsequent ticks of the event loop.</p></blockquote> <ol start="2"><li>process.channel：实际测试结果，即使父、子进程间存在IPC通道，process.channel 的值依旧是undefined.（测试方法有问题？）</li></ol> <h2 id="相关链接"><a href="#相关链接" class="header-anchor">#</a> 相关链接</h2> <p><a href="https://howtonode.org/understanding-process-next-tick" target="_blank" rel="noopener noreferrer">Understanding process.nextTick()<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p><a href="https://cnodejs.org/topic/4f16442ccae1f4aa2700109b" target="_blank" rel="noopener noreferrer">nodejs 异步之 Timer &amp;Tick; 篇<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

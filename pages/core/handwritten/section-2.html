@@ -1,0 +1,53 @@
+<!-- Section: # 2 实现节流函数（throttle） -->
+<div class="section-content" data-section-id="_2-实现节流函数-throttle">
+<h2 id="_2-实现节流函数-throttle"><a href="#_2-实现节流函数-throttle" class="header-anchor">#</a> 2 实现节流函数（throttle）</h2>
+<blockquote><p>节流函数原理:指频繁触发事件时，只会在指定的时间段内执行事件回调，即触发事件间隔大于等于指定的时间才会执行回调函数。总结起来就是：<strong>事件，按照一段时间的间隔来进行触发</strong>。</p></blockquote>
+<p><img alt="" src="https://s.poetries.top/uploads/2022/07/0abcf5e689d2716b.png"> <img alt="" src="https://s.poetries.top/uploads/2023/01/07fded84cc81ece4.png"></p>
+<blockquote><p>像dom的拖拽，如果用消抖的话，就会出现卡顿的感觉，因为只在停止的时候执行了一次，这个时候就应该用节流，在一定时间内多次执行，会流畅很多</p></blockquote>
+<p><strong>手写简版</strong></p>
+<p>使用时间戳的节流函数会在第一次触发事件时立即执行，以后每过 <code>wait</code> 秒之后才执行一次，并且最后一次触发事件不会被执行</p>
+<p><strong>时间戳方式：</strong></p>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// func是用户传入需要防抖的函数</span>
+<span class="token comment">// wait是等待时间</span>
+<span class="token keyword">const</span> <span class="token function-variable function">throttle</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">func<span class="token punctuation">,</span> wait <span class="token operator">=</span> <span class="token number">50</span></span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 上一次执行该函数的时间</span>
+  <span class="token keyword">let</span> lastTime <span class="token operator">=</span> <span class="token number">0</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 当前时间</span>
+    <span class="token keyword">let</span> now <span class="token operator">=</span> <span class="token operator">+</span><span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment">// 将当前时间和上一次执行函数时间对比</span>
+    <span class="token comment">// 如果差值大于设置的等待时间就执行函数</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>now <span class="token operator">-</span> lastTime <span class="token operator">&gt;</span> wait<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      lastTime <span class="token operator">=</span> now
+      <span class="token function">func</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token function">setInterval</span><span class="token punctuation">(</span>
+  <span class="token function">throttle</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">500</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token number">1</span>
+<span class="token punctuation">)</span>
+</code></pre></div>
+<p><strong>定时器方式：</strong></p>
+<blockquote><p>使用定时器的节流函数在第一次触发时不会执行，而是在 delay 秒之后才执行，当最后一次停止触发后，还会再执行一次函数</p></blockquote>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">throttle</span><span class="token punctuation">(</span><span class="token parameter">func<span class="token punctuation">,</span> delay</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  <span class="token keyword">var</span> timer <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">var</span> context <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> args <span class="token operator">=</span> arguments<span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>timer<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token comment">// 当前有任务了，直接返回</span>
+    timer <span class="token operator">=</span> <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+      <span class="token function">func</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span>context<span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      timer <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>delay<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div>
+<p><strong>适用场景：</strong></p>
+<ul><li>拖拽场景：固定时间内只执行一次，防止超高频次触发位置变动。<code>DOM</code> 元素的拖拽功能实现（<code>mousemove</code>）</li> <li>缩放场景：监控浏览器<code>resize</code></li> <li>滚动场景：监听滚动<code>scroll</code>事件判断是否到页面底部自动加载更多</li> <li>动画场景：避免短时间内多次触发动画引起性能问题</li></ul>
+<p><strong>总结</strong></p>
+<ul><li><strong>函数防抖</strong>：<code>限制执行次数，多次密集的触发只执行一次</code> <ul><li>将几次操作合并为一次操作进行。原理是维护一个计时器，规定在<code>delay</code>时间后触发函数，但是在<code>delay</code>时间内再次触发的话，就会取消之前的计时器而重新设置。这样一来，只有最后一次操作能被触发。</li></ul></li> <li><strong>函数节流</strong>：<code>限制执行的频率，按照一定的时间间隔有节奏的执行</code> <ul><li>使得一定时间内只触发一次函数。原理是通过判断是否到达一定时间来触发函数。</li></ul></li></ul>
+</div>

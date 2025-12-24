@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端高频面试题-精选篇-性能优化模块 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>前端高频面试题-精选篇-性能优化模块</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>前端高频面试题-精选篇-性能优化模块</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<!----> <div class="content__default"><h2 id="_1-性能优化方式"><a href="#_1-性能优化方式" class="header-anchor">#</a> 1 性能优化方式</h2> <h3 id="_1-1-dns-预解析"><a href="#_1-1-dns-预解析" class="header-anchor">#</a> 1.1 DNS 预解析</h3> <ul><li><code>DNS</code> 解析也是需要时间的，可以通过预解析的方式来预先获得域名所对应的 <code>IP</code></li></ul> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dns-prefetch<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>//blog.poetries.top<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><h3 id="_1-2-缓存"><a href="#_1-2-缓存" class="header-anchor">#</a> 1.2 缓存</h3> <ul><li>缓存对于前端性能优化来说是个很重要的点，良好的缓存策略可以降低资源的重复加载提高网页的整体加载速度</li> <li>通常浏览器缓存策略分为两种：强缓存和协商缓存</li></ul> <p><strong>强缓存</strong></p> <blockquote><p>实现强缓存可以通过两种响应头实现：<code>Expires</code>和 <code>Cache-Control</code> 。强缓存表示在缓存期间不需要请求，<code>state code</code>为 <code>200</code></p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>Expires: Wed, 22 Oct 2018 08:41:00 GMT
+</code></pre></div><blockquote><p><code>Expires</code> 是 <code>HTTP / 1.0</code> 的产物，表示资源会在 <code>Wed, 22 Oct 2018 08:41:00 GMT</code> 后过期，需要再次请求。并且 <code>Expires</code> 受限于本地时间，如果修改了本地时间，可能会造成缓存失效</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>Cache-control: max-age=30
+</code></pre></div><blockquote><p><code>Cache-Control</code> 出现于 <code>HTTP / 1.1</code>，优先级高于 <code>Expires</code> 。该属性表示资源会在 <code>30</code> 秒后过期，需要再次请求</p></blockquote> <p><strong>协商缓存</strong></p> <ul><li>如果缓存过期了，我们就可以使用协商缓存来解决问题。协商缓存需要请求，如果缓存有效会返回 304</li> <li>协商缓存需要客户端和服务端共同实现，和强缓存一样，也有两种实现方式</li></ul> <p><code>Last-Modified</code> 和 <code>If-Modified-Since</code></p> <ul><li><code>Last-Modified</code> 表示本地文件最后修改日期，<code>If-Modified-Since</code> 会将 <code>Last-Modified</code>的值发送给服务器，询问服务器在该日期后资源是否有更新，有更新的话就会将新的资源发送回来</li> <li>但是如果在本地打开缓存文件，就会造成 <code>Last-Modified</code> 被修改，所以在 <code>HTTP / 1.1</code> 出现了 <code>ETag</code></li></ul> <p><code>ETag</code> 和 <code>If-None-Match</code></p> <ul><li><code>ETag</code> 类似于文件指纹，<code>If-None-Match</code> 会将当前 <code>ETag</code> 发送给服务器，询问该资源 ETag 是否变动，有变动的话就将新的资源发送回来。并且 <code>ETag</code> 优先级比 <code>Last-Modified</code> 高</li></ul> <p><strong>选择合适的缓存策略</strong></p> <blockquote><p>对于大部分的场景都可以使用强缓存配合协商缓存解决，但是在一些特殊的地方可能需要选择特殊的缓存策略</p></blockquote> <ul><li>对于某些不需要缓存的资源，可以使用 <code>Cache-control: no-store</code> ，表示该资源不需要缓存</li> <li>对于频繁变动的资源，可以使用 <code>Cache-Control: no-cache</code> 并配合 <code>ETag</code> 使用，表示该资源已被缓存，但是每次都会发送请求询问资源是否更新。</li> <li>对于代码文件来说，通常使用 <code>Cache-Control: max-age=31536000</code> 并配合策略缓存使用，然后对文件进行指纹处理，一旦文件名变动就会立刻下载新的文件</li></ul> <h3 id="_1-3-使用-http-2-0"><a href="#_1-3-使用-http-2-0" class="header-anchor">#</a> 1.3 使用 HTTP / 2.0</h3> <ul><li>因为浏览器会有并发请求限制，在 <code>HTTP / 1.1</code> 时代，每个请求都需要建立和断开，消耗了好几个 <code>RTT</code> 时间，并且由于 <code>TCP</code> 慢启动的原因，加载体积大的文件会需要更多的时间</li> <li>在 <code>HTTP / 2.0</code> 中引入了多路复用，能够让多个请求使用同一个 <code>TCP</code> 链接，极大的加快了网页的加载速度。并且还支持 <code>Header</code> 压缩，进一步的减少了请求的数据大小</li></ul> <h3 id="_1-4-预加载"><a href="#_1-4-预加载" class="header-anchor">#</a> 1.4 预加载</h3> <ul><li>在开发中，可能会遇到这样的情况。有些资源不需要马上用到，但是希望尽早获取，这时候就可以使用预加载</li> <li>预加载其实是声明式的 <code>fetch</code> ，强制浏览器请求资源，并且不会阻塞 <code>onload</code> 事件，可以使用以下代码开启预加载</li></ul> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>preload<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://example.com<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><blockquote><p>预加载可以一定程度上降低首屏的加载时间，因为可以将一些不影响首屏但重要的文件延后加载，唯一缺点就是兼容性不好</p></blockquote> <h3 id="_1-5-预渲染"><a href="#_1-5-预渲染" class="header-anchor">#</a> 1.5 预渲染</h3> <blockquote><p>可以通过预渲染将下载的文件预先在后台渲染，可以使用以下代码开启预渲染</p></blockquote> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>prerender<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://poetries.com<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><ul><li>预渲染虽然可以提高页面的加载速度，但是要确保该页面百分百会被用户在之后打开，否则就白白浪费资源去渲染</li></ul> <h3 id="_1-6-懒执行与懒加载"><a href="#_1-6-懒执行与懒加载" class="header-anchor">#</a> 1.6 懒执行与懒加载</h3> <p><strong>懒执行</strong></p> <ul><li>懒执行就是将某些逻辑延迟到使用时再计算。该技术可以用于首屏优化，对于某些耗时逻辑并不需要在首屏就使用的，就可以使用懒执行。懒执行需要唤醒，一般可以通过定时器或者事件的调用来唤醒</li></ul> <p><strong>懒加载</strong></p> <ul><li>懒加载就是将不关键的资源延后加载</li></ul> <blockquote><p>懒加载的原理就是只加载自定义区域（通常是可视区域，但也可以是即将进入可视区域）内需要加载的东西。对于图片来说，先设置图片标签的 <code>src</code> 属性为一张占位图，将真实的图片资源放入一个自定义属性中，当进入自定义区域时，就将自定义属性替换为 <code>src</code> 属性，这样图片就会去下载资源，实现了图片懒加载</p></blockquote> <ul><li>懒加载不仅可以用于图片，也可以使用在别的资源上。比如进入可视区域才开始播放视频等</li></ul> <h3 id="_1-7-文件优化"><a href="#_1-7-文件优化" class="header-anchor">#</a> 1.7 文件优化</h3> <p><strong>图片优化</strong></p> <blockquote><p>对于如何优化图片，有 2 个思路</p></blockquote> <ul><li>减少像素点</li> <li>减少每个像素点能够显示的颜色</li></ul> <p><strong>图片加载优化</strong></p> <ul><li>不用图片。很多时候会使用到很多修饰类图片，其实这类修饰图片完全可以用 <code>CSS</code> 去代替。</li> <li>对于移动端来说，屏幕宽度就那么点，完全没有必要去加载原图浪费带宽。一般图片都用 CDN 加载，可以计算出适配屏幕的宽度，然后去请求相应裁剪好的图片</li> <li>小图使用 <code>base64</code>格式</li> <li>将多个图标文件整合到一张图片中（雪碧图）</li> <li>选择正确的图片格式：
+<ul><li>对于能够显示 <code>WebP</code> 格式的浏览器尽量使用 <code>WebP</code> 格式。因为 <code>WebP</code> 格式具有更好的图像数据压缩算法，能带来更小的图片体积，而且拥有肉眼识别无差异的图像质量，缺点就是兼容性并不好</li> <li>小图使用 <code>PNG</code>，其实对于大部分图标这类图片，完全可以使用 <code>SVG</code> 代替</li> <li>照片使用 <code>JPEG</code></li></ul></li></ul> <p><strong>其他文件优化</strong></p> <ul><li><code>CSS</code>文件放在 <code>head</code> 中</li> <li>服务端开启文件压缩功能</li> <li>将 <code>script</code> 标签放在 <code>body</code> 底部，因为 <code>JS</code> 文件执行会阻塞渲染。当然也可以把 <code>script</code> 标签放在任意位置然后加上 <code>defer</code> ，表示该文件会并行下载，但是会放到 <code>HTML</code> 解析完成后顺序执行。对于没有任何依赖的 <code>JS</code>文件可以加上 <code>async</code> ，表示加载和渲染后续文档元素的过程将和 <code>JS</code> 文件的加载与执行并行无序进行。
+执行 <code>JS</code>代码过长会卡住渲染，对于需要很多时间计算的代码</li> <li>可以考虑使用 <code>Webworker</code>。<code>Webworker</code>可以让我们另开一个线程执行脚本而不影响渲染。</li></ul> <p><strong>CDN</strong></p> <blockquote><p>静态资源尽量使用 <code>CDN</code> 加载，由于浏览器对于单个域名有并发请求上限，可以考虑使用多个 <code>CDN</code> 域名。对于 <code>CDN</code> 加载静态资源需要注意 <code>CDN</code> 域名要与主站不同，否则每次请求都会带上主站的 <code>Cookie</code></p></blockquote> <h3 id="_1-8-其他"><a href="#_1-8-其他" class="header-anchor">#</a> 1.8 其他</h3> <p><strong>使用 Webpack 优化项目</strong></p> <ul><li>对于 <code>Webpack4</code>，打包项目使用 <code>production</code> 模式，这样会自动开启代码压缩</li> <li>使用 <code>ES6</code> 模块来开启 <code>tree shaking</code>，这个技术可以移除没有使用的代码</li> <li>优化图片，对于小图可以使用 <code>base64</code> 的方式写入文件中</li> <li>按照路由拆分代码，实现按需加载</li> <li>给打包出来的文件名添加哈希，实现浏览器缓存文件</li></ul> <p><strong>监控</strong></p> <blockquote><p>对于代码运行错误，通常的办法是使用 <code>window.onerror</code> 拦截报错。该方法能拦截到大部分的详细报错信息，但是也有例外</p></blockquote> <ul><li>对于跨域的代码运行错误会显示 <code>Script error</code>. 对于这种情况我们需要给 <code>script</code> 标签添加 <code>crossorigin</code> 属性</li> <li>对于某些浏览器可能不会显示调用栈信息，这种情况可以通过 <code>arguments.callee.caller</code> 来做栈递归</li> <li>对于异步代码来说，可以使用 <code>catch</code> 的方式捕获错误。比如 <code>Promise</code> 可以直接使用 catch 函数，<code>async await</code> 可以使用 <code>try catch</code></li> <li>但是要注意线上运行的代码都是压缩过的，需要在打包时生成 <code>sourceMap</code> 文件便于 <code>debug</code>。</li> <li>对于捕获的错误需要上传给服务器，通常可以通过 <code>img</code> 标签的 <code>src</code>发起一个请求</li></ul> <h2 id="_2-首屏渲染优化"><a href="#_2-首屏渲染优化" class="header-anchor">#</a> 2 首屏渲染优化</h2> <ul><li><code>css</code> / <code>js</code> 分割，使首屏依赖的文件体积最小，内联首屏关键 <code>css</code> / <code>js</code>；</li> <li>非关键性的文件尽可能的 异步加载和懒加载，避免阻塞首页渲染；</li> <li>使用<code>dns-prefetch</code> / <code>preconnect</code> / <code>prefetch</code> / preload等浏览器提供的资源提示，加快文件传输；</li> <li>谨慎控制好 Web字体，一个大字体包足够让你功亏一篑
+<ul><li>控制字体包的加载时机；</li> <li>如果使用的字体有限，那尽可能只将使用的文字单独打包，能有效减少体积；
+合理利用 <code>Localstorage</code> / <code>services worker</code> 等存储方式进行 数据与资源缓存</li></ul></li> <li><strong>分清轻重缓急</strong> <ul><li>重要的元素优先渲染；</li> <li>视窗内的元素优先渲染</li></ul></li> <li><strong>服务端渲染(SSR)</strong>:
+<ul><li>减少首屏需要的数据量，剔除冗余数据和请求；</li> <li>控制好缓存，对数据/页面进行合理的缓存；</li> <li>页面的请求使用流的形式进行传递；</li></ul></li> <li><strong>优化用户感知</strong> <ul><li>利用一些动画 过渡效果，能有效减少用户对卡顿的感知；</li> <li>尽可能利用 骨架屏(<code>Placeholder</code>) / <code>Loading</code> 等减少用户对白屏的感知；</li> <li>动画帧数尽量保证在 <code>30帧</code> 以上，低帧数、卡顿的动画宁愿不要；</li> <li>js 执行时间避免超过 <code>100ms</code>，超过的话就需要做
+<ul><li>寻找可 缓存 的点</li> <li>任务的 分割异步 或 <code>web worker</code> 执行</li></ul></li></ul></li></ul> <p><strong>移动端的性能优化</strong></p> <ol><li>首屏加载和按需加载，懒加载</li> <li>资源预加载</li> <li>图片压缩处理，使用<code>base64</code>内嵌图片</li> <li>合理缓存<code>dom</code>对象</li> <li>使用<code>touchstart</code>代替<code>click</code>（<code>click 300</code>毫秒的延迟）</li> <li>利用<code>transform:translateZ(0)</code>，开启硬件GUP加速</li> <li>不滥用web字体，不滥用<code>float</code>（布局计算消耗性能），减少<code>font-size</code>声明</li> <li>使用<code>viewport</code>固定屏幕渲染，加速页面渲染内容</li> <li>尽量使用事件代理，避免直接事件绑定</li></ol> <h2 id="_3-页面基础优化"><a href="#_3-页面基础优化" class="header-anchor">#</a> 3 页面基础优化</h2> <ul><li>引入位置: css 文件<code>&lt;head&gt;</code>中引入， js 文件<code>&lt;body&gt;</code>底部引入
+<ul><li>影响首屏的，优先级很高的 js 也可以头部引入，甚至内联</li></ul></li> <li><strong>减少请求</strong> (http 1.0 - 1.1)，合并请求，正确设置 http 缓存</li> <li><strong>减少文件体积</strong> <ul><li><strong>删除多余代码:</strong> <ul><li><code>tree-shaking</code></li> <li><code>UglifyJs</code></li> <li><code>code-spliting</code></li></ul></li> <li>混淆 / 压缩代码，开启 <code>gzip</code> 压缩；</li> <li>多份编译文件按条件引入
+<ul><li>针对现代浏览器直接给 ES6 文件，只针对低端浏览器引用编译后的 ES5 文件</li> <li>可以利用<code>&lt;script type="module"&gt; / &lt;script type="module"&gt;</code>进行条件引入用</li></ul></li> <li>动态 <code>polyfill</code>，只针对不支持的浏览器引入 <code>polyfill；</code></li></ul></li> <li>图片优化:
+<ul><li>根据业务场景，与UI探讨选择 合适质量，合适尺寸；</li> <li>根据需求和平台，选择 合适格式，例如非透明时可用 <code>jpg</code>；非苹果端，使用 <code>webp</code>；</li> <li>小图片合成 雪碧图，低于 <code>5K</code> 的图片可以转换成 <code>base64</code> 内嵌</li> <li>合适场景下，使用 <code>iconfont</code> 或者 <code>svg</code>；</li></ul></li> <li><strong>使用缓存</strong> <ul><li><strong>浏览器缓存</strong>: 通过设置请求的过期时间，合理运用浏览器缓存；</li> <li><strong>CDN缓存</strong>: 静态文件合理使用 <code>CDN</code> 缓存技术
+<ul><li><code>HTML</code> 放于自己的服务器上；</li> <li>打包后的图片 / <code>js</code> / <code>css</code> 等资源上传到 <code>CDN</code> 上，文件带上 <code>hash</code> 值；</li> <li>由于浏览器对单个域名请求的限制，可以将资源放在多个不同域的 CDN 上，可以绕开该限制；</li></ul></li> <li><strong>服务器缓存</strong>: 将不变的数据、页面缓存到 内存 或 远程存储(redis等) 上</li> <li><strong>数据缓存</strong>: 通过各种存储将不常变的数据进行缓存，缩短数据的获取时间</li></ul></li></ul> <h2 id="_4-性能优化方向"><a href="#_4-性能优化方向" class="header-anchor">#</a> 4 性能优化方向</h2> <blockquote><p>前端性能优化分为两个方向，一是工程化方向，另一个是细节方向</p></blockquote> <h3 id="_4-1-工程化方向"><a href="#_4-1-工程化方向" class="header-anchor">#</a> 4.1 工程化方向</h3> <ul><li>客户端Gzip离线包，服务器资源Gzip压缩。</li> <li>JS瘦身，<code>Tree shaking</code>，<code>ES Module</code>，动态<code>Import</code>，动态<code>Polyfill</code></li> <li>图片加载优化，<code>Webp</code>，考虑兼容性，可以提前加载一张图片，嗅探是否支持<code>Webp</code></li> <li>服务端渲染，客户端预渲染</li> <li><code>CDN</code>静态资源</li> <li><code>Webpack Dll</code>，通用优先打包抽离，利用浏览器缓存</li> <li>骨架图</li> <li>数据预取，包括接口数据，和加载详情页图片</li> <li>Webpack本身提供的优化，Base64，资源压缩，Tree shaking，拆包chunk</li> <li>减少重定向</li></ul> <h3 id="_4-2-细节方向"><a href="#_4-2-细节方向" class="header-anchor">#</a> 4.2 细节方向</h3> <ul><li>图片，图片占位，图片懒加载。 雪碧图</li> <li>使用 <code>prefetch / preload</code> 预加载等新特性
+<ul><li><code>Preload</code> 来告诉浏览器预先请求当前页需要的资源，从而提高这些资源的请求优先级。比如，对于那些本来请求优先级较低的关键请求，我们可以通过设置 <code>Preload</code> 来提升这些请求的优先级</li> <li><code>Prefetch</code> 来告诉浏览器用户将来可能在其他页面（非本页面）可能使用到的资源，那么浏览器会在空闲时，就去预先加载这些资源放在 <code>http</code> 缓存内，最常见的 <code>dns-prefetch</code>。比如，当我们在浏览A页面，如果会通过A页面中的链接跳转到B页面，而B页面中我们有些资源希望尽早提前加载，那么我们就可以在A页面里添加这些资源 <code>Prefetch</code> ，那么当浏览器空闲时，就会去加载这些资源</li> <li>所以，对于那些可能在当前页面使用到的资源可以利用 <code>Preload</code>，而对一些可能在将来的某些页面中被使用的资源可以利用 <code>Prefetch</code>。如果从加载优先级上看，<code>Preload</code> 会提升请求优先级；而<code>Prefetch</code>会把资源的优先级放在最低，当浏览器空闲时才去预加载</li></ul></li> <li>服务器合理设置缓存策略</li> <li><code>async</code>（加载完当前js立即执行）/ <code>defer</code>(所有资源加载完之后执行js)</li> <li>减少<code>Dom</code>的操作，减少重排重绘</li> <li>从客户端层面，首屏减少和客户端交互，合并接口请求</li> <li>数据缓存</li> <li>首页不加载不可视组件</li> <li>防止渲染抖动，控制时序</li> <li>减少组件层级</li> <li>优先使用<code>Flex</code>布局</li></ul> <h2 id="_5-长列表优化"><a href="#_5-长列表优化" class="header-anchor">#</a> 5 长列表优化</h2> <h3 id="vue-virtual-scroll-list优化长列表"><a href="#vue-virtual-scroll-list优化长列表" class="header-anchor">#</a> vue-virtual-scroll-list优化长列表</h3> <blockquote><p>虚拟列表的实现原理：只渲染可视区的 dom 节点，其余不可见的数据卷起来，只会渲染可视区域的 dom 节点，提高渲染性能及流畅性，优点是支持海量数据的渲染；</p></blockquote> <p>github地址：https://github.com/tangbc/vue-virtual-scroll-list</p> <h3 id="object-freeze优化长列表"><a href="#object-freeze优化长列表" class="header-anchor">#</a> Object.freeze优化长列表</h3> <ul><li><code>Object.freeze()</code>方法可以冻结一个对象。一个被冻结的对象再也不能被修改；冻结了一个对象则不能向这个对象添加新的属性，不能删除已有属性，不能修改该对象已有属性的可枚举性、可配置性、可写性，以及不能修改已有属性的值。</li> <li>对于<code>data()</code>或vuex中冻结的对象，vue不会做<code>getter</code>和<code>setter</code>的转换。因此对于一个不变的、大数据量的数组或Object数据来说，使用<code>Object.freeze()</code>可以有效地提升性能。</li></ul> <h2 id="_6-卡顿问题解决"><a href="#_6-卡顿问题解决" class="header-anchor">#</a> 6 卡顿问题解决</h2> <ul><li>CSS动画效率比JS高，<code>css</code>可以用<code>GPU</code>加速，<code>3d</code>加速。如果非要用JS动画，可以用<code>requestAnimationFrame</code></li> <li>批量进行DOM操作，固定图片容器大小，避免屏幕抖动</li> <li>减少重绘重排</li> <li>节流和防抖</li> <li>减少临时大对象产生，利用对象缓存，主要是减少内存碎片</li> <li>异步操作，<code>IntersectionObserver</code>，<code>PostMessage</code>，<code>RequestIdleCallback</code></li></ul> <h2 id="_7-编码优化"><a href="#_7-编码优化" class="header-anchor">#</a> 7 编码优化</h2> <blockquote><p>编码优化，指的就是 在代码编写时的，通过一些 最佳实践，提升代码的执行性能。通常这并不会带来非常大的收益，但这属于 程序猿的自我修养，而且这也是面试中经常被问到的一个方面，考察自我管理与细节的处理。</p></blockquote> <p><strong>数据读取:</strong></p> <ul><li>通过作用域链 / 原型链 读取变量或方法时，需要更多的耗时，且越长越慢</li> <li>对象嵌套越深，读取值也越慢；</li> <li>最佳实践
+<ul><li>尽量在局部作用域中进行 变量缓存；</li> <li>避免嵌套过深的数据结构，数据扁平化 有利于数据的读取和维护</li></ul></li></ul> <p><strong>循环</strong>: 循环通常是编码性能的关键点；</p> <ul><li>代码的性能问题会再循环中被指数倍放大</li> <li>最佳实践
+<ul><li>尽可能 减少循环次数
+<ul><li>减少遍历的数据量；</li> <li>完成目的后马上结束循环</li></ul></li> <li>避免在循环中执行大量的运算，避免重复计算，相同的执行结果应该使用缓存；</li> <li>js 中使用 倒序循环 会略微提升性能；</li> <li>尽量避免使用 for-in 循环，因为它会枚举原型对象，耗时大于普通循环；</li></ul></li></ul> <p><strong>条件流程性能</strong>: Map / Object &gt; switch &gt; if-else</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 使用 if-else</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span>type <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>type <span class="token operator">===</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>type <span class="token operator">===</span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 使用 switch</span>
+<span class="token keyword">switch</span> <span class="token punctuation">(</span>type<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">case</span> <span class="token number">1</span><span class="token operator">:</span>
+		<span class="token keyword">break</span><span class="token punctuation">;</span><span class="token number">4</span>
+	<span class="token keyword">case</span> <span class="token number">2</span><span class="token operator">:</span>
+		<span class="token keyword">break</span><span class="token punctuation">;</span>
+	<span class="token keyword">case</span> <span class="token number">3</span><span class="token operator">:</span>
+		<span class="token keyword">break</span><span class="token punctuation">;</span>
+    <span class="token keyword">default</span><span class="token operator">:</span>
+        <span class="token keyword">break</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 使用 Map</span>
+<span class="token keyword">const</span> map <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Map</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+	<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+	<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+	<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+map<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 使用 Objext</span>
+<span class="token keyword">const</span> obj <span class="token operator">=</span> <span class="token punctuation">{</span>
+	<span class="token number">1</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token number">2</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token number">3</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+obj<span class="token punctuation">[</span>type<span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><p><strong>减少 cookie 体积</strong>: 能有效减少每次请求的体积和响应时间；</p> <ul><li>去除不必要的 <code>cookie</code>；</li> <li>压缩 <code>cookie</code> 大小；</li> <li>设置 <code>domain</code> 与 过期时间；</li></ul> <p><strong>dom 优化:</strong></p> <ul><li>减少访问 dom 的次数，如需多次，将 dom 缓存于变量中；</li> <li>减少重绘与回流:
+<ul><li>多次操作合并为一次；</li> <li>减少对计算属性的访问
+<ul><li>例如 offsetTop， getComputedStyle 等</li> <li>因为浏览器需要获取最新准确的值，因此必须立即进行重排，这样会破坏了浏览器的队列整合，尽量将值进行缓存使用；</li></ul></li> <li>大量操作时，可将 dom 脱离文档流或者隐藏，待操作完成后再重新恢复；</li> <li>使用DocumentFragment / cloneNode / replaceChild进行操作；</li></ul></li> <li>使用事件委托，避免大量的事件绑定；</li></ul> <p><strong>css 优化:</strong></p> <ul><li>层级扁平，避免过于多层级的选择器嵌套；</li> <li>特定的选择器 好过一层一层查找:  <code>.xxx-child-text{}</code> - 优于 <code>.xxx .child .text{}</code></li> <li>减少使用通配符与属性选择器；</li> <li>减少不必要的多余属性；</li> <li>使用 动画属性实现动画，动画时脱离文档流，开启硬件加速，优先使用 css 动画；</li> <li>使用 <code>&lt;link&gt;</code> 替代原生 <code>@import</code>；</li></ul> <p><strong>html 优化:</strong></p> <ul><li>减少 dom 数量，避免不必要的节点或嵌套</li> <li>避免<code>&lt;img src="" /&gt;</code>空标签，能减少服务器压力，因为 src 为空时，浏览器仍然会发起请求
+<ul><li>IE 向页面所在的目录发送请求；</li> <li>Safari、Chrome、Firefox 向页面本身发送请求；</li> <li>Opera 不执行任何操作。</li></ul></li> <li>图片提前 指定宽高 或者 脱离文档流，能有效减少因图片加载导致的页面回流；</li> <li>语义化标签 有利于 SEO 与浏览器的解析时间；</li> <li>减少使用 table 进行布局，避免使用<code>&lt;br /&gt;</code>与<code>&lt;hr /&gt;</code></li></ul> <h2 id="_8-如何根据chrome的timing优化"><a href="#_8-如何根据chrome的timing优化" class="header-anchor">#</a> 8 如何根据chrome的timing优化</h2> <h3 id="_8-1-性能优化api"><a href="#_8-1-性能优化api" class="header-anchor">#</a> 8.1 性能优化API</h3> <ul><li><code>Performance</code>。<code>performance.now()</code>与<code>new Date()</code>区别，它是高精度的，且是相对时间，相对于页面加载的那一刻。但是不一定适合单页面场景</li> <li><code>window.addEventListener("load", "");</code> <code>window.addEventListener("domContentLoaded", "");</code></li> <li><code>Img</code>的<code>onload</code>事件，监听首屏内的图片是否加载完成，判断首屏事件</li> <li><code>RequestFrameAnmation</code> 和 <code>RequestIdleCallback</code></li> <li><code>IntersectionObserver</code>、<code>MutationObserver</code>，<code>PostMessage</code></li> <li><code>Web Worker</code>，耗时任务放在里面执行</li></ul> <h3 id="_8-2-检测工具"><a href="#_8-2-检测工具" class="header-anchor">#</a> 8.2 检测工具</h3> <ul><li><code>Chrome Dev Tools</code></li> <li><code>Page Speed</code></li> <li><code>Jspref</code></li></ul> <h3 id="_8-3-前端指标"><a href="#_8-3-前端指标" class="header-anchor">#</a> 8.3 前端指标</h3> <p><img alt="image-20210307184052955" src="https://s.poetries.top/images/image-20210307184052955.png"></p> <div class="language-js extra-class"><pre class="language-js"><code>window<span class="token punctuation">.</span><span class="token function-variable function">onload</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">let</span> t <span class="token operator">=</span> performance<span class="token punctuation">.</span>timing
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'DNS查询耗时 ：'</span> <span class="token operator">+</span> <span class="token punctuation">(</span>t<span class="token punctuation">.</span>domainLookupEnd <span class="token operator">-</span> t<span class="token punctuation">.</span>domainLookupStart<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toFixed</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'TCP链接耗时 ：'</span> <span class="token operator">+</span> <span class="token punctuation">(</span>t<span class="token punctuation">.</span>connectEnd <span class="token operator">-</span> t<span class="token punctuation">.</span>connectStart<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toFixed</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'request请求耗时 ：'</span> <span class="token operator">+</span> <span class="token punctuation">(</span>t<span class="token punctuation">.</span>responseEnd <span class="token operator">-</span> t<span class="token punctuation">.</span>responseStart<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toFixed</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'解析dom树耗时 ：'</span> <span class="token operator">+</span> <span class="token punctuation">(</span>t<span class="token punctuation">.</span>domComplete <span class="token operator">-</span> t<span class="token punctuation">.</span>domInteractive<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toFixed</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'白屏时间 ：'</span> <span class="token operator">+</span> <span class="token punctuation">(</span>t<span class="token punctuation">.</span>responseStart <span class="token operator">-</span> t<span class="token punctuation">.</span>navigationStart<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toFixed</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'domready时间 ：'</span> <span class="token operator">+</span> <span class="token punctuation">(</span>t<span class="token punctuation">.</span>domContentLoadedEventEnd <span class="token operator">-</span> t<span class="token punctuation">.</span>navigationStart<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toFixed</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'onload时间 ：'</span> <span class="token operator">+</span> <span class="token punctuation">(</span>t<span class="token punctuation">.</span>loadEventEnd <span class="token operator">-</span> t<span class="token punctuation">.</span>navigationStart<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toFixed</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span><span class="token punctuation">(</span>t <span class="token operator">=</span> performance<span class="token punctuation">.</span>memory<span class="token punctuation">)</span><span class="token punctuation">{</span>
+            console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'js内存使用占比 ：'</span> <span class="token operator">+</span> <span class="token punctuation">(</span>t<span class="token punctuation">.</span>usedJSHeapSize <span class="token operator">/</span> t<span class="token punctuation">.</span>totalJSHeapSize <span class="token operator">*</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toFixed</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">'%'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><strong>DNS预解析优化</strong></p> <blockquote><p>dns解析是很耗时的，因此如果解析域名过多，会让首屏加载变得过慢，可以考虑dns-prefetch优化</p></blockquote> <p><code>DNS Prefetch</code> 应该尽量的放在网页的前面，推荐放在 后面。具体使用方法如下：</p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">http-equiv</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>x-dns-prefetch-control<span class="token punctuation">"</span></span> <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>on<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dns-prefetch<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>//www.zhix.net<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dns-prefetch<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>//api.share.zhix.net<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dns-prefetch<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>//bdimg.share.zhix.net<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p><strong>request请求耗时</strong></p> <ul><li>不请求，用<code>cache</code>（最好的方式就是尽量引用公共资源，同时设置缓存，不去重新请求资源，也可以运用PWA的离线缓存技术，可以帮助wep实现离线使用）</li> <li>前端打包时压缩</li> <li>服务器上的<code>zip</code>压缩</li> <li>图片压缩（比如<code>tiny</code>），使用<code>webp</code>等高压缩比格式</li> <li>把过大的包，拆分成多个较少的包，防止单个资源耗时过大</li> <li>同一时间针对同一域名下的请求有一定数量限制，超过限制数目的请求会被阻塞。如果资源来自于多个域下，可以增大并行请求和下载速度</li> <li>延迟、异步、预加载、懒加载</li> <li>对于非首屏的资源，可以使用 <code>defer</code> 或 <code>async</code> 的方式引入</li> <li>也可以按需加载，在逻辑中，只有执行到时才做请求</li> <li>对于多屏页面，滚动时才动态载入图片</li></ul> <p><strong>解析dom树耗时</strong></p> <h2 id="_9-vue性能优化"><a href="#_9-vue性能优化" class="header-anchor">#</a> 9 Vue性能优化</h2> <h3 id="_9-1-vue首屏加载优化有哪些方案么"><a href="#_9-1-vue首屏加载优化有哪些方案么" class="header-anchor">#</a> 9.1 vue首屏加载优化有哪些方案么</h3> <ul><li><code>Vue-Router</code>路由懒加载（利用<code>Webpack</code>的代码切割）</li> <li>使用<code>CDN</code>加速，将通用的库从<code>vendor</code>进行抽离</li> <li><code>Nginx</code>的<code>gzip</code>压缩</li> <li><code>Vue</code>异步组件</li> <li>服务端渲染<code>SSR</code></li> <li>如果使用了一些<code>UI</code>库，采用按需加载</li> <li><code>Webpack</code>开启<code>gzip</code>压缩</li> <li><code>Service Worker</code>缓存文件处理</li> <li>使用<code>link</code>标签的<code>rel</code>属性设置   <code>prefetch</code>（这段资源将会在未来某个导航或者功能要用到，但是本资源的下载顺序权重比较低，<code>prefetch</code>通常用于加速下一次导航）、<code>preload</code>（<code>preload</code>将会把资源得下载顺序权重提高，使得关键数据提前下载好，优化页面打开速度）</li></ul> <h3 id="_9-2-编码阶段"><a href="#_9-2-编码阶段" class="header-anchor">#</a> 9.2 编码阶段</h3> <ul><li>尽量减少<code>data</code>中的数据，<code>data</code>中的数据都会增加<code>getter</code>和<code>setter</code>，会收集对应的<code>watcher</code>；</li> <li>如果需要使用<code>v-for</code>给每项元素绑定事件时使用事件代理；</li> <li><code>SPA</code> 页面采用<code>keep-alive</code>缓存组件；</li> <li>在更多的情况下，使用<code>v-if</code>替代<code>v-show</code>；</li> <li><code>key</code>保证唯一；</li> <li>使用路由懒加载、异步组件；</li> <li>防抖、节流；</li> <li>第三方模块按需导入；</li> <li>长列表滚动到可视区域动态加载；</li> <li>图片懒加载；</li></ul> <h3 id="_9-3-用户体验"><a href="#_9-3-用户体验" class="header-anchor">#</a> 9.3 用户体验：</h3> <ul><li>骨架屏；</li> <li><code>PWA</code>；</li> <li>还可以使用缓存(客户端缓存、服务端缓存)优化、服务端开启<code>gzip</code>压缩等。</li></ul> <h3 id="_9-4-seo优化"><a href="#_9-4-seo优化" class="header-anchor">#</a> 9.4 SEO优化</h3> <ul><li>预渲染；</li> <li>服务端渲染SSR；</li></ul> <h3 id="_9-5-打包优化"><a href="#_9-5-打包优化" class="header-anchor">#</a> 9.5 打包优化</h3> <ul><li>压缩代码；</li> <li><code>Tree Shaking/Scope Hoisting</code>；
+<ul><li><code>scope hoisting</code> 是 <code>webpack3</code> 的新功能，直译过来就是「作用域提升」。熟悉 JavaScript 都应该知道「函数提升」和「变量提升」，JavaScript 会把函数和变量声明提升到当前作用域的顶部。「作用域提升」也类似于此，webpack 会把引入的 js 文件“提升到”它的引入者顶部</li></ul></li> <li>使用cdn加载第三方模块；</li> <li>多线程打包<code>happypack</code>；</li> <li><code>splitChunks</code>抽离公共文件；</li> <li><code>sourceMap</code>优化；</li></ul> <h2 id="_10-vue1-x-vue2-x-vue3-框架分析性能"><a href="#_10-vue1-x-vue2-x-vue3-框架分析性能" class="header-anchor">#</a> 10 vue1.X，vue2.X，vue3 框架分析性能</h2> <h3 id="_10-1-vue1-x-特点-响应式"><a href="#_10-1-vue1-x-特点-响应式" class="header-anchor">#</a> 10.1 Vue1.x （特点：响应式）</h3> <blockquote><p>没有vdom，完全的响应式，每个数据变化，都通过响应式通知机制来新建Watcher干活，项目规模变大后，过多的Watcher，会导致性能的瓶颈。</p></blockquote> <p><img alt="image-20210307183730134" src="https://s.poetries.top/images/image-20210307183730134.png"></p> <h3 id="_10-2-vue2-x-特点-组件级响应式-组件内部vdom-diff"><a href="#_10-2-vue2-x-特点-组件级响应式-组件内部vdom-diff" class="header-anchor">#</a> 10.2 Vue2.x （特点：组件级响应式，组件内部vdom diff）</h3> <blockquote><p>引入<code>vdom</code>，控制了颗粒度，组件层面走<code>watcher</code>通知， 组件内部走<code>vdom</code>做<code>diff</code>，既不会有太多watcher，也不会让vdom的规模过大，diff超过16ms，真是优秀。</p></blockquote> <p><img alt="image-20210307183810844" src="https://s.poetries.top/images/image-20210307183810844.png"></p> <h3 id="_10-3-vue3-特点-proxy做响应式-静态标记、按需更新"><a href="#_10-3-vue3-特点-proxy做响应式-静态标记、按需更新" class="header-anchor">#</a> 10.3 Vue3 （特点：proxy做响应式：静态标记、按需更新）</h3> <blockquote><p>先说结论，静态标记，upadte性能提升1.3~2倍，ssr提升2~3倍。</p></blockquote> <p>Vue3通过<code>Proxy响应式+组件内部vdom+静态标记</code>，把任务颗粒度控制的足够细致，所以也不太需要<code>time-slice</code>了。</p> <p><img alt="image-20210307183845241" src="https://s.poetries.top/images/image-20210307183845241.png"></p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

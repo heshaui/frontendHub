@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nginx极简教程,覆盖常用场景 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Nginx极简教程,覆盖常用场景</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>Nginx极简教程,覆盖常用场景</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h1 id="一、概述"><a href="#一、概述" class="header-anchor">#</a> 一、概述</h1> <h2 id="_1-1-什么是-nginx"><a href="#_1-1-什么是-nginx" class="header-anchor">#</a> 1.1 什么是 Nginx</h2> <blockquote><p><code>Nginx (engine x)</code> 是一款轻量级的 <code>Web</code> 服务器 、反向代理服务器及电子邮件（<code>IMAP/POP3</code>）代理服务器</p></blockquote> <p><img src="https://s.poetries.top/gitee/2019/10/512.png" alt=""></p> <h2 id="_1-2-什么是反向代理"><a href="#_1-2-什么是反向代理" class="header-anchor">#</a> 1.2 什么是反向代理</h2> <blockquote><p>反向代理（<code>Reverse Proxy</code>）方式是指以代理服务器来接受 <code>internet</code> 上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给 internet 上请求连接的客户端，此时代理服务器对外就表现为一个反向代理服务器</p></blockquote> <h1 id="二、使用"><a href="#二、使用" class="header-anchor">#</a> 二、使用</h1> <blockquote><p>nginx 的使用比较简单，就是几条命。</p></blockquote> <p><strong>常用到的命令如下</strong></p> <div class="language- extra-class"><pre class="language-text"><code>nginx -s stop       快速关闭Nginx，可能不保存相关信息，并迅速终止web服务。
+nginx -s quit       平稳关闭Nginx，保存相关信息，有安排的结束web服务。
+nginx -s reload     因改变了Nginx相关配置，需要重新加载配置而重载。
+nginx -s reopen     重新打开日志文件。
+nginx -c filename   为 Nginx 指定一个配置文件，来代替缺省的。
+nginx -t            不运行，而仅仅测试配置文件。nginx 将检查配置文件的语法的正确性，并尝试打开配置文件中所引用到的文件。
+nginx -v            显示 nginx 的版本。
+nginx -V            显示 nginx 的版本，编译器版本和配置参数。
+</code></pre></div><blockquote><p>如果不想每次都敲命令，可以在 <code>nginx</code> 安装目录下新添一个启动批处理文件<code>startup.bat</code>，双击即可运行。内容如下</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>@echo off
+rem 如果启动前已经启动nginx并记录下pid文件，会kill指定进程
+nginx.exe -s stop
+
+rem 测试配置文件语法正确性
+nginx.exe -t -c conf/nginx.conf
+
+rem 显示版本信息
+nginx.exe -v
+
+rem 按照指定配置去启动nginx
+nginx.exe -c conf/nginx.conf
+</code></pre></div><blockquote><p>如果是运行在 Linux 下，写一个 shell 脚本，大同小异</p></blockquote> <h1 id="三、nginx-配置实战"><a href="#三、nginx-配置实战" class="header-anchor">#</a> 三、nginx 配置实战</h1> <h2 id="_3-1-http-反向代理配置"><a href="#_3-1-http-反向代理配置" class="header-anchor">#</a> 3.1 http 反向代理配置</h2> <blockquote><p>我们先实现一个小目标：不考虑复杂的配置，仅仅是完成一个 http 反向代理</p></blockquote> <p><strong>nginx.conf 配置文件如下</strong></p> <blockquote><p>注：<code>conf / nginx.conf</code> 是 <code>nginx</code> 的默认配置文件。你也可以使用 <code>nginx -c</code> 指定你的配置文件</p></blockquote> <div class="language-nginx extra-class"><pre class="language-nginx"><code><span class="token comment">#运行用户</span>
+<span class="token comment">#user somebody;</span>
+
+<span class="token comment">#启动进程,通常设置成和cpu的数量相等</span>
+<span class="token directive"><span class="token keyword">worker_processes</span>  <span class="token number">1</span></span><span class="token punctuation">;</span>
+
+<span class="token comment">#全局错误日志</span>
+<span class="token directive"><span class="token keyword">error_log</span>  D:/Tools/nginx-1.10.1/logs/error.log</span><span class="token punctuation">;</span>
+<span class="token directive"><span class="token keyword">error_log</span>  D:/Tools/nginx-1.10.1/logs/notice.log  notice</span><span class="token punctuation">;</span>
+<span class="token directive"><span class="token keyword">error_log</span>  D:/Tools/nginx-1.10.1/logs/info.log  info</span><span class="token punctuation">;</span>
+
+<span class="token comment">#PID文件，记录当前启动的nginx的进程ID</span>
+<span class="token directive"><span class="token keyword">pid</span>        D:/Tools/nginx-1.10.1/logs/nginx.pid</span><span class="token punctuation">;</span>
+
+<span class="token comment">#工作模式及连接数上限</span>
+<span class="token directive"><span class="token keyword">events</span></span> <span class="token punctuation">{</span>
+    <span class="token directive"><span class="token keyword">worker_connections</span> <span class="token number">1024</span></span><span class="token punctuation">;</span>    <span class="token comment">#单个后台worker process进程的最大并发链接数</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">#设定http服务器，利用它的反向代理功能提供负载均衡支持</span>
+<span class="token directive"><span class="token keyword">http</span></span> <span class="token punctuation">{</span>
+    <span class="token comment">#设定mime类型(邮件支持类型),类型由mime.types文件定义</span>
+    <span class="token directive"><span class="token keyword">include</span>       D:/Tools/nginx-1.10.1/conf/mime.types</span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">default_type</span>  application/octet-stream</span><span class="token punctuation">;</span>
+
+    <span class="token comment">#设定日志</span>
+    <span class="token directive"><span class="token keyword">log_format</span>  main  <span class="token string">'[<span class="token variable">$remote_addr]</span> - [<span class="token variable">$remote_user]</span> [<span class="token variable">$time_local]</span> "<span class="token variable">$request</span>" '</span>
+                      <span class="token string">'<span class="token variable">$status</span> <span class="token variable">$body_bytes_sent</span> "<span class="token variable">$http_referer</span>" '</span>
+                      <span class="token string">'"<span class="token variable">$http_user_agent</span>" "<span class="token variable">$http_x_forwarded_for</span>"'</span></span><span class="token punctuation">;</span>
+
+    <span class="token directive"><span class="token keyword">access_log</span>    D:/Tools/nginx-1.10.1/logs/access.log main</span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">rewrite_log</span>     <span class="token boolean">on</span></span><span class="token punctuation">;</span>
+
+    <span class="token comment">#sendfile 指令指定 nginx 是否调用 sendfile 函数（zero copy 方式）来输出文件，对于普通应用，</span>
+    <span class="token comment">#必须设为 on,如果用来进行下载等应用磁盘IO重负载应用，可设置为 off，以平衡磁盘与网络I/O处理速度，降低系统的uptime.</span>
+    <span class="token directive"><span class="token keyword">sendfile</span>        <span class="token boolean">on</span></span><span class="token punctuation">;</span>
+    <span class="token comment">#tcp_nopush     on;</span>
+
+    <span class="token comment">#连接超时时间</span>
+    <span class="token directive"><span class="token keyword">keepalive_timeout</span>  <span class="token number">120</span></span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">tcp_nodelay</span>        <span class="token boolean">on</span></span><span class="token punctuation">;</span>
+
+    <span class="token comment">#gzip压缩开关</span>
+    <span class="token comment">#gzip  on;</span>
+
+    <span class="token comment">#设定实际的服务器列表</span>
+    <span class="token directive"><span class="token keyword">upstream</span> zp_server1</span><span class="token punctuation">{</span>
+        <span class="token directive"><span class="token keyword">server</span> 127.0.0.1:8089</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">#HTTP服务器</span>
+    <span class="token directive"><span class="token keyword">server</span></span> <span class="token punctuation">{</span>
+        <span class="token comment">#监听80端口，80端口是知名端口号，用于HTTP协议</span>
+        <span class="token directive"><span class="token keyword">listen</span>       <span class="token number">80</span></span><span class="token punctuation">;</span>
+
+        <span class="token comment">#定义使用www.xx.com访问</span>
+        <span class="token directive"><span class="token keyword">server_name</span>  www.helloworld.com</span><span class="token punctuation">;</span>
+
+        <span class="token comment">#首页</span>
+        <span class="token directive"><span class="token keyword">index</span> index.html
+
+        <span class="token comment">#指向webapp的目录</span>
+        root D:\01_Workspace\Project\github\zp\SpringNotes\spring-security\spring-shiro\src\main\webapp</span><span class="token punctuation">;</span>
+
+        <span class="token comment">#编码格式</span>
+        <span class="token directive"><span class="token keyword">charset</span> utf-8</span><span class="token punctuation">;</span>
+
+        <span class="token comment">#代理配置参数</span>
+        <span class="token directive"><span class="token keyword">proxy_connect_timeout</span> <span class="token number">180</span></span><span class="token punctuation">;</span>
+        <span class="token directive"><span class="token keyword">proxy_send_timeout</span> <span class="token number">180</span></span><span class="token punctuation">;</span>
+        <span class="token directive"><span class="token keyword">proxy_read_timeout</span> <span class="token number">180</span></span><span class="token punctuation">;</span>
+        <span class="token directive"><span class="token keyword">proxy_set_header</span> Host <span class="token variable">$host</span></span><span class="token punctuation">;</span>
+        <span class="token directive"><span class="token keyword">proxy_set_header</span> X-Forwarder-For <span class="token variable">$remote_addr</span></span><span class="token punctuation">;</span>
+
+        <span class="token comment">#反向代理的路径（和upstream绑定），location 后面设置映射的路径</span>
+        <span class="token directive"><span class="token keyword">location</span> /</span> <span class="token punctuation">{</span>
+            <span class="token directive"><span class="token keyword">proxy_pass</span> http://zp_server1</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment">#静态文件，nginx自己处理</span>
+        <span class="token directive"><span class="token keyword">location</span> ~ ^/(images|javascript|js|css|flash|media|static)/</span> <span class="token punctuation">{</span>
+            <span class="token directive"><span class="token keyword">root</span> D:\01_Workspace\Project\github\zp\SpringNotes\spring-security\spring-shiro\src\main\webapp\views</span><span class="token punctuation">;</span>
+            <span class="token comment">#过期30天，静态文件不怎么更新，过期可以设大一点，如果频繁更新，则可以设置得小一点。</span>
+            <span class="token directive"><span class="token keyword">expires</span> <span class="token number">30d</span></span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment">#设定查看Nginx状态的地址</span>
+        <span class="token directive"><span class="token keyword">location</span> /NginxStatus</span> <span class="token punctuation">{</span>
+            <span class="token directive"><span class="token keyword">stub_status</span>           <span class="token boolean">on</span></span><span class="token punctuation">;</span>
+            <span class="token directive"><span class="token keyword">access_log</span>            <span class="token boolean">on</span></span><span class="token punctuation">;</span>
+            <span class="token directive"><span class="token keyword">auth_basic</span>            <span class="token string">"NginxStatus"</span></span><span class="token punctuation">;</span>
+            <span class="token directive"><span class="token keyword">auth_basic_user_file</span>  conf/htpasswd</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment">#禁止访问 .htxxx 文件</span>
+        <span class="token directive"><span class="token keyword">location</span> ~ /\.ht</span> <span class="token punctuation">{</span>
+            <span class="token directive"><span class="token keyword">deny</span> all</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment">#错误处理页面（可选择性配置）</span>
+        <span class="token comment">#error_page   404              /404.html;</span>
+        <span class="token comment">#error_page   500 502 503 504  /50x.html;</span>
+        <span class="token comment">#location = /50x.html {</span>
+        <span class="token comment">#    root   html;</span>
+        <span class="token comment">#}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>好了，让我们来试试吧</p></blockquote> <ol><li>启动 <code>webapp</code>，注意启动绑定的端口要和 <code>nginx</code> 中的 <code>upstream</code> 设置的端口保持一致</li> <li>更改 <code>host</code>：在 <code>C:\Windows\System32\drivers\etc</code> 目录下的 <code>host</code> 文件中添加一条 <code>DNS</code> 记录 <code>127.0.0.1 www.helloworld.com</code></li> <li>启动前文中 <code>startup.bat</code> 的命令</li> <li>在浏览器中访问 <code>www.helloworld.com</code>，不出意外，已经可以访问了</li></ol> <h2 id="_3-2-负载均衡配置"><a href="#_3-2-负载均衡配置" class="header-anchor">#</a> 3.2 负载均衡配置</h2> <ul><li>上一个例子中，代理仅仅指向一个服务器</li> <li>但是，网站在实际运营过程中，多半都是有多台服务器运行着同样的 <code>app</code>，这时需要使用负载均衡来分流</li> <li><code>nginx</code> 也可以实现简单的负载均衡功能</li></ul> <blockquote><p>假设这样一个应用场景：将应用部署在 <code>192.168.1.11:80</code>、<code>192.168.1.12:80</code>、<code>192.168.1.13:80</code> 三台 <code>linux</code> 环境的服务器上。网站域名叫 <code>www.helloworld.com</code>，公网 <code>IP</code> 为 <code>192.168.1.11</code>。在公网 <code>IP</code> 所在的服务器上部署 <code>nginx</code>，对所有请求做负载均衡处理。</p></blockquote> <p><strong>nginx.conf 配置如下</strong></p> <div class="language-nginx extra-class"><pre class="language-nginx"><code><span class="token directive"><span class="token keyword">http</span></span> <span class="token punctuation">{</span>
+     <span class="token comment">#设定mime类型,类型由mime.type文件定义</span>
+    <span class="token directive"><span class="token keyword">include</span>       /etc/nginx/mime.types</span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">default_type</span>  application/octet-stream</span><span class="token punctuation">;</span>
+    <span class="token comment">#设定日志格式</span>
+    <span class="token directive"><span class="token keyword">access_log</span>    /var/log/nginx/access.log</span><span class="token punctuation">;</span>
+
+    <span class="token comment">#设定负载均衡的服务器列表</span>
+    <span class="token directive"><span class="token keyword">upstream</span> load_balance_server</span> <span class="token punctuation">{</span>
+        <span class="token comment">#weigth参数表示权值，权值越高被分配到的几率越大</span>
+        <span class="token directive"><span class="token keyword">server</span> 192.168.1.11:80   weight=5</span><span class="token punctuation">;</span>
+        <span class="token directive"><span class="token keyword">server</span> 192.168.1.12:80   weight=1</span><span class="token punctuation">;</span>
+        <span class="token directive"><span class="token keyword">server</span> 192.168.1.13:80   weight=6</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+   <span class="token comment">#HTTP服务器</span>
+   <span class="token directive"><span class="token keyword">server</span></span> <span class="token punctuation">{</span>
+        <span class="token comment">#侦听80端口</span>
+        <span class="token directive"><span class="token keyword">listen</span>       <span class="token number">80</span></span><span class="token punctuation">;</span>
+
+        <span class="token comment">#定义使用www.xx.com访问</span>
+        <span class="token directive"><span class="token keyword">server_name</span>  www.helloworld.com</span><span class="token punctuation">;</span>
+
+        <span class="token comment">#对所有请求进行负载均衡请求</span>
+        <span class="token directive"><span class="token keyword">location</span> /</span> <span class="token punctuation">{</span>
+            <span class="token directive"><span class="token keyword">root</span>        /root</span><span class="token punctuation">;</span>                 <span class="token comment">#定义服务器的默认网站根目录位置</span>
+            <span class="token directive"><span class="token keyword">index</span>       index.html index.htm</span><span class="token punctuation">;</span>  <span class="token comment">#定义首页索引文件的名称</span>
+            <span class="token directive"><span class="token keyword">proxy_pass</span>  http://load_balance_server</span> <span class="token punctuation">;</span><span class="token comment">#请求转向load_balance_server 定义的服务器列表</span>
+
+            <span class="token comment">#以下是一些反向代理的配置(可选择性配置)</span>
+            <span class="token comment">#proxy_redirect off;</span>
+            <span class="token directive"><span class="token keyword">proxy_set_header</span> Host <span class="token variable">$host</span></span><span class="token punctuation">;</span>
+            <span class="token directive"><span class="token keyword">proxy_set_header</span> X-Real-IP <span class="token variable">$remote_addr</span></span><span class="token punctuation">;</span>
+            <span class="token comment">#后端的Web服务器可以通过X-Forwarded-For获取用户真实IP</span>
+            <span class="token directive"><span class="token keyword">proxy_set_header</span> X-Forwarded-For <span class="token variable">$remote_addr</span></span><span class="token punctuation">;</span>
+            <span class="token directive"><span class="token keyword">proxy_connect_timeout</span> <span class="token number">90</span></span><span class="token punctuation">;</span>          <span class="token comment">#nginx跟后端服务器连接超时时间(代理连接超时)</span>
+            <span class="token directive"><span class="token keyword">proxy_send_timeout</span> <span class="token number">90</span></span><span class="token punctuation">;</span>             <span class="token comment">#后端服务器数据回传时间(代理发送超时)</span>
+            <span class="token directive"><span class="token keyword">proxy_read_timeout</span> <span class="token number">90</span></span><span class="token punctuation">;</span>             <span class="token comment">#连接成功后，后端服务器响应时间(代理接收超时)</span>
+            <span class="token directive"><span class="token keyword">proxy_buffer_size</span> <span class="token number">4k</span></span><span class="token punctuation">;</span>              <span class="token comment">#设置代理服务器（nginx）保存用户头信息的缓冲区大小</span>
+            <span class="token directive"><span class="token keyword">proxy_buffers</span> <span class="token number">4</span> <span class="token number">32k</span></span><span class="token punctuation">;</span>               <span class="token comment">#proxy_buffers缓冲区，网页平均在32k以下的话，这样设置</span>
+            <span class="token directive"><span class="token keyword">proxy_busy_buffers_size</span> <span class="token number">64k</span></span><span class="token punctuation">;</span>       <span class="token comment">#高负荷下缓冲大小（proxy_buffers*2）</span>
+            <span class="token directive"><span class="token keyword">proxy_temp_file_write_size</span> <span class="token number">64k</span></span><span class="token punctuation">;</span>    <span class="token comment">#设定缓存文件夹大小，大于这个值，将从upstream服务器传</span>
+
+            <span class="token directive"><span class="token keyword">client_max_body_size</span> <span class="token number">10m</span></span><span class="token punctuation">;</span>          <span class="token comment">#允许客户端请求的最大单文件字节数</span>
+            <span class="token directive"><span class="token keyword">client_body_buffer_size</span> <span class="token number">128k</span></span><span class="token punctuation">;</span>      <span class="token comment">#缓冲区代理缓冲用户端请求的最大字节数</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="_3-3-网站有多个-webapp-的配置"><a href="#_3-3-网站有多个-webapp-的配置" class="header-anchor">#</a> 3.3 网站有多个 webapp 的配置</h2> <blockquote><p>当一个网站功能越来越丰富时，往往需要将一些功能相对独立的模块剥离出来，独立维护。这样的话，通常，会有多个 <code>webapp</code></p></blockquote> <blockquote><p>举个例子：假如 <code>www.helloworld.com</code> 站点有好几个 <code>webapp</code>，<code>finance</code>（金融）、<code>product</code>（产品）、<code>admin</code>（用户中心）。访问这些应用的方式通过上下文(<code>context</code>)来进行区分:</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>www.helloworld.com/finance/
+
+www.helloworld.com/product/
+
+www.helloworld.com/admin/
+</code></pre></div><ul><li>我们知道，<code>http</code> 的默认端口号是 <code>80</code>，如果在一台服务器上同时启动这 3 个 <code>webapp</code> 应用，都用 80 端口，肯定是不成的。所以，这三个应用需要分别绑定不同的端口号。</li> <li>那么，问题来了，用户在实际访问 <code>www.helloworld.com</code> 站点时，访问不同<code>webapp</code>，总不会还带着对应的端口号去访问吧。所以，你再次需要用到反向代理来做处理</li></ul> <p><strong>配置</strong></p> <div class="language-nginx extra-class"><pre class="language-nginx"><code><span class="token directive"><span class="token keyword">http</span></span> <span class="token punctuation">{</span>
+    <span class="token comment">#此处省略一些基本配置</span>
+
+    <span class="token directive"><span class="token keyword">upstream</span> product_server</span><span class="token punctuation">{</span>
+        <span class="token directive"><span class="token keyword">server</span> www.helloworld.com:8081</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token directive"><span class="token keyword">upstream</span> admin_server</span><span class="token punctuation">{</span>
+        <span class="token directive"><span class="token keyword">server</span> www.helloworld.com:8082</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token directive"><span class="token keyword">upstream</span> finance_server</span><span class="token punctuation">{</span>
+        <span class="token directive"><span class="token keyword">server</span> www.helloworld.com:8083</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token directive"><span class="token keyword">server</span></span> <span class="token punctuation">{</span>
+        <span class="token comment">#此处省略一些基本配置</span>
+        <span class="token comment">#默认指向product的server</span>
+        <span class="token directive"><span class="token keyword">location</span> /</span> <span class="token punctuation">{</span>
+            <span class="token directive"><span class="token keyword">proxy_pass</span> http://product_server</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token directive"><span class="token keyword">location</span> /product/</span><span class="token punctuation">{</span>
+            <span class="token directive"><span class="token keyword">proxy_pass</span> http://product_server</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token directive"><span class="token keyword">location</span> /admin/</span> <span class="token punctuation">{</span>
+            <span class="token directive"><span class="token keyword">proxy_pass</span> http://admin_server</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token directive"><span class="token keyword">location</span> /finance/</span> <span class="token punctuation">{</span>
+            <span class="token directive"><span class="token keyword">proxy_pass</span> http://finance_server</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="_3-4-https-反向代理配置"><a href="#_3-4-https-反向代理配置" class="header-anchor">#</a> 3.4 https 反向代理配置</h2> <ul><li>一些对安全性要求比较高的站点，可能会使用 <code>HTTPS</code>（一种使用 <code>ssl</code> 通信标准的安全 <code>HTTP</code> 协议）</li></ul> <blockquote><p>这里不科普 <code>HTTP</code> 协议和 SSL 标准。但是，使用 <code>nginx</code> 配置 <code>https</code> 需要知道几点</p></blockquote> <ul><li><code>HTTPS</code> 的固定端口号是 <code>443</code>，不同于 <code>HTTP</code> 的 <code>80</code> 端口</li> <li><code>SSL</code> 标准需要引入安全证书，所以在 <code>nginx.conf</code> 中你需要指定证书和它对应的 <code>key</code></li></ul> <blockquote><p>其他和 <code>http</code> 反向代理基本一样，只是在 <code>Server</code> 部分配置有些不同</p></blockquote> <div class="language-nginx extra-class"><pre class="language-nginx"><code> <span class="token comment">#HTTP服务器</span>
+  <span class="token directive"><span class="token keyword">server</span></span> <span class="token punctuation">{</span>
+      <span class="token comment">#监听443端口。443为知名端口号，主要用于HTTPS协议</span>
+      <span class="token directive"><span class="token keyword">listen</span>       <span class="token number">443</span> ssl</span><span class="token punctuation">;</span>
+
+      <span class="token comment">#定义使用www.xx.com访问</span>
+      <span class="token directive"><span class="token keyword">server_name</span>  www.helloworld.com</span><span class="token punctuation">;</span>
+
+      <span class="token comment">#ssl证书文件位置(常见证书文件格式为：crt/pem)</span>
+      <span class="token directive"><span class="token keyword">ssl_certificate</span>      cert.pem</span><span class="token punctuation">;</span>
+      <span class="token comment">#ssl证书key位置</span>
+      <span class="token directive"><span class="token keyword">ssl_certificate_key</span>  cert.key</span><span class="token punctuation">;</span>
+
+      <span class="token comment">#ssl配置参数（选择性配置）</span>
+      <span class="token directive"><span class="token keyword">ssl_session_cache</span>    shared:SSL:1m</span><span class="token punctuation">;</span>
+      <span class="token directive"><span class="token keyword">ssl_session_timeout</span>  <span class="token number">5m</span></span><span class="token punctuation">;</span>
+      <span class="token comment">#数字签名，此处使用MD5</span>
+      <span class="token directive"><span class="token keyword">ssl_ciphers</span>  HIGH:!aNULL:!MD5</span><span class="token punctuation">;</span>
+      <span class="token directive"><span class="token keyword">ssl_prefer_server_ciphers</span>  <span class="token boolean">on</span></span><span class="token punctuation">;</span>
+
+      <span class="token directive"><span class="token keyword">location</span> /</span> <span class="token punctuation">{</span>
+          <span class="token directive"><span class="token keyword">root</span>   /root</span><span class="token punctuation">;</span>
+          <span class="token directive"><span class="token keyword">index</span>  index.html index.htm</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+</code></pre></div><h2 id="_3-5-静态站点配置"><a href="#_3-5-静态站点配置" class="header-anchor">#</a> 3.5 静态站点配置</h2> <ul><li>有时候，我们需要配置静态站点(即 <code>html</code> 文件和一堆静态资源)。</li> <li>举例来说：如果所有的静态资源都放在了 <code>/app/dist</code> 目录下，我们只需要在 <code>nginx.conf</code> 中指定首页以及这个站点的 <code>host</code> 即可。</li></ul> <p><strong>配置如下</strong></p> <div class="language-nginx extra-class"><pre class="language-nginx"><code><span class="token directive"><span class="token keyword">worker_processes</span>  <span class="token number">1</span></span><span class="token punctuation">;</span>
+
+<span class="token directive"><span class="token keyword">events</span></span> <span class="token punctuation">{</span>
+    <span class="token directive"><span class="token keyword">worker_connections</span>  <span class="token number">1024</span></span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token directive"><span class="token keyword">http</span></span> <span class="token punctuation">{</span>
+    <span class="token directive"><span class="token keyword">include</span>       mime.types</span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">default_type</span>  application/octet-stream</span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">sendfile</span>        <span class="token boolean">on</span></span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">keepalive_timeout</span>  <span class="token number">65</span></span><span class="token punctuation">;</span>
+
+    <span class="token directive"><span class="token keyword">gzip</span> <span class="token boolean">on</span></span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">gzip_types</span> text/plain application/x-javascript text/css application/xml text/javascript application/javascript image/jpeg image/gif image/png</span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">gzip_vary</span> <span class="token boolean">on</span></span><span class="token punctuation">;</span>
+
+    <span class="token directive"><span class="token keyword">server</span></span> <span class="token punctuation">{</span>
+        <span class="token directive"><span class="token keyword">listen</span>       <span class="token number">80</span></span><span class="token punctuation">;</span>
+        <span class="token directive"><span class="token keyword">server_name</span>  static.zp.cn</span><span class="token punctuation">;</span>
+
+        <span class="token directive"><span class="token keyword">location</span> /</span> <span class="token punctuation">{</span>
+            <span class="token directive"><span class="token keyword">root</span> /app/dist</span><span class="token punctuation">;</span>
+            <span class="token directive"><span class="token keyword">index</span> index.html</span><span class="token punctuation">;</span>
+            <span class="token comment">#转发任何请求到 index.html</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+</code></pre></div><ul><li>然后，添加 <code>HOST：127.0.0.1 static.zp.cn</code></li> <li>此时，在本地浏览器访问 <code>static.zp.cn</code> ，就可以访问静态站点了。</li></ul> <h2 id="_3-6-搭建文件服务器"><a href="#_3-6-搭建文件服务器" class="header-anchor">#</a> 3.6 搭建文件服务器</h2> <blockquote><p>有时候，团队需要归档一些数据或资料，那么文件服务器必不可少。使用 Nginx 可以非常快速便捷的搭建一个简易的文件服务</p></blockquote> <p><strong>Nginx 中的配置要点</strong></p> <ul><li>将 <code>autoindex</code> 开启可以显示目录，默认不开启</li> <li>将 <code>autoindex_exact_size</code> 开启可以显示文件的大小。</li> <li>将 <code>autoindex_localtime</code> 开启可以显示文件的修改时间</li> <li><code>root</code> 用来设置开放为文件服务的根路径。</li> <li><code>charset</code> 设置为 <code>charset utf-8,gbk;</code>，可以避免中文乱码问题（<code>windows</code> 服务器下设置后，依然乱码，本人暂时没有找到解决方法）。</li></ul> <p><strong>一个最简化的配置如下</strong></p> <div class="language-nginx extra-class"><pre class="language-nginx"><code><span class="token directive"><span class="token keyword">autoindex</span> <span class="token boolean">on</span></span><span class="token punctuation">;</span><span class="token comment"># 显示目录</span>
+<span class="token directive"><span class="token keyword">autoindex_exact_size</span> <span class="token boolean">on</span></span><span class="token punctuation">;</span><span class="token comment"># 显示文件大小</span>
+<span class="token directive"><span class="token keyword">autoindex_localtime</span> <span class="token boolean">on</span></span><span class="token punctuation">;</span><span class="token comment"># 显示文件时间</span>
+
+<span class="token directive"><span class="token keyword">server</span></span> <span class="token punctuation">{</span>
+    <span class="token directive"><span class="token keyword">charset</span>      utf-8,gbk</span><span class="token punctuation">;</span> <span class="token comment"># windows 服务器下设置后，依然乱码，暂时无解</span>
+    <span class="token directive"><span class="token keyword">listen</span>       <span class="token number">9050</span> default_server</span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">listen</span>       [::]:9050 default_server</span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">server_name</span>  _</span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">root</span>         /share/fs</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="_3-7-跨域解决方案"><a href="#_3-7-跨域解决方案" class="header-anchor">#</a> 3.7 跨域解决方案</h2> <ul><li><code>web</code> 领域开发中，经常采用前后端分离模式。这种模式下，前端和后端分别是独立的 <code>web</code> 应用程序，例如：后端是 <code>Java</code> 程序，前端是 <code>React</code> 或 <code>Vue</code> 应用。</li> <li>各自独立的 <code>web app</code> 在互相访问时，势必存在跨域问题。解决跨域问题一般有两种思路</li></ul> <p><strong>1. CORS</strong></p> <blockquote><p>在后端服务器设置 <code>HTTP</code> 响应头，把你需要运行访问的域名加入加入 <code>Access-Control-Allow-Origin</code>中</p></blockquote> <p><strong>2. jsonp</strong></p> <blockquote><p>把后端根据请求，构造 <code>json</code> 数据，并返回，前端用 <code>jsonp</code> 跨域</p></blockquote> <blockquote><p>需要说明的是，<code>nginx</code> 根据第一种思路，也提供了一种解决跨域的解决方案</p></blockquote> <p>举例：<code>www.helloworld.com</code> 网站是由一个前端 <code>app</code> ，一个后端 <code>app</code>组成的。前端端口号为 <code>9000</code>， 后端端口号为 <code>8080</code></p> <blockquote><p>前端和后端如果使用 <code>http</code> 进行交互时，请求会被拒绝，因为存在跨域问题。来看看，<code>nginx</code>是怎么解决的吧</p></blockquote> <p><strong>首先，在 enable-cors.conf 文件中设置 cors</strong></p> <div class="language-nginx extra-class"><pre class="language-nginx"><code><span class="token comment"># allow origin list</span>
+<span class="token directive"><span class="token keyword">set</span> <span class="token variable">$ACAO</span> <span class="token string">'*'</span></span><span class="token punctuation">;</span>
+
+<span class="token comment"># set single origin</span>
+<span class="token directive"><span class="token keyword">if</span> (<span class="token variable">$http_origin</span> ~* (www.helloworld.com)$)</span> <span class="token punctuation">{</span>
+  <span class="token directive"><span class="token keyword">set</span> <span class="token variable">$ACAO</span> <span class="token variable">$http_origin</span></span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token directive"><span class="token keyword">if</span> (<span class="token variable">$cors</span> = <span class="token string">"trueget"</span>)</span> <span class="token punctuation">{</span>
+    <span class="token directive"><span class="token keyword">add_header</span> <span class="token string">'Access-Control-Allow-Origin'</span> <span class="token string">"<span class="token variable">$http_origin</span>"</span></span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">add_header</span> <span class="token string">'Access-Control-Allow-Credentials'</span> <span class="token string">'true'</span></span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">add_header</span> <span class="token string">'Access-Control-Allow-Methods'</span> <span class="token string">'GET, POST, OPTIONS'</span></span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">add_header</span> <span class="token string">'Access-Control-Allow-Headers'</span> <span class="token string">'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type'</span></span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token directive"><span class="token keyword">if</span> (<span class="token variable">$request_method</span> = <span class="token string">'OPTIONS'</span>)</span> <span class="token punctuation">{</span>
+  <span class="token directive"><span class="token keyword">set</span> <span class="token variable">$cors</span> <span class="token string">"<span class="token variable">${cors}</span>options"</span></span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token directive"><span class="token keyword">if</span> (<span class="token variable">$request_method</span> = <span class="token string">'GET'</span>)</span> <span class="token punctuation">{</span>
+  <span class="token directive"><span class="token keyword">set</span> <span class="token variable">$cors</span> <span class="token string">"<span class="token variable">${cors}</span>get"</span></span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token directive"><span class="token keyword">if</span> (<span class="token variable">$request_method</span> = <span class="token string">'POST'</span>)</span> <span class="token punctuation">{</span>
+  <span class="token directive"><span class="token keyword">set</span> <span class="token variable">$cors</span> <span class="token string">"<span class="token variable">${cors}</span>post"</span></span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><strong>接下来，在你的服务器中 include enable-cors.conf 来引入跨域配置</strong></p> <div class="language-nginx extra-class"><pre class="language-nginx"><code><span class="token comment"># ----------------------------------------------------</span>
+<span class="token comment"># 此文件为项目 nginx 配置片段</span>
+<span class="token comment"># 可以直接在 nginx config 中 include（推荐）</span>
+<span class="token comment"># 或者 copy 到现有 nginx 中，自行配置</span>
+<span class="token comment"># www.helloworld.com 域名需配合 dns hosts 进行配置</span>
+<span class="token comment"># 其中，api 开启了 cors，需配合本目录下另一份配置文件</span>
+<span class="token comment"># ----------------------------------------------------</span>
+<span class="token directive"><span class="token keyword">upstream</span> front_server</span><span class="token punctuation">{</span>
+  <span class="token directive"><span class="token keyword">server</span> www.helloworld.com:9000</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token directive"><span class="token keyword">upstream</span> api_server</span><span class="token punctuation">{</span>
+  <span class="token directive"><span class="token keyword">server</span> www.helloworld.com:8080</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token directive"><span class="token keyword">server</span></span> <span class="token punctuation">{</span>
+  <span class="token directive"><span class="token keyword">listen</span>       <span class="token number">80</span></span><span class="token punctuation">;</span>
+  <span class="token directive"><span class="token keyword">server_name</span>  www.helloworld.com</span><span class="token punctuation">;</span>
+
+  <span class="token directive"><span class="token keyword">location</span> ~ ^/api/</span> <span class="token punctuation">{</span>
+    <span class="token directive"><span class="token keyword">include</span> enable-cors.conf</span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">proxy_pass</span> http://api_server</span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">rewrite</span> <span class="token string">"^/api/(.*)$"</span> /<span class="token variable">$1</span> break</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token directive"><span class="token keyword">location</span> ~ ^/</span> <span class="token punctuation">{</span>
+    <span class="token directive"><span class="token keyword">proxy_pass</span> http://front_server</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

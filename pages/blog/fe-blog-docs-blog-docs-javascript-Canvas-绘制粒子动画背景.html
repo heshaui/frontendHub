@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas 绘制粒子动画背景 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Canvas 绘制粒子动画背景</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>Canvas 绘制粒子动画背景</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>canvas</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>canvas<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>您的浏览器不支持，请升级最新的版本!<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>canvas</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div> <div class="language-css extra-class"><pre class="language-css"><code><span class="token selector">*</span><span class="token punctuation">{</span>
+	<span class="token property">margin</span><span class="token punctuation">:</span>0px<span class="token punctuation">;</span>
+	<span class="token property">padding</span><span class="token punctuation">:</span>0px<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">body</span><span class="token punctuation">{</span>
+	<span class="token property">background</span><span class="token punctuation">:</span>#000<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">canvas</span><span class="token punctuation">{</span>
+	<span class="token property">position</span><span class="token punctuation">:</span>absolute<span class="token punctuation">;</span>
+	<span class="token property">width</span><span class="token punctuation">:</span>100%<span class="token punctuation">;</span>
+	<span class="token property">height</span><span class="token punctuation">:</span>100%<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code>window<span class="token punctuation">.</span>requestAnimFrame <span class="token operator">=</span> <span class="token punctuation">(</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">return</span> window<span class="token punctuation">.</span>requestAnimationFrame <span class="token operator">||</span>
+					window<span class="token punctuation">.</span>webkitRequestAnimationFrame <span class="token operator">||</span>
+					window<span class="token punctuation">.</span>mozRequestAnimationFrame <span class="token operator">||</span>
+					<span class="token keyword">function</span><span class="token punctuation">(</span> <span class="token parameter">callback</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+						window<span class="token punctuation">.</span><span class="token function">setTimeout</span><span class="token punctuation">(</span> callback<span class="token punctuation">,</span> <span class="token number">1000</span> <span class="token operator">/</span> <span class="token number">60</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+					<span class="token punctuation">}</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">var</span> can <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"canvas"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">var</span> cxt <span class="token operator">=</span> can<span class="token punctuation">.</span><span class="token function">getContext</span><span class="token punctuation">(</span><span class="token string">"2d"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		can<span class="token punctuation">.</span>width <span class="token operator">=</span> window<span class="token punctuation">.</span>innerWidth<span class="token punctuation">;</span>
+		can<span class="token punctuation">.</span>height <span class="token operator">=</span> window<span class="token punctuation">.</span>innerHeight<span class="token punctuation">;</span>
+		cxt<span class="token punctuation">.</span>lineWidth <span class="token operator">=</span> <span class="token number">0.3</span><span class="token punctuation">;</span>
+		<span class="token comment">//初始链接线条显示位置</span>
+		<span class="token keyword">var</span> mousePosition <span class="token operator">=</span> <span class="token punctuation">{</span>
+			<span class="token literal-property property">x</span> <span class="token operator">:</span> <span class="token number">30</span><span class="token operator">*</span>can<span class="token punctuation">.</span>width<span class="token operator">/</span><span class="token number">100</span><span class="token punctuation">,</span>
+			<span class="token literal-property property">y</span> <span class="token operator">:</span> <span class="token number">30</span><span class="token operator">*</span>can<span class="token punctuation">.</span>height<span class="token operator">/</span><span class="token number">100</span>
+		<span class="token punctuation">}</span>
+		<span class="token comment">//圆形粒子对象参数</span>
+		<span class="token keyword">var</span> dots <span class="token operator">=</span> <span class="token punctuation">{</span>
+			<span class="token literal-property property">n</span> <span class="token operator">:</span> <span class="token number">500</span><span class="token punctuation">,</span><span class="token comment">//圆形粒子个数</span>
+			<span class="token literal-property property">distance</span> <span class="token operator">:</span> <span class="token number">50</span><span class="token punctuation">,</span><span class="token comment">//圆形粒子之间的距离</span>
+			<span class="token literal-property property">d_radius</span> <span class="token operator">:</span> <span class="token number">100</span><span class="token punctuation">,</span><span class="token comment">//粒子距离鼠标点的距离</span>
+			<span class="token literal-property property">array</span> <span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token comment">//保存n个圆形粒子对象</span>
+		<span class="token punctuation">}</span>
+		<span class="token comment">//创建随即颜色值</span>
+		<span class="token keyword">function</span> <span class="token function">colorValue</span><span class="token punctuation">(</span><span class="token parameter">min</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			<span class="token keyword">return</span> Math<span class="token punctuation">.</span><span class="token function">floor</span><span class="token punctuation">(</span>Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">255</span> <span class="token operator">+</span> min<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+		<span class="token keyword">function</span> <span class="token function">createColorStyle</span><span class="token punctuation">(</span><span class="token parameter">r<span class="token punctuation">,</span>g<span class="token punctuation">,</span>b</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			<span class="token keyword">return</span> <span class="token string">"rgba("</span><span class="token operator">+</span>r<span class="token operator">+</span><span class="token string">","</span><span class="token operator">+</span>g<span class="token operator">+</span><span class="token string">","</span><span class="token operator">+</span>b<span class="token operator">+</span><span class="token string">", 1)"</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+		<span class="token comment">//混合两个圆形粒子的颜色</span>
+		<span class="token keyword">function</span> <span class="token function">mixConnect</span><span class="token punctuation">(</span><span class="token parameter">c1<span class="token punctuation">,</span>r1<span class="token punctuation">,</span>c2<span class="token punctuation">,</span>r2</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token comment">//圆的颜色 半径</span>
+			<span class="token keyword">return</span> <span class="token punctuation">(</span>c1<span class="token operator">*</span>r1<span class="token operator">+</span>c2<span class="token operator">*</span>r2<span class="token punctuation">)</span><span class="token operator">/</span><span class="token punctuation">(</span>r1<span class="token operator">+</span>r2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span><span class="token punctuation">;</span>
+		<span class="token comment">//生成线条的颜色</span>
+		<span class="token keyword">function</span> <span class="token function">lineColor</span><span class="token punctuation">(</span><span class="token parameter">dot1<span class="token punctuation">,</span>dot2</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token comment">//获取具体的圆的颜色再计算</span>
+			<span class="token keyword">var</span> color1 <span class="token operator">=</span> dot1<span class="token punctuation">.</span>color<span class="token punctuation">,</span>
+				color2 <span class="token operator">=</span> dot2<span class="token punctuation">.</span>color<span class="token punctuation">;</span>
+			<span class="token keyword">var</span> r <span class="token operator">=</span> <span class="token function">mixConnect</span><span class="token punctuation">(</span>color1<span class="token punctuation">.</span>r<span class="token punctuation">,</span>dot1<span class="token punctuation">.</span>radius<span class="token punctuation">,</span>color2<span class="token punctuation">.</span>r<span class="token punctuation">,</span>dot2<span class="token punctuation">.</span>radius<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token keyword">var</span> g <span class="token operator">=</span> <span class="token function">mixConnect</span><span class="token punctuation">(</span>color1<span class="token punctuation">.</span>g<span class="token punctuation">,</span>dot1<span class="token punctuation">.</span>radius<span class="token punctuation">,</span>color2<span class="token punctuation">.</span>g<span class="token punctuation">,</span>dot2<span class="token punctuation">.</span>radius<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token keyword">var</span> b <span class="token operator">=</span> <span class="token function">mixConnect</span><span class="token punctuation">(</span>color1<span class="token punctuation">.</span>b<span class="token punctuation">,</span>dot1<span class="token punctuation">.</span>radius<span class="token punctuation">,</span>color2<span class="token punctuation">.</span>b<span class="token punctuation">,</span>dot2<span class="token punctuation">.</span>radius<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token keyword">return</span> <span class="token function">createColorStyle</span><span class="token punctuation">(</span>Math<span class="token punctuation">.</span><span class="token function">floor</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span><span class="token punctuation">,</span>Math<span class="token punctuation">.</span><span class="token function">floor</span><span class="token punctuation">(</span>g<span class="token punctuation">)</span><span class="token punctuation">,</span>Math<span class="token punctuation">.</span><span class="token function">floor</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+		<span class="token comment">//生成圆形粒子的颜色对象</span>
+		<span class="token keyword">function</span> <span class="token function">Color</span><span class="token punctuation">(</span><span class="token parameter">min</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			min <span class="token operator">=</span> min <span class="token operator">||</span> <span class="token number">0</span><span class="token punctuation">;</span>
+			<span class="token keyword">this</span><span class="token punctuation">.</span>r <span class="token operator">=</span> <span class="token function">colorValue</span><span class="token punctuation">(</span>min<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token keyword">this</span><span class="token punctuation">.</span>g <span class="token operator">=</span> <span class="token function">colorValue</span><span class="token punctuation">(</span>min<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token keyword">this</span><span class="token punctuation">.</span>b <span class="token operator">=</span> <span class="token function">colorValue</span><span class="token punctuation">(</span>min<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token keyword">this</span><span class="token punctuation">.</span>style <span class="token operator">=</span> <span class="token function">createColorStyle</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>r<span class="token punctuation">,</span><span class="token keyword">this</span><span class="token punctuation">.</span>g<span class="token punctuation">,</span><span class="token keyword">this</span><span class="token punctuation">.</span>b<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+		<span class="token comment">//创建圆形粒子对象</span>
+		<span class="token keyword">function</span> <span class="token function">Dot</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			<span class="token comment">//圆形粒子随机圆心坐标点</span>
+			<span class="token keyword">this</span><span class="token punctuation">.</span>x <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span>can<span class="token punctuation">.</span>width<span class="token punctuation">;</span>
+			<span class="token keyword">this</span><span class="token punctuation">.</span>y <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span>can<span class="token punctuation">.</span>height<span class="token punctuation">;</span>
+			<span class="token comment">//x y 方向运动的速度值</span>
+			<span class="token keyword">this</span><span class="token punctuation">.</span>vx <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">0.5</span> <span class="token operator">+</span> Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token keyword">this</span><span class="token punctuation">.</span>vy <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">0.5</span> <span class="token operator">+</span> Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token keyword">this</span><span class="token punctuation">.</span>radius <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">5</span><span class="token punctuation">;</span>
+			<span class="token comment">//this.color = "#ff3333";</span>
+			<span class="token keyword">this</span><span class="token punctuation">.</span>color <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Color</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+		<span class="token comment">//绘制出圆形粒子</span>
+		<span class="token class-name">Dot</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">draw</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			cxt<span class="token punctuation">.</span><span class="token function">beginPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+			cxt<span class="token punctuation">.</span>fillStyle <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>color<span class="token punctuation">.</span>style<span class="token punctuation">;</span>
+			cxt<span class="token punctuation">.</span><span class="token function">arc</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>x<span class="token punctuation">,</span><span class="token keyword">this</span><span class="token punctuation">.</span>y<span class="token punctuation">,</span><span class="token keyword">this</span><span class="token punctuation">.</span>radius<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>Math<span class="token punctuation">.</span><span class="token constant">PI</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+			cxt<span class="token punctuation">.</span><span class="token function">fill</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+		<span class="token comment">//添加圆形粒子</span>
+		<span class="token keyword">function</span> <span class="token function">createCircle</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">var</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span>dots<span class="token punctuation">.</span>n <span class="token punctuation">;</span>i<span class="token operator">++</span> <span class="token punctuation">)</span>
+			<span class="token punctuation">{</span>
+				dots<span class="token punctuation">.</span>array<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Dot</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">}</span>
+		<span class="token comment">//绘制出圆形粒子</span>
+		<span class="token keyword">function</span> <span class="token function">drawDots</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">var</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span>dots<span class="token punctuation">.</span>n <span class="token punctuation">;</span>i<span class="token operator">++</span> <span class="token punctuation">)</span>
+			<span class="token punctuation">{</span>
+				<span class="token keyword">var</span> dot <span class="token operator">=</span> dots<span class="token punctuation">.</span>array<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+				dot<span class="token punctuation">.</span><span class="token function">draw</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">}</span>
+		
+		<span class="token comment">//drawDots();</span>
+		<span class="token comment">//移动</span>
+		<span class="token keyword">function</span> <span class="token function">moveDots</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">var</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span>dots<span class="token punctuation">.</span>n <span class="token punctuation">;</span>i<span class="token operator">++</span> <span class="token punctuation">)</span><span class="token punctuation">{</span>
+				<span class="token keyword">var</span> dot <span class="token operator">=</span> dots<span class="token punctuation">.</span>array<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+				<span class="token comment">//当圆形粒子对象碰壁的时候就反弹回来</span>
+				<span class="token keyword">if</span> <span class="token punctuation">(</span>dot<span class="token punctuation">.</span>y <span class="token operator">&lt;</span> <span class="token number">0</span> <span class="token operator">||</span> dot<span class="token punctuation">.</span>y <span class="token operator">&gt;</span> can<span class="token punctuation">.</span>height<span class="token punctuation">)</span>
+				<span class="token punctuation">{</span>
+					dot<span class="token punctuation">.</span>vx <span class="token operator">=</span> dot<span class="token punctuation">.</span>vx<span class="token punctuation">;</span>
+					dot<span class="token punctuation">.</span>vy <span class="token operator">=</span> <span class="token operator">-</span>dot<span class="token punctuation">.</span>vy<span class="token punctuation">;</span>
+				<span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>dot<span class="token punctuation">.</span>x <span class="token operator">&lt;</span> <span class="token number">0</span> <span class="token operator">||</span> dot<span class="token punctuation">.</span>x <span class="token operator">&gt;</span> can<span class="token punctuation">.</span>width<span class="token punctuation">)</span>
+				<span class="token punctuation">{</span>
+					dot<span class="token punctuation">.</span>vx <span class="token operator">=</span> <span class="token operator">-</span>dot<span class="token punctuation">.</span>vx<span class="token punctuation">;</span>
+					dot<span class="token punctuation">.</span>vy <span class="token operator">=</span> dot<span class="token punctuation">.</span>vy<span class="token punctuation">;</span>
+				<span class="token punctuation">}</span>
+				<span class="token comment">//给圆形粒子圆心坐标加上速度值移动圆形粒子</span>
+				dot<span class="token punctuation">.</span>x <span class="token operator">+=</span> dot<span class="token punctuation">.</span>vx<span class="token punctuation">;</span>
+				dot<span class="token punctuation">.</span>y <span class="token operator">+=</span> dot<span class="token punctuation">.</span>vy<span class="token punctuation">;</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">}</span>
+		<span class="token comment">//链接粒子对象</span>
+		<span class="token keyword">function</span> <span class="token function">connectDots</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">var</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span>dots<span class="token punctuation">.</span>n <span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+			<span class="token punctuation">{</span>
+				<span class="token keyword">for</span> <span class="token punctuation">(</span> <span class="token keyword">var</span> j<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>j<span class="token operator">&lt;</span>dots<span class="token punctuation">.</span>n <span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span>
+				<span class="token punctuation">{</span>
+					iDot <span class="token operator">=</span> dots<span class="token punctuation">.</span>array<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+					jDot <span class="token operator">=</span> dots<span class="token punctuation">.</span>array<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">;</span>
+					<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>iDot<span class="token punctuation">.</span>x <span class="token operator">-</span> jDot<span class="token punctuation">.</span>x<span class="token punctuation">)</span> <span class="token operator">&lt;</span> dots<span class="token punctuation">.</span>distance <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>iDot<span class="token punctuation">.</span>y <span class="token operator">-</span> jDot<span class="token punctuation">.</span>y<span class="token punctuation">)</span> <span class="token operator">&lt;</span> dots<span class="token punctuation">.</span>distance <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>iDot<span class="token punctuation">.</span>x <span class="token operator">-</span> jDot<span class="token punctuation">.</span>x<span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span>dots<span class="token punctuation">.</span>distance <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>iDot<span class="token punctuation">.</span>y <span class="token operator">-</span> jDot<span class="token punctuation">.</span>y<span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span>dots<span class="token punctuation">.</span>distance<span class="token punctuation">)</span>
+					<span class="token punctuation">{</span>
+						<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>iDot<span class="token punctuation">.</span>x <span class="token operator">-</span> mousePosition<span class="token punctuation">.</span>x<span class="token punctuation">)</span> <span class="token operator">&lt;</span> dots<span class="token punctuation">.</span>d_radius <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>iDot<span class="token punctuation">.</span>y <span class="token operator">-</span> mousePosition<span class="token punctuation">.</span>y<span class="token punctuation">)</span> <span class="token operator">&lt;</span> dots<span class="token punctuation">.</span>d_radius <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>iDot<span class="token punctuation">.</span>x <span class="token operator">-</span> mousePosition<span class="token punctuation">.</span>x<span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span>dots<span class="token punctuation">.</span>d_radius <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>iDot<span class="token punctuation">.</span>y <span class="token operator">-</span> mousePosition<span class="token punctuation">.</span>y<span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span>dots<span class="token punctuation">.</span>d_radius<span class="token punctuation">)</span>
+						<span class="token punctuation">{</span>
+							cxt<span class="token punctuation">.</span><span class="token function">beginPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+							<span class="token comment">//cxt.strokeStyle = "yellow";</span>
+							cxt<span class="token punctuation">.</span>strokeStyle <span class="token operator">=</span> <span class="token function">lineColor</span><span class="token punctuation">(</span>iDot<span class="token punctuation">,</span>jDot<span class="token punctuation">)</span><span class="token punctuation">;</span>
+							cxt<span class="token punctuation">.</span><span class="token function">moveTo</span><span class="token punctuation">(</span>iDot<span class="token punctuation">.</span>x<span class="token punctuation">,</span>iDot<span class="token punctuation">.</span>y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+							cxt<span class="token punctuation">.</span><span class="token function">lineTo</span><span class="token punctuation">(</span>jDot<span class="token punctuation">.</span>x<span class="token punctuation">,</span>jDot<span class="token punctuation">.</span>y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+							cxt<span class="token punctuation">.</span><span class="token function">closePath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+							cxt<span class="token punctuation">.</span><span class="token function">stroke</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+						<span class="token punctuation">}</span>
+						
+					<span class="token punctuation">}</span>
+				<span class="token punctuation">}</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">}</span>
+		<span class="token function">createCircle</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token comment">//让圆形粒子不断的移动</span>
+		<span class="token keyword">function</span> <span class="token function">animateDots</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			cxt<span class="token punctuation">.</span><span class="token function">clearRect</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span>can<span class="token punctuation">.</span>width<span class="token punctuation">,</span>can<span class="token punctuation">.</span>height<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token function">moveDots</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token function">connectDots</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+			<span class="token function">drawDots</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token function">requestAnimFrame</span><span class="token punctuation">(</span>animateDots<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+		<span class="token function">animateDots</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		
+		can<span class="token punctuation">.</span><span class="token function-variable function">onmousemove</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">ev</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			<span class="token keyword">var</span> ev <span class="token operator">=</span> ev <span class="token operator">||</span> window<span class="token punctuation">.</span>event<span class="token punctuation">;</span>
+			mousePosition<span class="token punctuation">.</span>x <span class="token operator">=</span> ev<span class="token punctuation">.</span>pageX<span class="token punctuation">;</span>
+			mousePosition<span class="token punctuation">.</span>y <span class="token operator">=</span> ev<span class="token punctuation">.</span>pageY<span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+		can<span class="token punctuation">.</span><span class="token function-variable function">onmouseout</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			mousePosition<span class="token punctuation">.</span>x <span class="token operator">=</span> can<span class="token punctuation">.</span>width<span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">;</span>
+			mousePosition<span class="token punctuation">.</span>y <span class="token operator">=</span> can<span class="token punctuation">.</span>height<span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

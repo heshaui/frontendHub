@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日志模块morgan - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>日志模块morgan</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>日志模块morgan</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="章节概览"><a href="#章节概览" class="header-anchor">#</a> 章节概览</h2> <p>morgan是express默认的日志中间件，也可以脱离express，作为node.js的日志组件单独使用。本文由浅入深，内容主要包括：</p> <ul><li>morgan使用入门例子</li> <li>如何将日志保存到本地文件</li> <li>核心API使用说明及例子</li> <li>进阶使用：1、日志分割 2、将日志写入数据库</li> <li>源码剖析：morgan的日志格式以及预编译</li></ul> <h2 id="入门例子"><a href="#入门例子" class="header-anchor">#</a> 入门例子</h2> <p>首先，初始化项目。</p> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">npm</span> <span class="token function">install</span> express morgan
+</code></pre></div><p>然后，在<code>basic.js</code>中添加如下代码。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> morgan <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'morgan'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">morgan</span><span class="token punctuation">(</span><span class="token string">'short'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    res<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">'ok'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p><code>node basic.js</code>运行程序，并在浏览器里访问 http://127.0.0.1:3000 ，打印日志如下</p> <div class="language-bash extra-class"><pre class="language-bash"><code>➜  <span class="token number">2016.12</span>.11-advanced-morgan git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> ✗ <span class="token function">node</span> basic.js
+::ffff:127.0.0.1 - GET / HTTP/1.1 <span class="token number">304</span> - - <span class="token number">3.019</span> ms
+::ffff:127.0.0.1 - GET /favicon.ico HTTP/1.1 <span class="token number">200</span> <span class="token number">2</span> - <span class="token number">0.984</span> ms
+</code></pre></div><h2 id="将日志打印到本地文件"><a href="#将日志打印到本地文件" class="header-anchor">#</a> 将日志打印到本地文件</h2> <p>morgan支持stream配置项，可以通过它来实现将日志落地的效果，代码如下：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> morgan <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'morgan'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> accessLogStream <span class="token operator">=</span> fs<span class="token punctuation">.</span><span class="token function">createWriteStream</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'access.log'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">flags</span><span class="token operator">:</span> <span class="token string">'a'</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">morgan</span><span class="token punctuation">(</span><span class="token string">'short'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">stream</span><span class="token operator">:</span> accessLogStream<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    res<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">'ok'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="使用讲解"><a href="#使用讲解" class="header-anchor">#</a> 使用讲解</h2> <h3 id="核心api"><a href="#核心api" class="header-anchor">#</a> 核心API</h3> <p>morgan的API非常少，使用频率最高的就是<code>morgan()</code>，作用是返回一个express日志中间件。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">morgan</span><span class="token punctuation">(</span>format<span class="token punctuation">,</span> options<span class="token punctuation">)</span>
+</code></pre></div><p>参数说明如下：</p> <ul><li>format：可选，morgan与定义了几种日志格式，每种格式都有对应的名称，比如<code>combined</code>、<code>short</code>等，默认是<code>default</code>。不同格式的差别可参考<a href="https://github.com/expressjs/morgan/#predefined-formats" target="_blank" rel="noopener noreferrer">这里<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>。下文会讲解下，如果自定义日志格式。</li> <li>options：可选，配置项，包含<code>stream（常用）</code>、<code>skip</code>、<code>immediate</code>。
+<ul><li>stream：日志的输出流配置，默认是<code>process.stdout</code>。</li> <li>skip：是否跳过日志记录，使用方式可以参考<a href="https://github.com/expressjs/morgan/#skip" target="_blank" rel="noopener noreferrer">这里<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>。</li> <li>immediate：布尔值，默认是false。当为true时，一收到请求，就记录日志；如果为false，则在请求返回后，再记录日志。</li></ul></li></ul> <h3 id="自定义日志格式"><a href="#自定义日志格式" class="header-anchor">#</a> 自定义日志格式</h3> <p>首先搞清楚morgan中的两个概念：format 跟 token。非常简单：</p> <ul><li>format：日志格式，本质是代表日志格式的字符串，比如 <code>:method :url :status :res[content-length] - :response-time ms</code>。</li> <li>token：format的组成部分，比如上面的<code>:method</code>、<code>:url</code>即使所谓的token。</li></ul> <p>搞清楚format、token的区别后，就可以看下morgan中，关于自定义日志格式的关键API。</p> <div class="language-js extra-class"><pre class="language-js"><code>morgan<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> format<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 自定义日志格式</span>
+morgan<span class="token punctuation">.</span><span class="token function">token</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> fn<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 自定义token</span>
+</code></pre></div><h2 id="自定义format"><a href="#自定义format" class="header-anchor">#</a> 自定义format</h2> <p>非常简单，首先通过<code>morgan.format()</code>定义名为<code>joke</code>的日志格式，然后通过<code>morgan('joke')</code>调用即可。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> morgan <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'morgan'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+morgan<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span><span class="token string">'joke'</span><span class="token punctuation">,</span> <span class="token string">'[joke] :method :url :status'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">morgan</span><span class="token punctuation">(</span><span class="token string">'joke'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    res<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">'ok'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>我们来看下运行结果</p> <div class="language-bash extra-class"><pre class="language-bash"><code>➜  <span class="token number">2016.12</span>.11-advanced-morgan git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> ✗ <span class="token function">node</span> morgan.format.js
+<span class="token punctuation">[</span>joke<span class="token punctuation">]</span> GET / <span class="token number">304</span>
+<span class="token punctuation">[</span>joke<span class="token punctuation">]</span> GET /favicon.ico <span class="token number">200</span>
+</code></pre></div><h2 id="自定义token"><a href="#自定义token" class="header-anchor">#</a> 自定义token</h2> <p>代码如下，通过<code>morgan.token()</code>自定义token，然后将自定义的token，加入自定义的format中即可。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> morgan <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'morgan'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 自定义token</span>
+morgan<span class="token punctuation">.</span><span class="token function">token</span><span class="token punctuation">(</span><span class="token string">'from'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> req<span class="token punctuation">.</span>query<span class="token punctuation">.</span>from <span class="token operator">||</span> <span class="token string">'-'</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 自定义format，其中包含自定义的token</span>
+morgan<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span><span class="token string">'joke'</span><span class="token punctuation">,</span> <span class="token string">'[joke] :method :url :status :from'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 使用自定义的format</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">morgan</span><span class="token punctuation">(</span><span class="token string">'joke'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    res<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">'ok'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>运行程序，并在浏览器里先后访问 http://127.0.0.1:3000/hello?from=app 和 http://127.0.0.1:3000/hello?from=pc</p> <div class="language-bash extra-class"><pre class="language-bash"><code>➜  <span class="token number">2016.12</span>.11-advanced-morgan git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> ✗ <span class="token function">node</span> morgan.token.js 
+<span class="token punctuation">[</span>joke<span class="token punctuation">]</span> GET /hello?from<span class="token operator">=</span>app <span class="token number">200</span> app
+<span class="token punctuation">[</span>joke<span class="token punctuation">]</span> GET /favicon.ico <span class="token number">304</span> -
+<span class="token punctuation">[</span>joke<span class="token punctuation">]</span> GET /hello?from<span class="token operator">=</span>pc <span class="token number">200</span> pc
+<span class="token punctuation">[</span>joke<span class="token punctuation">]</span> GET /favicon.ico <span class="token number">304</span> -
+</code></pre></div><h2 id="高级使用"><a href="#高级使用" class="header-anchor">#</a> 高级使用</h2> <h3 id="日志切割"><a href="#日志切割" class="header-anchor">#</a> 日志切割</h3> <p>一个线上应用，如果所有的日志都落地到同一个本地文件，时间久了，文件会变得非常大，既影响性能，又不便于查看。这时候，就需要用到日志分割了。</p> <p>借助<code>file-stream-rotator</code>插件，可以轻松完成日志分割的工作。除了<code>file-stream-rotator</code>相关的配置代码，其余跟之前的例子差不多，这里不赘述。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> FileStreamRotator <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'file-stream-rotator'</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> morgan <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'morgan'</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> logDirectory <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'log'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// ensure log directory exists</span>
+fs<span class="token punctuation">.</span><span class="token function">existsSync</span><span class="token punctuation">(</span>logDirectory<span class="token punctuation">)</span> <span class="token operator">||</span> fs<span class="token punctuation">.</span><span class="token function">mkdirSync</span><span class="token punctuation">(</span>logDirectory<span class="token punctuation">)</span>
+
+<span class="token comment">// create a rotating write stream</span>
+<span class="token keyword">var</span> accessLogStream <span class="token operator">=</span> FileStreamRotator<span class="token punctuation">.</span><span class="token function">getStream</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token literal-property property">date_format</span><span class="token operator">:</span> <span class="token string">'YYYYMMDD'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">filename</span><span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>logDirectory<span class="token punctuation">,</span> <span class="token string">'access-%DATE%.log'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">frequency</span><span class="token operator">:</span> <span class="token string">'daily'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">verbose</span><span class="token operator">:</span> <span class="token boolean">false</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// setup the logger</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">morgan</span><span class="token punctuation">(</span><span class="token string">'combined'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">stream</span><span class="token operator">:</span> accessLogStream<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+app<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'/'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  res<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">'hello, world!'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+</code></pre></div><h3 id="日志写入数据库"><a href="#日志写入数据库" class="header-anchor">#</a> 日志写入数据库</h3> <p>有的时候，我们会有这样的需求，将访问日志写入数据库。这种需求常见于需要实时查询统计的日志系统。</p> <p>在morgan里该如何实现呢？从文档上，并没有看到适合的扩展接口。于是查阅了下<code>morgan</code>的源码，发现实现起来非常简单。</p> <p>回顾下之前日志写入本地文件的例子，最关键的两行代码如下。通过<code>stream</code>指定日志的输出流。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> accessLogStream <span class="token operator">=</span> fs<span class="token punctuation">.</span><span class="token function">createWriteStream</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'access.log'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">flags</span><span class="token operator">:</span> <span class="token string">'a'</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">morgan</span><span class="token punctuation">(</span><span class="token string">'short'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">stream</span><span class="token operator">:</span> accessLogStream<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>在<code>morgan</code>内部，大致实现是这样的（简化后）。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// opt为配置文件</span>
+<span class="token keyword">var</span> stream <span class="token operator">=</span> opts<span class="token punctuation">.</span>stream <span class="token operator">||</span> process<span class="token punctuation">.</span>stdout<span class="token punctuation">;</span>
+<span class="token keyword">var</span> logString <span class="token operator">=</span> <span class="token function">createLogString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 伪代码，根据format、token的定义，生成日志</span>
+stream<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span>logString<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>于是，可以用比较取巧的方式来实现目的：声明一个带<code>write</code>方法的对象，并作为<code>stream</code>配置传入。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> morgan <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'morgan'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 带write方法的对象</span>
+<span class="token keyword">var</span> dbStream <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token function-variable function">write</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">line</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token function">saveToDatabase</span><span class="token punctuation">(</span>line<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 伪代码，保存到数据库</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 将 dbStream 作为 stream 配置项的值</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">morgan</span><span class="token punctuation">(</span><span class="token string">'short'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">stream</span><span class="token operator">:</span> dbStream<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  res<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">'ok'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="深入剖析"><a href="#深入剖析" class="header-anchor">#</a> 深入剖析</h2> <p>morgan的代码非常简洁，从设计上来说，morgan的生命周期包含：</p> <blockquote><p>token定义 --&gt; 日志格式定义 -&gt; 日志格式预编译 --&gt; 请求达到/返回 --&gt; 写日志</p></blockquote> <p>其中，token定义、日志格式定义前面已经讲到，这里就只讲下 <strong>日志格式预编译</strong> 的细节。</p> <p>跟模板引擎预编译一样，日志格式预编译，也是为了提升性能。源码如下，最关键的代码就是<code>compile(fmt)</code>。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">getFormatFunction</span> <span class="token punctuation">(</span><span class="token parameter">name</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// lookup format</span>
+  <span class="token keyword">var</span> fmt <span class="token operator">=</span> morgan<span class="token punctuation">[</span>name<span class="token punctuation">]</span> <span class="token operator">||</span> name <span class="token operator">||</span> morgan<span class="token punctuation">.</span>default
+
+  <span class="token comment">// return compiled format</span>
+  <span class="token keyword">return</span> <span class="token keyword">typeof</span> fmt <span class="token operator">!==</span> <span class="token string">'function'</span>
+    <span class="token operator">?</span> <span class="token function">compile</span><span class="token punctuation">(</span>fmt<span class="token punctuation">)</span>
+    <span class="token operator">:</span> fmt
+<span class="token punctuation">}</span>
+</code></pre></div><p><code>compile()</code>方法的实现细节这里不赘述，着重看下<code>compile(fmt)</code>返回的内容：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> morgan <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'morgan'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> format <span class="token operator">=</span> morgan<span class="token punctuation">[</span><span class="token string">'tiny'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> fn <span class="token operator">=</span> morgan<span class="token punctuation">.</span><span class="token function">compile</span><span class="token punctuation">(</span>format<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>fn<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>运行上面程序，输出内容如下，其中<code>tokens</code>其实就是<code>morgan</code>。</p> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token keyword">function</span> anonymous<span class="token punctuation">(</span>tokens, req, res
+/**/<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token builtin class-name">return</span> <span class="token string">""</span>
+    + <span class="token punctuation">(</span>tokens<span class="token punctuation">[</span><span class="token string">"method"</span><span class="token punctuation">]</span><span class="token punctuation">(</span>req, res, undefined<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token string">"-"</span><span class="token punctuation">)</span> + <span class="token string">" "</span>
+    + <span class="token punctuation">(</span>tokens<span class="token punctuation">[</span><span class="token string">"url"</span><span class="token punctuation">]</span><span class="token punctuation">(</span>req, res, undefined<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token string">"-"</span><span class="token punctuation">)</span> + <span class="token string">" "</span>
+    + <span class="token punctuation">(</span>tokens<span class="token punctuation">[</span><span class="token string">"status"</span><span class="token punctuation">]</span><span class="token punctuation">(</span>req, res, undefined<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token string">"-"</span><span class="token punctuation">)</span> + <span class="token string">" "</span>
+    + <span class="token punctuation">(</span>tokens<span class="token punctuation">[</span><span class="token string">"res"</span><span class="token punctuation">]</span><span class="token punctuation">(</span>req, res, <span class="token string">"content-length"</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token string">"-"</span><span class="token punctuation">)</span> + <span class="token string">" - "</span>
+    + <span class="token punctuation">(</span>tokens<span class="token punctuation">[</span><span class="token string">"response-time"</span><span class="token punctuation">]</span><span class="token punctuation">(</span>req, res, undefined<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token string">"-"</span><span class="token punctuation">)</span> + <span class="token string">" ms"</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>看下<code>morgan.token()</code>的定义，就很清晰了</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">token</span> <span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span> fn</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  morgan<span class="token punctuation">[</span>name<span class="token punctuation">]</span> <span class="token operator">=</span> fn
+  <span class="token keyword">return</span> <span class="token keyword">this</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="相关链接"><a href="#相关链接" class="header-anchor">#</a> 相关链接</h2> <p>https://github.com/expressjs/morgan</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

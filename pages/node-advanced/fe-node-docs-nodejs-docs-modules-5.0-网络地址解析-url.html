@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络地址解析 url - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>网络地址解析 url</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>网络地址解析 url</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="模块概述"><a href="#模块概述" class="header-anchor">#</a> 模块概述</h2> <p>nodejs中，提供了<strong>url</strong>这个非常实用的模块，用来做URL的解析。在做node服务端的开发时会经常用到。使用很简单，总共只有3个方法。</p> <h2 id="模块方法概述"><a href="#模块方法概述" class="header-anchor">#</a> 模块方法概述</h2> <p>url模块三个方法分别是：</p> <ul><li><strong>.parse(urlString)</strong>：将url字符串，解析成object，便于开发者进行操作。</li> <li><strong>.format(urlObj)</strong>：.parse() 方法的反向操作。</li> <li><strong>.resove(from, to)</strong>：以from作为起始地址，解析出完整的目标地址（还是看直接看例子好些）</li></ul> <h2 id="url解析-url-parse"><a href="#url解析-url-parse" class="header-anchor">#</a> url解析：url.parse()</h2> <blockquote><p>完整语法：url.parse(urlString[, parseQueryString[, slashesDenoteHost]])</p></blockquote> <p>使用比较简单，几个要点备忘如下。</p> <ol><li><strong>parseQueryString</strong>：（默认为false）如为false，则<code>urlObject.query</code>为未解析的字符串，比如<code>nick=%E7%A8%8B%E5%BA%8F%E7%8C%BF%E5%B0%8F%E5%8D%A1</code>，且对应的值不会decode；如果<code>parseQueryString</code>为true，则<code>urlObject.query</code>为object，比如<code>{ nick: '程序员poetry' }</code>，且值会被decode；</li> <li><strong>slashesDenoteHos</strong>：（默认为false）如果为true，那么类似<code>//foo/bar</code>里的<code>foo</code>就会被认为是<code>hostname</code>；如果为false，则<code>foo</code>被认为是pathname的一部分。</li> <li>关于解析得到的 urlObject ，会在下一小节进行详细介绍。</li></ol> <h3 id="例子1-参数值不进行解析"><a href="#例子1-参数值不进行解析" class="header-anchor">#</a> 例子1：参数值不进行解析</h3> <p>代码如下：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> url <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'url'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> str <span class="token operator">=</span> <span class="token string">'http://Chyingp:HelloWorld@ke.qq.com:8080/index.html?nick=%E7%A8%8B%E5%BA%8F%E7%8C%BF%E5%B0%8F%E5%8D%A1#part=1'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> obj <span class="token operator">=</span> url<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>输出如下：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>Url <span class="token punctuation">{</span>
+  <span class="token literal-property property">protocol</span><span class="token operator">:</span> <span class="token string">'http:'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">slashes</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">auth</span><span class="token operator">:</span> <span class="token string">'Chyingp:HelloWorld'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">host</span><span class="token operator">:</span> <span class="token string">'ke.qq.com:8080'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">port</span><span class="token operator">:</span> <span class="token string">'8080'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">hostname</span><span class="token operator">:</span> <span class="token string">'ke.qq.com'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">hash</span><span class="token operator">:</span> <span class="token string">'#part=1'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">search</span><span class="token operator">:</span> <span class="token string">'?nick=%E7%A8%8B%E5%BA%8F%E7%8C%BF%E5%B0%8F%E5%8D%A1'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">query</span><span class="token operator">:</span> <span class="token string">'nick=%E7%A8%8B%E5%BA%8F%E7%8C%BF%E5%B0%8F%E5%8D%A1'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">pathname</span><span class="token operator">:</span> <span class="token string">'/index.html'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">path</span><span class="token operator">:</span> <span class="token string">'/index.html?nick=%E7%A8%8B%E5%BA%8F%E7%8C%BF%E5%B0%8F%E5%8D%A1'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">href</span><span class="token operator">:</span> <span class="token string">'http://Chyingp:HelloWorld@ke.qq.com:8080/index.html?nick=%E7%A8%8B%E5%BA%8F%E7%8C%BF%E5%B0%8F%E5%8D%A1#part=1'</span> <span class="token punctuation">}</span>
+</code></pre></div><h3 id="例子2-对参数值进行decode"><a href="#例子2-对参数值进行decode" class="header-anchor">#</a> 例子2：对参数值进行decode</h3> <p>代码如下：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> url <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'url'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> str <span class="token operator">=</span> <span class="token string">'http://Chyingp:HelloWorld@ke.qq.com:8080/index.html?nick=%E7%A8%8B%E5%BA%8F%E7%8C%BF%E5%B0%8F%E5%8D%A1#part=1'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> obj <span class="token operator">=</span> url<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>str<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>输出如下，对比上面的例子会发现，<strong>query</strong> 字段被解析成了object，并且decode过。</p> <div class="language-bash extra-class"><pre class="language-bash"><code>Url <span class="token punctuation">{</span>
+  protocol: <span class="token string">'http:'</span>,
+  slashes: true,
+  auth: <span class="token string">'Chyingp:HelloWorld'</span>,
+  host: <span class="token string">'ke.qq.com:8080'</span>,
+  port: <span class="token string">'8080'</span>,
+  hostname: <span class="token string">'ke.qq.com'</span>,
+  hash: <span class="token string">'#part=1'</span>,
+  search: <span class="token string">'?nick=%E7%A8%8B%E5%BA%8F%E7%8C%BF%E5%B0%8F%E5%8D%A1'</span>,
+  query: <span class="token punctuation">{</span> nick: <span class="token string">'程序员poetry'</span> <span class="token punctuation">}</span>,
+  pathname: <span class="token string">'/index.html'</span>,
+  path: <span class="token string">'/index.html?nick=%E7%A8%8B%E5%BA%8F%E7%8C%BF%E5%B0%8F%E5%8D%A1'</span>,
+  href: <span class="token string">'http://Chyingp:HelloWorld@ke.qq.com:8080/index.html?nick=%E7%A8%8B%E5%BA%8F%E7%8C%BF%E5%B0%8F%E5%8D%A1#part=1'</span> <span class="token punctuation">}</span>
+</code></pre></div><h3 id="例子3-针对路径-foo-bar-的处理"><a href="#例子3-针对路径-foo-bar-的处理" class="header-anchor">#</a> 例子3：针对路径 //foo/bar 的处理</h3> <p>代码如下：</p> <div class="language- extra-class"><pre class="language-text"><code>var url = require('url');
+var str = '//foo/bar';
+
+var obj = url.parse(str, true, false);
+console.log(obj);
+
+obj = url.parse(str, true, true);
+console.log(obj);
+</code></pre></div><p>输出如下，自行对比两者之间的差异：</p> <div class="language-bash extra-class"><pre class="language-bash"><code>Url <span class="token punctuation">{</span>
+  protocol: null,
+  slashes: null,
+  auth: null,
+  host: null,
+  port: null,
+  hostname: null,
+  hash: null,
+  search: <span class="token string">''</span>,
+  query: <span class="token punctuation">{</span><span class="token punctuation">}</span>,
+  pathname: <span class="token string">'//foo/bar'</span>,
+  path: <span class="token string">'//foo/bar'</span>,
+  href: <span class="token string">'//foo/bar'</span> <span class="token punctuation">}</span>
+Url <span class="token punctuation">{</span>
+  protocol: null,
+  slashes: true,
+  auth: null,
+  host: <span class="token string">'foo'</span>,
+  port: null,
+  hostname: <span class="token string">'foo'</span>,
+  hash: null,
+  search: <span class="token string">''</span>,
+  query: <span class="token punctuation">{</span><span class="token punctuation">}</span>,
+  pathname: <span class="token string">'/bar'</span>,
+  path: <span class="token string">'/bar'</span>,
+  href: <span class="token string">'//foo/bar'</span> <span class="token punctuation">}</span>
+</code></pre></div><h2 id="关于urlobject"><a href="#关于urlobject" class="header-anchor">#</a> 关于urlObject</h2> <p>以上面的作为例子，粗略讲解下<code>urlObject</code>。更多细节可参考<a href="https://nodejs.org/api/url.html#url_url_strings_and_url_objects" target="_blank" rel="noopener noreferrer">官方文档<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>。</p> <ul><li>protocol：协议，需要注意的是包含了<code>:</code>，并且是小写的。</li> <li>slashes：如果<code>:</code>后面跟了两个<code>//</code>，那么为true。</li> <li>auth：认证信息，如果有密码，为<code>usrname:passwd</code>，如果没有，则为<code>usrname</code>。注意，这里区分大小写。</li> <li>host：主机名。注意包含了端口，比如<code>ke.qq.com:8080</code>，并且是小写的。</li> <li>hostname：主机名，不包含端口，并且是小写的。</li> <li>hash：哈希部分，注意包含了<code>#</code>。</li> <li>search：查询字符串，注意，包含了<code>?</code>，此外，值是没有经过decode的。</li> <li>query：字符串 或者 对象。如果是字符串，则是<code>search</code>去掉<code>?</code>，其余一样；如果是对象，那么是decode过的。</li> <li>path：路径部分，包含search部分。</li> <li>pathname：路径部分，不包含search部分。</li> <li>href：原始的地址。不过需要注意的是，<code>protocol</code>、<code>host</code>会被转成小写字母。</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  <span class="token literal-property property">protocol</span><span class="token operator">:</span> <span class="token string">'http:'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">slashes</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">auth</span><span class="token operator">:</span> <span class="token string">'Chyingp:HelloWorld'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">host</span><span class="token operator">:</span> <span class="token string">'ke.qq.com:8080'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">port</span><span class="token operator">:</span> <span class="token string">'8080'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">hostname</span><span class="token operator">:</span> <span class="token string">'ke.qq.com'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">hash</span><span class="token operator">:</span> <span class="token string">'#part=1'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">search</span><span class="token operator">:</span> <span class="token string">'?nick=%E7%A8%8B%E5%BA%8F%E7%8C%BF%E5%B0%8F%E5%8D%A1'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">query</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">nick</span><span class="token operator">:</span> <span class="token string">'程序员poetry'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">pathname</span><span class="token operator">:</span> <span class="token string">'/index.html'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">path</span><span class="token operator">:</span> <span class="token string">'/index.html?nick=%E7%A8%8B%E5%BA%8F%E7%8C%BF%E5%B0%8F%E5%8D%A1'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">href</span><span class="token operator">:</span> <span class="token string">'http://Chyingp:HelloWorld@ke.qq.com:8080/index.html?nick=%E7%A8%8B%E5%BA%8F%E7%8C%BF%E5%B0%8F%E5%8D%A1#part=1'</span> <span class="token punctuation">}</span>
+</code></pre></div><h2 id="url拼接-url-format-urlobject"><a href="#url拼接-url-format-urlobject" class="header-anchor">#</a> url拼接：url.format(urlObject)</h2> <blockquote><p>完整语法：url.format(urlObject)</p></blockquote> <p><code>url.parse(str)</code>的反向操作，没什么好说的。<code>urlObject</code>包含了很多字段，比如<code>protocol</code>、<code>slashes</code>、<code>protocol</code>等，且不一定需要全部传，所以有一套解析逻辑。</p> <p>过程比较冗长，大部分时候不需要用到，直接贴<a href="https://nodejs.org/api/url.html#url_url_format_urlobject" target="_blank" rel="noopener noreferrer">官方文档<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>的链接，有需要再看。</p> <h2 id="url-resolve-from-to"><a href="#url-resolve-from-to" class="header-anchor">#</a> url.resolve(from, to)</h2> <p>用法比较简单，直接贴官方文档的例子</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>url<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">'/one/two/three'</span><span class="token punctuation">,</span> <span class="token string">'four'</span><span class="token punctuation">)</span>         <span class="token comment">// '/one/two/four'</span>
+url<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">'http://example.com/'</span><span class="token punctuation">,</span> <span class="token string">'/one'</span><span class="token punctuation">)</span>    <span class="token comment">// 'http://example.com/one'</span>
+url<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">'http://example.com/one'</span><span class="token punctuation">,</span> <span class="token string">'/two'</span><span class="token punctuation">)</span> <span class="token comment">// 'http://example.com/two'</span>
+</code></pre></div><h2 id="非法字符转义"><a href="#非法字符转义" class="header-anchor">#</a> 非法字符转义</h2> <p>url字符如果有下面的字符会被转义（非法字符）</p> <blockquote><p>&lt; &gt; " ` \r \n \t { } | \ ^ '</p></blockquote> <h2 id="相关链接"><a href="#相关链接" class="header-anchor">#</a> 相关链接</h2> <p>官方文档：<a href="https://nodejs.org/api/url.html#url_url" target="_blank" rel="noopener noreferrer">https://nodejs.org/api/url.html#url_url<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

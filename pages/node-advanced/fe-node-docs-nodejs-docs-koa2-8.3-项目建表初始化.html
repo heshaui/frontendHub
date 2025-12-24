@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目建表初始化 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>项目建表初始化</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>项目建表初始化</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h1 id="建表初始化"><a href="#建表初始化" class="header-anchor">#</a> 建表初始化</h1> <h2 id="前言"><a href="#前言" class="header-anchor">#</a> 前言</h2> <p>通常初始化数据库要建立很多表，特别在项目开发的时候表的格式可能会有些变动，这时候就需要封装对数据库建表初始化的方法，保留项目的sql脚本文件，然后每次需要重新建表，则执行建表初始化程序就行</p> <h2 id="快速开始"><a href="#快速开始" class="header-anchor">#</a> 快速开始</h2> <p>demo源码</p> <p><a href="https://github.com/poetries/daily-code-practice/tree/master/node/koa/koa2-demo/mysql/" target="_blank" rel="noopener noreferrer">https://github.com/poetries/daily-code-practice/tree/master/node/koa/koa2-demo/mysql/<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h3 id="源码目录"><a href="#源码目录" class="header-anchor">#</a> 源码目录</h3> <div class="language-sh extra-class"><pre class="language-sh"><code>├── index.js <span class="token comment"># 程序入口文件</span>
+├── node_modules/
+├── package.json
+├── sql   <span class="token comment"># sql脚本文件目录</span>
+│   ├── data.sql
+│   └── user.sql
+└── util    <span class="token comment"># 工具代码</span>
+    ├── db.js <span class="token comment"># 封装的mysql模块方法</span>
+    ├── get-sql-content-map.js <span class="token comment"># 获取sql脚本文件内容</span>
+    ├── get-sql-map.js <span class="token comment"># 获取所有sql脚本文件</span>
+    └── walk-file.js <span class="token comment"># 遍历sql脚本文件</span>
+</code></pre></div><h3 id="具体流程"><a href="#具体流程" class="header-anchor">#</a> 具体流程</h3> <div class="language-sh extra-class"><pre class="language-sh"><code>       +---------------------------------------------------+
+       <span class="token operator">|</span>                                                   <span class="token operator">|</span>
+       <span class="token operator">|</span>   +-----------+   +-----------+   +-----------+   <span class="token operator">|</span>
+       <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>
+       <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>
+       <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>
+       <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>
++----------+  遍历sql  +---+ 解析所有sql +---+  执行sql  +------------<span class="token operator">&gt;</span>
+       <span class="token operator">|</span>   <span class="token operator">|</span>  目录下的  <span class="token operator">|</span>   <span class="token operator">|</span>  文件脚本  <span class="token operator">|</span>   <span class="token operator">|</span>   脚本     <span class="token operator">|</span>   <span class="token operator">|</span>
++----------+  sql文件   +---+   内容    +---+           +------------<span class="token operator">&gt;</span>
+       <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>
+       <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>
+       <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>
+       <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>           <span class="token operator">|</span>   <span class="token operator">|</span>
+       <span class="token operator">|</span>   +-----------+   +-----------+   +-----------+   <span class="token operator">|</span>
+       <span class="token operator">|</span>                                                   <span class="token operator">|</span>
+       +---------------------------------------------------+
+
+</code></pre></div><h2 id="源码详解"><a href="#源码详解" class="header-anchor">#</a> 源码详解</h2> <h3 id="数据库操作文件-util-db-js"><a href="#数据库操作文件-util-db-js" class="header-anchor">#</a> 数据库操作文件 ./util/db.js</h3> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> mysql <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'mysql'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> pool <span class="token operator">=</span> mysql<span class="token punctuation">.</span><span class="token function">createPool</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token literal-property property">host</span>     <span class="token operator">:</span>  <span class="token string">'127.0.0.1'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">user</span>     <span class="token operator">:</span>  <span class="token string">'root'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">password</span> <span class="token operator">:</span>  <span class="token string">'abc123'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">database</span> <span class="token operator">:</span>  <span class="token string">'koa_demo'</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">let</span> <span class="token function-variable function">query</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span> <span class="token parameter">sql<span class="token punctuation">,</span> values</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span> <span class="token parameter">resolve<span class="token punctuation">,</span> reject</span> <span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    pool<span class="token punctuation">.</span><span class="token function">getConnection</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">err<span class="token punctuation">,</span> connection</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">reject</span><span class="token punctuation">(</span> err <span class="token punctuation">)</span>
+      <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        connection<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span>sql<span class="token punctuation">,</span> values<span class="token punctuation">,</span> <span class="token punctuation">(</span> <span class="token parameter">err<span class="token punctuation">,</span> rows</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+
+          <span class="token keyword">if</span> <span class="token punctuation">(</span> err <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token function">reject</span><span class="token punctuation">(</span> err <span class="token punctuation">)</span>
+          <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token function">resolve</span><span class="token punctuation">(</span> rows <span class="token punctuation">)</span>
+          <span class="token punctuation">}</span>
+          connection<span class="token punctuation">.</span><span class="token function">release</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token punctuation">}</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  query
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="获取所有sql脚本内容-util-get-sql-content-map-js"><a href="#获取所有sql脚本内容-util-get-sql-content-map-js" class="header-anchor">#</a> 获取所有sql脚本内容 ./util/get-sql-content-map.js</h3> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> getSqlMap <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./get-sql-map'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">let</span> sqlContentMap <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+
+<span class="token comment">/**
+ * 读取sql文件内容
+ * @param  {string} fileName 文件名称
+ * @param  {string} path     文件所在的路径
+ * @return {string}          脚本文件内容
+ */</span>
+<span class="token keyword">function</span> <span class="token function">getSqlContent</span><span class="token punctuation">(</span> <span class="token parameter">fileName<span class="token punctuation">,</span>  path</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> content <span class="token operator">=</span> fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span> path<span class="token punctuation">,</span> <span class="token string">'binary'</span> <span class="token punctuation">)</span>
+  sqlContentMap<span class="token punctuation">[</span> fileName <span class="token punctuation">]</span> <span class="token operator">=</span> content
+<span class="token punctuation">}</span>
+
+<span class="token comment">/**
+ * 封装所有sql文件脚本内容
+ * @return {object} 
+ */</span>
+<span class="token keyword">function</span> <span class="token function">getSqlContentMap</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> sqlMap <span class="token operator">=</span> <span class="token function">getSqlMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">for</span><span class="token punctuation">(</span> <span class="token keyword">let</span> key <span class="token keyword">in</span> sqlMap <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">getSqlContent</span><span class="token punctuation">(</span> key<span class="token punctuation">,</span> sqlMap<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">return</span> sqlContentMap
+<span class="token punctuation">}</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> getSqlContentMap
+</code></pre></div><h3 id="获取sql目录详情-util-get-sql-map-js"><a href="#获取sql目录详情-util-get-sql-map-js" class="header-anchor">#</a> 获取sql目录详情 ./util/get-sql-map.js</h3> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> walkFile <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./walk-file'</span><span class="token punctuation">)</span>
+
+<span class="token comment">/**
+ * 获取sql目录下的文件目录数据
+ * @return {object} 
+ */</span>
+<span class="token keyword">function</span> <span class="token function">getSqlMap</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> basePath <span class="token operator">=</span> __dirname
+  basePath <span class="token operator">=</span> basePath<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\\</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token string">'\/'</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">let</span> pathArr <span class="token operator">=</span> basePath<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">'\/'</span><span class="token punctuation">)</span>
+  pathArr <span class="token operator">=</span> pathArr<span class="token punctuation">.</span><span class="token function">splice</span><span class="token punctuation">(</span> <span class="token number">0</span><span class="token punctuation">,</span> pathArr<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span> <span class="token punctuation">)</span>
+  basePath <span class="token operator">=</span> pathArr<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">'/'</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">'/sql/'</span>
+
+  <span class="token keyword">let</span> fileList <span class="token operator">=</span> <span class="token function">walkFile</span><span class="token punctuation">(</span> basePath<span class="token punctuation">,</span> <span class="token string">'sql'</span> <span class="token punctuation">)</span>
+  <span class="token keyword">return</span> fileList
+<span class="token punctuation">}</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> getSqlMap
+</code></pre></div><h3 id="遍历目录操作-util-walk-file-js"><a href="#遍历目录操作-util-walk-file-js" class="header-anchor">#</a> 遍历目录操作 ./util/walk-file.js</h3> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span>
+
+<span class="token comment">/**
+ * 遍历目录下的文件目录
+ * @param  {string} pathResolve  需进行遍历的目录路径
+ * @param  {string} mime         遍历文件的后缀名
+ * @return {object}              返回遍历后的目录结果
+ */</span>
+<span class="token keyword">const</span> <span class="token function-variable function">walkFile</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span>  <span class="token parameter">pathResolve <span class="token punctuation">,</span> mime</span> <span class="token punctuation">)</span><span class="token punctuation">{</span>
+
+  <span class="token keyword">let</span> files <span class="token operator">=</span> fs<span class="token punctuation">.</span><span class="token function">readdirSync</span><span class="token punctuation">(</span> pathResolve <span class="token punctuation">)</span>
+
+  <span class="token keyword">let</span> fileList <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+
+   <span class="token keyword">for</span><span class="token punctuation">(</span> <span class="token keyword">let</span> <span class="token punctuation">[</span> i<span class="token punctuation">,</span> item<span class="token punctuation">]</span> <span class="token keyword">of</span> files<span class="token punctuation">.</span><span class="token function">entries</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> itemArr <span class="token operator">=</span> item<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">'\.'</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">let</span> itemMime <span class="token operator">=</span> <span class="token punctuation">(</span> itemArr<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">1</span> <span class="token punctuation">)</span> <span class="token operator">?</span> itemArr<span class="token punctuation">[</span> itemArr<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span> <span class="token punctuation">]</span> <span class="token operator">:</span> <span class="token string">'undefined'</span>
+    <span class="token keyword">let</span> keyName <span class="token operator">=</span> item <span class="token operator">+</span> <span class="token string">''</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span> mime <span class="token operator">===</span> itemMime <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      fileList<span class="token punctuation">[</span> item <span class="token punctuation">]</span> <span class="token operator">=</span>  pathResolve <span class="token operator">+</span> item
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">return</span> fileList
+<span class="token punctuation">}</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> walkFile
+</code></pre></div><h3 id="入口文件-index-js"><a href="#入口文件-index-js" class="header-anchor">#</a> 入口文件 ./index.js</h3> <div class="language-js extra-class"><pre class="language-js"><code>
+<span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> getSqlContentMap <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./util/get-sql-content-map'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token punctuation">{</span> query <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./util/db'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+<span class="token comment">// 打印脚本执行日志</span>
+<span class="token keyword">const</span> <span class="token function-variable function">eventLog</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span> <span class="token parameter">err <span class="token punctuation">,</span> sqlFile<span class="token punctuation">,</span> index</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span><span class="token punctuation">(</span> err <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">[ERROR] sql脚本文件: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>sqlFile<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> 第</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>index <span class="token operator">+</span> <span class="token number">1</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">条脚本 执行失败 o(╯□╰)o ！</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">[SUCCESS] sql脚本文件: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>sqlFile<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> 第</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>index <span class="token operator">+</span> <span class="token number">1</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">条脚本 执行成功 O(∩_∩)O !</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 获取所有sql脚本内容</span>
+<span class="token keyword">let</span> sqlContentMap <span class="token operator">=</span> <span class="token function">getSqlContentMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 执行建表sql脚本</span>
+<span class="token keyword">const</span> <span class="token function-variable function">createAllTables</span> <span class="token operator">=</span> <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">for</span><span class="token punctuation">(</span> <span class="token keyword">let</span> key <span class="token keyword">in</span> sqlContentMap <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> sqlShell <span class="token operator">=</span> sqlContentMap<span class="token punctuation">[</span>key<span class="token punctuation">]</span>
+    <span class="token keyword">let</span> sqlShellList <span class="token operator">=</span> sqlShell<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">';'</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span> <span class="token keyword">let</span> <span class="token punctuation">[</span> i<span class="token punctuation">,</span> shell <span class="token punctuation">]</span> <span class="token keyword">of</span> sqlShellList<span class="token punctuation">.</span><span class="token function">entries</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span> shell<span class="token punctuation">.</span><span class="token function">trim</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">let</span> result <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">query</span><span class="token punctuation">(</span> shell <span class="token punctuation">)</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span> result<span class="token punctuation">.</span>serverStatus <span class="token operator">*</span> <span class="token number">1</span> <span class="token operator">===</span> <span class="token number">2</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token function">eventLog</span><span class="token punctuation">(</span> <span class="token keyword">null</span><span class="token punctuation">,</span>  key<span class="token punctuation">,</span> i<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+          <span class="token function">eventLog</span><span class="token punctuation">(</span> <span class="token boolean">true</span><span class="token punctuation">,</span>  key<span class="token punctuation">,</span> i<span class="token punctuation">)</span> 
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'sql脚本执行结束！'</span><span class="token punctuation">)</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'请按 ctrl + c 键退出！'</span><span class="token punctuation">)</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token function">createAllTables</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="sql脚本文件-sql-data-sql"><a href="#sql脚本文件-sql-data-sql" class="header-anchor">#</a> sql脚本文件 ./sql/data.sql</h3> <div class="language-sql extra-class"><pre class="language-sql"><code><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span>   <span class="token keyword">IF</span> <span class="token operator">NOT</span> <span class="token keyword">EXISTS</span>  <span class="token identifier"><span class="token punctuation">`</span>data<span class="token punctuation">`</span></span> <span class="token punctuation">(</span>
+  <span class="token identifier"><span class="token punctuation">`</span>id<span class="token punctuation">`</span></span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">AUTO_INCREMENT</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>data_info<span class="token punctuation">`</span></span> json <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>create_time<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>modified_time<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>level<span class="token punctuation">`</span></span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span><span class="token identifier"><span class="token punctuation">`</span>id<span class="token punctuation">`</span></span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span> <span class="token keyword">ENGINE</span><span class="token operator">=</span><span class="token keyword">InnoDB</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CHARSET</span><span class="token operator">=</span>utf8
+</code></pre></div><h3 id="sql脚本文件-sql-user-sql"><a href="#sql脚本文件-sql-user-sql" class="header-anchor">#</a> sql脚本文件 ./sql/user.sql</h3> <div class="language-sql extra-class"><pre class="language-sql"><code><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span>   <span class="token keyword">IF</span> <span class="token operator">NOT</span> <span class="token keyword">EXISTS</span>  <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token punctuation">(</span>
+  <span class="token identifier"><span class="token punctuation">`</span>id<span class="token punctuation">`</span></span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">AUTO_INCREMENT</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>email<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>password<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>name<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>nick<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>detail_info<span class="token punctuation">`</span></span> json <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>create_time<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>modified_time<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>level<span class="token punctuation">`</span></span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span><span class="token identifier"><span class="token punctuation">`</span>id<span class="token punctuation">`</span></span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span> <span class="token keyword">ENGINE</span><span class="token operator">=</span><span class="token keyword">InnoDB</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CHARSET</span><span class="token operator">=</span>utf8<span class="token punctuation">;</span>
+
+<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">set</span> email<span class="token operator">=</span><span class="token string">'1@example.com'</span><span class="token punctuation">,</span> password<span class="token operator">=</span><span class="token string">'123456'</span><span class="token punctuation">;</span>
+<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">set</span> email<span class="token operator">=</span><span class="token string">'2@example.com'</span><span class="token punctuation">,</span> password<span class="token operator">=</span><span class="token string">'123456'</span><span class="token punctuation">;</span>
+<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> <span class="token identifier"><span class="token punctuation">`</span>user<span class="token punctuation">`</span></span> <span class="token keyword">set</span> email<span class="token operator">=</span><span class="token string">'3@example.com'</span><span class="token punctuation">,</span> password<span class="token operator">=</span><span class="token string">'123456'</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="效果"><a href="#效果" class="header-anchor">#</a> 效果</h2> <h3 id="执行脚本"><a href="#执行脚本" class="header-anchor">#</a> 执行脚本</h3> <div class="language- extra-class"><pre class="language-text"><code>node index.js
+</code></pre></div><h3 id="执行结果"><a href="#执行结果" class="header-anchor">#</a> 执行结果</h3> <p><img src="https://s.poetries.top/uploads/2025/10/8a5e742faa822e5c.png" alt=""></p> <h3 id="查看数据库写入数据"><a href="#查看数据库写入数据" class="header-anchor">#</a> 查看数据库写入数据</h3> <p><img src="https://s.poetries.top/uploads/2025/10/8a3348c789f3b2d9.png" alt=""></p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

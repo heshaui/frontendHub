@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本地调试远程服务器上的Node代码 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>本地调试远程服务器上的Node代码</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>本地调试远程服务器上的Node代码</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="写在前面"><a href="#写在前面" class="header-anchor">#</a> 写在前面</h2> <p>谈到node断点调试，目前主要有三种方式，通过<code>node内置调试工具</code>、<code>通过IDE（如vscode）</code>、<code>通过node-inspector</code>，三者本质上差不多。本文着重点在于介绍 <strong>如何在本地通过node-inspector 调试远程服务器上的node代码</strong>。</p> <p>在进入主题之前，首先会对三种调试方式进行入门讲解，方便新手理解后面的内容。至于老司机们，可以直接跳到主题去。</p> <h2 id="方式一-内置debug功能"><a href="#方式一-内置debug功能" class="header-anchor">#</a> 方式一：内置debug功能</h2> <h4 id="进入调试模式-在第1行断点"><a href="#进入调试模式-在第1行断点" class="header-anchor">#</a> 进入调试模式（在第1行断点）</h4> <div class="language-powershell extra-class"><pre class="language-powershell"><code>node debug app<span class="token punctuation">.</span>js
+</code></pre></div><p><img src="https://segmentfault.com/img/bVCNET" alt="clipboard.png"></p> <h4 id="进入调试模式-在第n行断点"><a href="#进入调试模式-在第n行断点" class="header-anchor">#</a> 进入调试模式（在第n行断点）</h4> <p>比如要在第3行断点。</p> <p>方式一：通过<code>debugger</code></p> <p><img src="https://segmentfault.com/img/bVCNE6" alt="clipboard.png"></p> <p>方式二：通过<code>sb(line)</code>。</p> <p><img src="https://segmentfault.com/img/bVCNE7" alt="clipboard.png"></p> <h4 id="执行下一步"><a href="#执行下一步" class="header-anchor">#</a> 执行下一步</h4> <p>通过<code>next</code>命令。</p> <p><img src="https://segmentfault.com/img/bVCNE9" alt="clipboard.png"></p> <h4 id="跳到下一个断点"><a href="#跳到下一个断点" class="header-anchor">#</a> 跳到下一个断点</h4> <p>通过<code>cont</code>命令。</p> <p><img src="https://segmentfault.com/img/bVCNFa" alt="clipboard.png"></p> <h4 id="查看某个变量的值"><a href="#查看某个变量的值" class="header-anchor">#</a> 查看某个变量的值</h4> <p>输入<code>repl</code>命令后，再次输入变量名，就可以看到变量对应的值。如果想继续执行代码，可以按<code>ctrl+c</code>退出。</p> <p><img src="https://segmentfault.com/img/bVCNFb" alt="clipboard.png"></p> <h4 id="添加-删除watch"><a href="#添加-删除watch" class="header-anchor">#</a> 添加/删除watch</h4> <ul><li>通过<code>watch(expr)</code>来添加监视对象。</li> <li>通过<code>watchers</code>查看当前所有的监视对象。</li> <li>通过<code>unwatch(expr)</code>来删除监视对象。</li></ul> <p>添加watch：</p> <p><img src="https://segmentfault.com/img/bVCNFc" alt="clipboard.png"></p> <p>删除watch：</p> <p><img src="https://segmentfault.com/img/bVCNFd" alt="clipboard.png"></p> <h4 id="进入-跳出函数-step-in、step-out"><a href="#进入-跳出函数-step-in、step-out" class="header-anchor">#</a> 进入/跳出函数（step in、step out）</h4> <ul><li>进入函数：通过<code>step</code>或者<code>s</code>。</li> <li>跳出函数：通过<code>out</code>或者<code>o</code>。</li></ul> <p>示例代码如下，假设代码运行到<code>logger(str);</code>这一行，首先跳进函数内部，再跳出函数。</p> <div class="language- extra-class"><pre class="language-text"><code>var nick = 'chyingp';
+var country = 'China';
+
+var str = nick + ' live in ' + country;
+
+var logger = function(msg){
+    console.log(msg); // 这里
+    console.log('这行会跳过'); // 跳过这行
+};
+
+logger(str);  // 假设运行到这里，想要进入logger方法
+
+console.log(str);
+</code></pre></div><p>示例截图如下：</p> <p><img src="https://segmentfault.com/img/bVCNFh" alt="clipboard.png"></p> <h4 id="多个文件断点"><a href="#多个文件断点" class="header-anchor">#</a> 多个文件断点</h4> <p>通过<code>setBreakpoint('script.js', 1), sb(...)</code>，在某个文件某一行添加断点。反正我是没成功过。。。怎么看都是bug。。。</p> <h4 id="重新运行"><a href="#重新运行" class="header-anchor">#</a> 重新运行</h4> <p>每次都退出然后<code>node debug app.js</code>相当烦。直接用<code>restart</code></p> <p><img src="https://segmentfault.com/img/bVCNFi" alt="clipboard.png"></p> <h4 id="远程调试"><a href="#远程调试" class="header-anchor">#</a> 远程调试</h4> <p>比如远程机器ip是<code>192.168.1.126</code>，在远程机器上进入调试模式</p> <div class="language-powershell extra-class"><pre class="language-powershell"><code><span class="token namespace">[root@localhost ex]</span><span class="token comment"># node --debug-brk app.js</span>
+Debugger listening on port 5858
+</code></pre></div><p>然后，在本地机器通过<code>node debug 192.168.1.126:5858</code>连接远程机器进行调试。</p> <div class="language-powershell extra-class"><pre class="language-powershell"><code>node debug 192<span class="token punctuation">.</span>168<span class="token punctuation">.</span>1<span class="token punctuation">.</span>126:5858
+</code></pre></div><p>如下：</p> <div class="language-powershell extra-class"><pre class="language-powershell"><code>➜  <span class="token operator">/</span>tmp node debug 192<span class="token punctuation">.</span>168<span class="token punctuation">.</span>1<span class="token punctuation">.</span>126:5858
+connecting to 192<span class="token punctuation">.</span>168<span class="token punctuation">.</span>1<span class="token punctuation">.</span>126:5858 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> ok
+<span class="token keyword">break</span> in <span class="token operator">/</span>tmp/ex/app<span class="token punctuation">.</span>js:1
+&gt; 1 <span class="token keyword">var</span> Logger = require<span class="token punctuation">(</span><span class="token string">'./logger'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  2 
+  3 Logger<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string">'hello'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+debug&gt; n
+<span class="token keyword">break</span> in <span class="token operator">/</span>tmp/ex/app<span class="token punctuation">.</span>js:3
+  1 <span class="token keyword">var</span> Logger = require<span class="token punctuation">(</span><span class="token string">'./logger'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  2 
+&gt; 3 Logger<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string">'hello'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  4 
+  5 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>当然，还可以通过pid进行远程调试，这里就不举例。</p> <p>参考：https://nodejs.org/api/debugger.html#debugger_advanced_usage</p> <h2 id="方式二-通过ide-vscode"><a href="#方式二-通过ide-vscode" class="header-anchor">#</a> 方式二：通过IDE(vscode)</h2> <p>首先，在vscode里打开项目</p> <p><img src="https://segmentfault.com/img/bVCNFl" alt="clipboard.png"></p> <p>然后，添加调试配置。主要需要修改的是可执行文件的路径。</p> <p><img src="https://segmentfault.com/img/bVCNFm" alt="clipboard.png"></p> <p>点击代码左侧添加断点。</p> <p><img src="https://segmentfault.com/img/bVCNFp" alt="clipboard.png"></p> <p>开始调试</p> <p><img src="https://segmentfault.com/img/bVCNFr" alt="clipboard.png"></p> <p>顺利断点，左侧的变量、监视对象，右侧的调试工具栏，用过<code>chrome dev tool</code>的同学应该很熟悉，不赘述。</p> <p><img src="https://segmentfault.com/img/bVCNFs" alt="clipboard.png"></p> <h2 id="方式三-通过node-inspector"><a href="#方式三-通过node-inspector" class="header-anchor">#</a> 方式三：通过node-inspector</h2> <p>首先，安装<code>node-inspector</code>。</p> <div class="language-powershell extra-class"><pre class="language-powershell"><code>npm install <span class="token operator">-</span>g node-inspector
+</code></pre></div><h4 id="方式一-通过node-debug启动调试"><a href="#方式一-通过node-debug启动调试" class="header-anchor">#</a> 方式一：通过<code>node-debug</code>启动调试</h4> <p>启动调试，它会自动帮你在浏览器里打开调试界面。</p> <div class="language-powershell extra-class"><pre class="language-powershell"><code>➜  debugger git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> ✗ node-debug app<span class="token punctuation">.</span>js
+Node Inspector v0<span class="token punctuation">.</span>12<span class="token punctuation">.</span>8
+Visit http:<span class="token operator">/</span><span class="token operator">/</span>127<span class="token punctuation">.</span>0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1:8080/?port=5858 to <span class="token function">start</span> debugging<span class="token punctuation">.</span>
+Debugging `app<span class="token punctuation">.</span>js`
+
+Debugger listening on port 5858
+</code></pre></div><p>调试界面如下，简直不能更亲切。</p> <p><img src="https://segmentfault.com/img/bVCNFt" alt="clipboard.png"></p> <h4 id="方式二-更加灵活的方式"><a href="#方式二-更加灵活的方式" class="header-anchor">#</a> 方式二：更加灵活的方式</h4> <p>步骤1：通过<code>node-inspector</code>启动Node Inspector Server</p> <div class="language-powershell extra-class"><pre class="language-powershell"><code>➜  debugger git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> ✗ node-inspector 
+Node Inspector v0<span class="token punctuation">.</span>12<span class="token punctuation">.</span>8
+Visit http:<span class="token operator">/</span><span class="token operator">/</span>127<span class="token punctuation">.</span>0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1:8080/?port=5858 to <span class="token function">start</span> debugging<span class="token punctuation">.</span>
+</code></pre></div><p>步骤2：通过传统方式启动调试。加入<code>--debug-brk</code>，好让代码在第一行断住。</p> <div class="language-powershell extra-class"><pre class="language-powershell"><code>➜  debugger git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> ✗ node <span class="token operator">--</span><span class="token function">debug-brk</span> app<span class="token punctuation">.</span>js
+Debugger listening on port 5858
+</code></pre></div><p>步骤3：在浏览器里打开调试UI界面。就是步骤1里打印出来的地址 http://127.0.0.1:8080/?port=5858。成功</p> <p><img src="https://segmentfault.com/img/bVCNFu" alt="clipboard.png"></p> <h4 id="实现原理"><a href="#实现原理" class="header-anchor">#</a> 实现原理</h4> <p>从上面的例子不难猜想到。（不负责任猜想）</p> <ul><li>通过<code>node --debug-brk</code>启动调试，监听<code>5858</code>端口。</li> <li><code>node-inspector</code>启动服务，监听8080端口。</li> <li>在浏览器里访问<code>http://127.0.0.1:8080/?port=5858</code>。可以看到<code>port=5858</code>这个参数。结合之前讲到的node内置远程调试的功能，可以猜想，在返回UI调试界面的同时，服务内部通过<code>5858</code>端口开始了断点调试。</li></ul> <p>另外，从下面截图可以看出，UI调试工具（其实是个网页）跟 <code>inspector服务</code> 之间通过<code>websocket</code>进行通信。</p> <p>用户在界面上操作时，比如设置断点，就向 <code>inspector服务</code> 发送一条消息，<code>inspector服务</code> 在内部通过v8调试器来实现代码的断点。</p> <p><img src="https://segmentfault.com/img/bVCNFC" alt="clipboard.png"></p> <p>可以看到，用到了<code>v8-debug</code>，这个就待深挖了。</p> <p><img src="https://segmentfault.com/img/bVCNFD" alt="clipboard.png"></p> <h2 id="通过node-inspector调试远程代码"><a href="#通过node-inspector调试远程代码" class="header-anchor">#</a> 通过node-inspector调试远程代码</h2> <p>细心的同学可能会发现，node远程调试其实在上面<code>node-inspector</code>章节的讲解里已经覆盖到了。这里还是来个实际的例子。</p> <p>假设我们的node代码<code>app.js</code>运行在阿里云的服务器上，服务器ip是<code>xxx.xxx.xxx.xxx</code>。</p> <p>首先，服务器上启动node-inspector服务</p> <div class="language-powershell extra-class"><pre class="language-powershell"><code><span class="token namespace">[root@iZ94wb7tioqZ ~]</span><span class="token comment"># node-inspector </span>
+Node Inspector v0<span class="token punctuation">.</span>12<span class="token punctuation">.</span>8
+Visit http:<span class="token operator">/</span><span class="token operator">/</span>127<span class="token punctuation">.</span>0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1:8080/?port=5858 to <span class="token function">start</span> debugging<span class="token punctuation">.</span>
+</code></pre></div><p>其次，通过<code>--debug-brk</code>参数，进入调试模式</p> <div class="language-powershell extra-class"><pre class="language-powershell"><code><span class="token namespace">[root@iZ94wb7tioqZ ex]</span><span class="token comment"># node --debug-brk app.js</span>
+Debugger listening on port 5858
+</code></pre></div><p>最后，在本地通过ip地址愉快的访问调试界面。是不是很简单捏。</p> <p><img src="https://segmentfault.com/img/bVCNFF" alt="clipboard.png"></p> <h4 id="常见问题-安全限制"><a href="#常见问题-安全限制" class="header-anchor">#</a> 常见问题：安全限制</h4> <p>远程调试常见的问题就是请求被拒绝。这是服务器安全策略的限制。遇到这种情况，开放端口就完事了。</p> <p><img src="https://segmentfault.com/img/bVCNHD" alt="clipboard.png"></p> <p>在我们的云主机上，默认安装了<code>firewall-cmd</code>，可以通过<code>--add-port</code>选项来开放<code>8080</code>端口的开放。如果本机没有安装<code>firewall-cmd</code>，也可以通过<code>iptables</code>来实现同样的功能。</p> <div class="language-powershell extra-class"><pre class="language-powershell"><code><span class="token namespace">[root@iZ94wb7tioqZ ex]</span><span class="token comment"># firewall-cmd --add-port=8080/tcp</span>
+success
+</code></pre></div><p>然后，就可以愉快的远程调试了。</p> <p><img src="https://segmentfault.com/img/bVCNHE" alt="clipboard.png"></p> <h2 id="相关链接"><a href="#相关链接" class="header-anchor">#</a> 相关链接</h2> <p><a href="https://nodejs.org/api/debugger.html" target="_blank" rel="noopener noreferrer">Node Debugger<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p><a href="http://blog.0x972.info/?d=2014/11/13/10/40/50-how-does-a-debugger-work" target="_blank" rel="noopener noreferrer">How Does a C Debugger Work?<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p><a href="http://eli.thegreenplace.net/2011/01/27/how-debuggers-work-part-2-breakpoints/" target="_blank" rel="noopener noreferrer">How debuggers work: Part 2 - Breakpoints<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

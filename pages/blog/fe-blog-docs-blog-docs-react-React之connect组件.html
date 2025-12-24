@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React之connect组件 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>React之connect组件</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>React之connect组件</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、connect用法"><a href="#一、connect用法" class="header-anchor">#</a> 一、connect用法</h2> <blockquote><p>作用：连接<code>React</code>组件与 <code>Redux store</code></p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">connect</span><span class="token punctuation">(</span><span class="token punctuation">[</span>mapStateToProps<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>mapDispatchToProps<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>mergeProps<span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token punctuation">[</span>options<span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 这个函数允许我们将 store 中的数据作为 props 绑定到组件上</span>
+<span class="token keyword">const</span> <span class="token function-variable function">mapStateToProps</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">state</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">count</span><span class="token operator">:</span> state<span class="token punctuation">.</span>count
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>这个函数的第一个参数就是 <code>Redux</code> 的 <code>store</code>，我们从中摘取了 <code>count</code> 属性。你不必将 <code>state</code> 中的数据原封不动地传入组件，可以根据 <code>state</code> 中的数据，动态地输出组件需要的（最小）属性</li> <li>函数的第二个参数 <code>ownProps</code>，是组件自己的 <code>props</code></li></ul> <blockquote><p>当 <code>state</code> 变化，或者 <code>ownProps</code> 变化的时候，<code>mapStateToProps</code> 都会被调用，计算出一个新的 <code>stateProps</code>，（在与 <code>ownProps merge</code> 后）更新给组件</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">mapDispatchToProps</span><span class="token punctuation">(</span>dispatch<span class="token punctuation">,</span> ownProps<span class="token punctuation">)</span><span class="token operator">:</span> dispatchProps
+</code></pre></div><blockquote><p><code>connect</code> 的第二个参数是 <code>mapDispatchToProps</code>，它的功能是，将 <code>action</code> 作为 <code>props</code>绑定到组件上，也会成为 <code>MyComp</code> 的 <code>props</code></p></blockquote> <h2 id="二、原理解析"><a href="#二、原理解析" class="header-anchor">#</a> 二、原理解析</h2> <blockquote><p>首先<code>connect</code>之所以会成功，是因为<code>Provider</code>组件</p></blockquote> <ul><li>在原应用组件上包裹一层，使原来整个应用成为<code>Provider</code>的子组件</li> <li>接收<code>Redux</code>的<code>store</code>作为<code>props</code>，通过<code>context</code>对象传递给子孙组件上的<code>connect</code></li></ul> <p><strong>connect做了些什么</strong></p> <blockquote><p>它真正连接 <code>Redux</code> 和 <code>React</code>，它包在我们的容器组件的外一层，它接收上面 <code>Provider</code>提供的 <code>store</code> 里面的 <code>state</code>和 <code>dispatch</code>，传给一个构造函数，返回一个对象，以属性形式传给我们的容器组件</p></blockquote> <h2 id="三、源码"><a href="#三、源码" class="header-anchor">#</a> 三、源码</h2> <blockquote><p><code>connect</code>是一个高阶函数，首先传入<code>mapStateToProps</code>、<code>mapDispatchToProps</code>，然后返回一个生产<code>Component</code>的函数(<code>wrapWithConnect</code>)，然后再将真正的<code>Component</code>作为参数传入<code>wrapWithConnect</code>，这样就生产出一个经过包裹的<code>Connect</code>组件，该组件具有如下特点</p></blockquote> <ul><li>通过<code>props.store</code>获取祖先<code>Component</code>的<code>store props</code>包括<code>stateProps</code>、<code>dispatchProps</code>、<code>parentProps</code>,合并在一起得到<code>nextState</code>，作为<code>props</code>传给真正的<code>Component</code></li> <li><code>componentDidMount</code>时，添加事件<code>this.store.subscribe(this.handleChange)</code>，实现页面交互</li> <li><code>shouldComponentUpdate</code>时判断是否有避免进行渲染，提升页面性能，并得到<code>nextState</code></li> <li><code>componentWillUnmount</code>时移除注册的事件<code>this.handleChange</code></li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 主要逻辑</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token function">connect</span><span class="token punctuation">(</span><span class="token parameter">mapStateToProps<span class="token punctuation">,</span> mapDispatchToProps<span class="token punctuation">,</span> mergeProps<span class="token punctuation">,</span> options <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">wrapWithConnect</span><span class="token punctuation">(</span><span class="token parameter">WrappedComponent</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">class</span> <span class="token class-name">Connect</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">{</span>
+      <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">props<span class="token punctuation">,</span> context</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">// 从祖先Component处获得store</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>store <span class="token operator">=</span> props<span class="token punctuation">.</span>store <span class="token operator">||</span> context<span class="token punctuation">.</span>store
+        <span class="token keyword">this</span><span class="token punctuation">.</span>stateProps <span class="token operator">=</span> <span class="token function">computeStateProps</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>store<span class="token punctuation">,</span> props<span class="token punctuation">)</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>dispatchProps <span class="token operator">=</span> <span class="token function">computeDispatchProps</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>store<span class="token punctuation">,</span> props<span class="token punctuation">)</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>state <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token literal-property property">storeState</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span>
+        <span class="token comment">// 对stateProps、dispatchProps、parentProps进行合并</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">updateState</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">}</span>
+      <span class="token function">shouldComponentUpdate</span><span class="token punctuation">(</span><span class="token parameter">nextProps<span class="token punctuation">,</span> nextState</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">// 进行判断，当数据发生改变时，Component重新渲染</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>propsChanged <span class="token operator">||</span> mapStateProducedChange <span class="token operator">||</span> dispatchPropsChanged<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">updateState</span><span class="token punctuation">(</span>nextProps<span class="token punctuation">)</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token function">componentDidMount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token comment">// 改变Component的state</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span>store<span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+            <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+              <span class="token literal-property property">storeState</span><span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>store<span class="token punctuation">.</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span>
+          <span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+        <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token comment">// 生成包裹组件Connect</span>
+          <span class="token keyword">return</span> <span class="token punctuation">(</span>
+            <span class="token operator">&lt;</span>WrappedComponent <span class="token punctuation">{</span><span class="token operator">...</span><span class="token keyword">this</span><span class="token punctuation">.</span>nextState<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
+          <span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+      Connect<span class="token punctuation">.</span>contextTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">store</span><span class="token operator">:</span> storeShape
+      <span class="token punctuation">}</span>
+      <span class="token keyword">return</span> Connect<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

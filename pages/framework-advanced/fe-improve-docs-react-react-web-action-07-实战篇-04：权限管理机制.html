@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实战篇 04 权限管理机制 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>实战篇 04 权限管理机制</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>实战篇 04 权限管理机制</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h1 id="实战篇-04-权限管理机制"><a href="#实战篇-04-权限管理机制" class="header-anchor">#</a> 实战篇 04：权限管理机制</h1> <blockquote><p>本节参考代码：</p> <ol><li><a href="https://github.com/AlanWei/react-acl-router" target="_blank" rel="noopener noreferrer">react-acl-router<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://github.com/AlanWei/react-boilerplate-pro/blob/master/src/app/init/router.js" target="_blank" rel="noopener noreferrer">react-boilerplate-pro/src/app/init/router.js<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://github.com/AlanWei/react-boilerplate-pro/blob/master/src/app/config/routes.js" target="_blank" rel="noopener noreferrer">react-boilerplate-pro/src/app/config/routes.js<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li></ol></blockquote> <p><img src="https://s.poetries.top/images/202202221105976.png" alt=""></p> <p>权限管理作为企业管理系统中非常核心的一个部分，一直以来因为业务方很多时候无法使用准确的术语来描述需求成为了困扰开发者们的一大难题。这里我们先来介绍两种常见的权限管理设计模式，即基于角色的访问控制以及访问控制列表。</p> <h2 id="设计策略"><a href="#设计策略" class="header-anchor">#</a> 设计策略</h2> <h3 id="基于角色的访问控制-role-based-access-control"><a href="#基于角色的访问控制-role-based-access-control" class="header-anchor">#</a> 基于角色的访问控制（<a href="https://en.wikipedia.org/wiki/Role-based_access_control" target="_blank" rel="noopener noreferrer">Role-based access control<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>）</h3> <p>基于角色的访问控制不直接将系统操作的各种权限赋予具体用户，而是在用户与权限之间建立起角色集合，将权限赋予角色再将角色赋予用户。这样就实现了对于权限和角色的集中管理，避免用户与权限之间直接产生复杂的多对多关系。</p> <h3 id="访问控制列表-access-control-list"><a href="#访问控制列表-access-control-list" class="header-anchor">#</a> 访问控制列表（<a href="https://en.wikipedia.org/wiki/Access_control_list" target="_blank" rel="noopener noreferrer">Access control list<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>）</h3> <p>具体到角色与权限之间，访问控制列表指代的是某个角色所拥有的系统权限列表。在传统计算机科学中，权限一般指的是对于文件系统进行增删改查的权力。而在 Web 应用中，大部分系统只需要做到页面级别的权限控制即可，简单来说就是根据当前用户的角色来决定其是否拥有查看当前页面的权利。</p> <p>下面就让我们按照这样的思路实现一个基础版的包含权限管理功能的应用路由。</p> <h2 id="实战代码"><a href="#实战代码" class="header-anchor">#</a> 实战代码</h2> <h3 id="路由容器"><a href="#路由容器" class="header-anchor">#</a> 路由容器</h3> <p>在编写权限管理相关的代码前，我们需要先为所有的页面路由找到一个合适的容器，即 <code>react-router</code> 中的 <code>Switch</code> 组件。与多个独立路由不同的是，包裹在 <code>Switch</code> 中的路由每次只会渲染路径匹配成功的第一个，而不是所有符合路径匹配条件的路由。</p> <div class="language- extra-class"><pre class="language-text"><code>&lt;Router&gt;
+  &lt;Route path="/about" component={About}/&gt;
+  &lt;Route path="/:user" component={User}/&gt;
+  &lt;Route component={NoMatch}/&gt;
+&lt;/Router&gt;
+
+</code></pre></div><div class="language- extra-class"><pre class="language-text"><code>&lt;Router&gt;
+  &lt;Switch&gt;
+    &lt;Route path="/about" component={About}/&gt;
+    &lt;Route path="/:user" component={User}/&gt;
+    &lt;Route component={NoMatch}/&gt;
+  &lt;/Switch&gt;
+&lt;/Router&gt;
+
+</code></pre></div><p>以上面两段代码为例，如果当前页面路径是 <code>/about</code> 的话，因为 <code>&lt;About /&gt;</code>、<code>&lt;User /&gt;</code> 及 <code>&lt;NoMatch /&gt;</code> 这三个路由的路径都符合 <code>/about</code>，所以它们会同时被渲染在当前页面。而将它们包裹在 <code>Switch</code> 中后，<code>react-router</code> 在找到第一个符合条件的 <code>&lt;About /&gt;</code> 路由后就会停止查找直接渲染 <code>&lt;About /&gt;</code> 组件。</p> <p>在企业管理系统中因为页面与页面之间一般都是平行且排他的关系，所以利用好 <code>Switch</code> 这个特性对于我们简化页面渲染逻辑有着极大的帮助。</p> <p>另外值得一提的是，在 <code>react-router</code> 作者 <a href="https://github.com/ryanflorence" target="_blank" rel="noopener noreferrer">Ryan Florence<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 的新作 <a href="https://reach.tech/router" target="_blank" rel="noopener noreferrer">@reach/router<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 中，<code>Switch</code> 的这一特性被默认包含了进去，而且 <code>@reach/router</code> 会自动匹配最符合当前路径的路由。这就使得使用者不必再去担心路由的书写顺序，感兴趣的朋友可以关注一下。</p> <h3 id="权限管理"><a href="#权限管理" class="header-anchor">#</a> 权限管理</h3> <p>现在我们的路由已经有了一个大体的框架，下面就让我们为其添加具体的权限判断逻辑。</p> <p>对于一个应用来说，除去需要鉴权的页面外，一定还存在着不需要鉴权的页面，让我们先将这些页面添加到我们的路由中，如登录页。</p> <div class="language- extra-class"><pre class="language-text"><code>&lt;Router&gt;
+  &lt;Switch&gt;
+    &lt;Route path="/login" component={Login}/&gt;
+  &lt;/Switch&gt;
+&lt;/Router&gt;
+
+</code></pre></div><p>对于需要鉴权的路由，我们需要先抽象出一个判断当前用户是否有权限的函数来作为判断依据，而根据具体的需求，用户可以拥有单个角色或多个角色，抑或更复杂的一个鉴权函数。这里笔者提供一个最基础的版本，即我们将用户的角色以字符串的形式存储在后台，如一个用户的角色是 admin，另一个用户的角色是 user。</p> <div class="language- extra-class"><pre class="language-text"><code>import isEmpty from 'lodash/isEmpty';
+import isArray from 'lodash/isArray';
+import isString from 'lodash/isString';
+import isFunction from 'lodash/isFunction';
+import indexOf from 'lodash/indexOf';
+
+const checkPermissions = (authorities, permissions) =&gt; {
+  if (isEmpty(permissions)) {
+    return true;
+  }
+
+  if (isArray(authorities)) {
+    for (let i = 0; i &lt; authorities.length; i += 1) {
+      if (indexOf(permissions, authorities[i]) !== -1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  if (isString(authorities)) {
+    return indexOf(permissions, authorities) !== -1;
+  }
+
+  if (isFunction(authorities)) {
+    return authorities(permissions);
+  }
+
+  throw new Error('[react-acl-router]: Unsupport type of authorities.');
+};
+
+export default checkPermissions;
+
+</code></pre></div><p>在上一节中我们提到了路由的配置文件，这里我们为每一个需要鉴权的路由再添加一个属性 <code>permissions</code>，即哪些角色可以访问该页面。</p> <div class="language- extra-class"><pre class="language-text"><code>const routes = [{
+  path: '/outlets',
+  exact: true,
+  permissions: ['admin', 'user'],
+  component: Outlets,
+  unauthorized: Unauthorized,
+  pageTitle: 'Outlet Management',
+  breadcrumb: ['/outlets'],
+}, {
+  path: '/outlets/:id',
+  exact: true,
+  permissions: ['admin'],
+  component: OutletDetail,
+  redirect: '/',
+  pageTitle: 'Outlet Detail',
+  breadcrumb: ['/outlets', '/outlets/:id'],
+}];
+
+</code></pre></div><p>在上面的配置中，admin 和 user 都可以访问门店列表页面，但只有 admin 才可以访问门店详情页面。</p> <p><img src="https://s.poetries.top/images/202202221106975.png" alt=""></p> <p>对于没有权限查看当前页面的情况，一般来讲有两种处理方式，一是直接重定向到另一个页面（如首页），二是渲染一个无权限页面，提示用户因为没有当前页面的权限所以无法查看。二者是排他的，即每个页面只需要使用其中一种即可，于是我们在路由配置中可以根据需要去配置 <code>redirect</code> 或 <code>unauthorized</code> 属性，分别对应<strong>无权限重定向</strong>及<strong>无权限显示无权限页面</strong>两种处理方式。具体代码大家可以参考示例项目 <a href="https://github.com/AlanWei/react-acl-router/blob/master/src/AclRouter.jsx" target="_blank" rel="noopener noreferrer">react-acl-router<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 中的实现，这里摘录一小段核心部分。</p> <div class="language- extra-class"><pre class="language-text"><code>
+renderRedirectRoute = route =&gt; (
+  &lt;Route
+    key={route.path}
+    {...omitRouteRenderProperties(route)}
+    render={() =&gt; &lt;Redirect to={route.redirect} /&gt;}
+  /&gt;
+);
+
+renderAuthorizedRoute = (route) =&gt; {
+  const { authorizedLayout: AuthorizedLayout } = this.props;
+  const { authorities } = this.state;
+  const {
+    permissions,
+    path,
+    component: RouteComponent,
+    unauthorized: Unauthorized,
+  } = route;
+  const hasPermission = checkPermissions(authorities, permissions);
+
+  if (!hasPermission &amp;&amp; route.unauthorized) {
+    return (
+      &lt;Route
+        key={path}
+        {...omitRouteRenderProperties(route)}
+        render={props =&gt; (
+          &lt;AuthorizedLayout {...props}&gt;
+            &lt;Unauthorized {...props} /&gt;
+          &lt;/AuthorizedLayout&gt;
+        )}
+      /&gt;
+    );
+  }
+
+  if (!hasPermission &amp;&amp; route.redirect) {
+    return this.renderRedirectRoute(route);
+  }
+
+  return (
+    &lt;Route
+      key={path}
+      {...omitRouteRenderProperties(route)}
+      render={props =&gt; (
+        &lt;AuthorizedLayout {...props}&gt;
+          &lt;RouteComponent {...props} /&gt;
+        &lt;/AuthorizedLayout&gt;
+      )}
+    /&gt;
+  );
+}
+
+</code></pre></div><p>于是，在最终的路由中，我们会优先匹配无需鉴权的页面路径，保证所有用户在访问无需鉴权的页面时，第一时间就可以看到页面。然后再去匹配需要鉴权的页面路径，最终如果所有的路径都匹配不到的话，再渲染 404 页面告知用户当前页面路径不存在。</p> <p><img src="https://s.poetries.top/images/202202221106241.png" alt=""></p> <div class="language- extra-class"><pre class="language-text"><code>&lt;Switch&gt;
+  {map(normalRoutes, route =&gt; (
+    this.renderNormalRoute(route)
+  ))}
+  {map(authorizedRoutes, route =&gt; (
+    this.renderAuthorizedRoute(route)
+  ))}
+  {this.renderNotFoundRoute()}
+&lt;/Switch&gt;
+
+</code></pre></div><p>需要鉴权的路由和不需要鉴权的路由作为两种不同的页面，一般而言它们的页面布局也是不同的。如登录页面使用的就是普通页面布局：</p> <p><img src="https://s.poetries.top/images/202202221106422.png" alt=""></p> <p>在这里我们可以将不同的页面布局与鉴权逻辑相结合以达到只需要在路由配置中配置相应的属性，新增加的页面就可以同时获得鉴权逻辑和基础布局的效果。这将极大地提升开发者们的工作效率，尤其是对于项目组的新成员来说纯配置的上手方式是最友好的。</p> <h2 id="应用集成"><a href="#应用集成" class="header-anchor">#</a> 应用集成</h2> <p>至此一个包含基础权限管理的应用路由就大功告成了，我们可以将它抽象为一个独立的路由组件，使用时只需要配置需要鉴权的路由和不需要鉴权的路由两部分即可。</p> <div class="language- extra-class"><pre class="language-text"><code>const authorizedRoutes = [{
+  path: '/outlets',
+  exact: true,
+  permissions: ['admin', 'user'],
+  component: Outlets,
+  unauthorized: Unauthorized,
+  pageTitle: 'pageTitle_outlets',
+  breadcrumb: ['/outlets'],
+}, {
+  path: '/outlets/:id',
+  exact: true,
+  permissions: ['admin', 'user'],
+  component: OutletDetail,
+  unauthorized: Unauthorized,
+  pageTitle: 'pageTitle_outletDetail',
+  breadcrumb: ['/outlets', '/outlets/:id'],
+}, {
+  path: '/exception/403',
+  exact: true,
+  permissions: ['god'],
+  component: WorkInProgress,
+  unauthorized: Unauthorized,
+}];
+
+const normalRoutes = [{
+  path: '/',
+  exact: true,
+  redirect: '/outlets',
+}, {
+  path: '/login',
+  exact: true,
+  component: Login,
+}];
+
+const Router = props =&gt; (
+  &lt;ConnectedRouter history={props.history}&gt;
+    &lt;MultiIntlProvider
+      defaultLocale={locale}
+      messageMap={messages}
+    &gt;
+      // the router component
+      &lt;AclRouter
+        authorities={props.user.authorities}
+        authorizedRoutes={authorizedRoutes}
+        authorizedLayout={BasicLayout}
+        normalRoutes={normalRoutes}
+        normalLayout={NormalLayout}
+        notFound={NotFound}
+      /&gt;
+    &lt;/MultiIntlProvider&gt;
+  &lt;/ConnectedRouter&gt;
+);
+
+const mapStateToProps = state =&gt; ({
+  user: state.app.user,
+});
+
+Router.propTypes = propTypes;
+export default connect(mapStateToProps)(Router);
+
+</code></pre></div><p>在实际项目中，我们可以使用 <code>react-redux</code> 提供的 <code>connect</code> 组件将应用路由 connect 至 redux store，以方便我们直接读取当前用户的角色信息。一旦登录用户的角色发生变化，客户端路由就可以进行相应的判断与响应。</p> <h2 id="组合式开发-权限管理"><a href="#组合式开发-权限管理" class="header-anchor">#</a> 组合式开发：权限管理</h2> <p>对于页面级别的权限管理来说，权限管理部分的逻辑是独立于页面的，是与页面中的具体内容无关的。也就是说，权限管理部分的代码并不应该成为页面中的一部分，而是应该在拿到用户权限后创建应用路由时就将没有权限的页面替换为重定向或无权限页面。</p> <p>这样一来，页面部分的代码就可以实现与权限管理逻辑的彻底解耦，以至于如果抽掉权限管理这一层后，页面就变成了一个无需权限判断的页面依然可以独立运行。而通用部分的权限管理代码也可以在根据业务需求微调后服务于更多的项目。</p> <h2 id="小结"><a href="#小结" class="header-anchor">#</a> 小结</h2> <p>在本节中我们从权限管理的基础设计思想讲起，实现了一套基于角色的页面级别的应用权限管理系统并分别讨论了无权限重定向及无权限显示无权限页面两种无权限查看时的处理方法。</p> <p>在下一节中我们将会探讨当前页面如何匹配企业管理系统中的多级菜单以及如何让路径较深的子页面高亮其隶属于的父级菜单。</p> <p>如果你想参与到文章中内容的讨论，欢迎在下面的评论区留言，期待与大家的交流。</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

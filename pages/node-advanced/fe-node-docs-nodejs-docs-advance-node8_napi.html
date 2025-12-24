@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node8_napi - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Node8_napi</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>Node8_napi</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="n-api简介"><a href="#n-api简介" class="header-anchor">#</a> N-API简介</h2> <p>Node.js 8.0 在2017年6月份发布，升级的特性中，包含了N-API。编写过或者使用过 node扩展的同学，不少都遇到过升级node版本，node扩展编译失败的情况。因为node扩展严重依赖于V8暴露的API，而node不同版本依赖的V8版本可能不同，一旦升级node版本，原先运行正常的node扩展就编译失败了。</p> <p>这种情况对node生态圈无疑是不利的，N-API的引入正是试图改善这种情况的一种尝试。它跟底层JS引擎无关，只要N-API暴露的API足够稳定，那么node扩展的编写者就不用过分担忧node的升级问题。</p> <h2 id="如何使用n-api"><a href="#如何使用n-api" class="header-anchor">#</a> 如何使用N-API</h2> <p>先强调一点，N-API并不是对原有node扩展实现方式的替代，它只是提供了一系列底层无关的API，来帮助开发者编写跨版本的node扩展。至于如何编写、编译、使用扩展，跟原来的差不多。</p> <p>本文会从一个超级简单的例子，简单介绍N-API的使用，包括环境准备、编写扩展、编译、运行几个步骤。</p> <blockquote><p>备注：当前N-API还处于试验阶段，官方文档提供的例子都是有问题的，如用于生产环境需格外谨慎。</p></blockquote> <h2 id="_1、环境准备"><a href="#_1、环境准备" class="header-anchor">#</a> 1、环境准备</h2> <p>首先，N-API是8.0版本引入的，首先确保本地安装了8.0版本。笔者用的是<code>nvm</code>，读者可自行选择安装方式。</p> <div class="language-bash extra-class"><pre class="language-bash"><code>nvm i <span class="token number">8.0</span>
+nvm use <span class="token number">8.0</span>
+</code></pre></div><p>然后，安装<code>node-gyp</code>，编译扩展会用到。</p> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">npm</span> <span class="token function">install</span> -g node-gyp
+</code></pre></div><p>创建项目目录，并初始化<code>package.json</code>。</p> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">mkdir</span> hello <span class="token operator">&amp;</span> <span class="token builtin class-name">cd</span> hello <span class="token comment"># 目录名随便起</span>
+<span class="token function">npm</span> init -f
+</code></pre></div><h2 id="_2、编写扩展"><a href="#_2、编写扩展" class="header-anchor">#</a> 2、编写扩展</h2> <p>创建<code>hello.cc</code>作为扩展的源文件。</p> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">mkdir</span> src
+<span class="token function">touch</span> src/hello.cc
+</code></pre></div><p>编辑<code>hello.cc</code>，输入如下内容。</p> <div class="language-c extra-class"><pre class="language-c"><code><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;node_api.h&gt;</span></span>
+
+<span class="token comment">// 实际暴露的方法，这里只是简单返回一个字符串</span>
+napi_value <span class="token function">HelloMethod</span> <span class="token punctuation">(</span>napi_env env<span class="token punctuation">,</span> napi_callback_info info<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    napi_value world<span class="token punctuation">;</span>
+    <span class="token function">napi_create_string_utf8</span><span class="token punctuation">(</span>env<span class="token punctuation">,</span> <span class="token string">"world"</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>world<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> world<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 扩展的初始化方法，其中 </span>
+<span class="token comment">// env：环境变量</span>
+<span class="token comment">// exports、module：node模块中对外暴露的对象</span>
+<span class="token keyword">void</span> <span class="token function">Init</span> <span class="token punctuation">(</span>napi_env env<span class="token punctuation">,</span> napi_value exports<span class="token punctuation">,</span> napi_value module<span class="token punctuation">,</span> <span class="token keyword">void</span><span class="token operator">*</span> priv<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// napi_property_descriptor 为结构体，作用是描述扩展暴露的 属性/方法 的描述</span>
+    napi_property_descriptor desc <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token string">"hello"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> HelloMethod<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> napi_default<span class="token punctuation">,</span> <span class="token number">0</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token function">napi_define_properties</span><span class="token punctuation">(</span>env<span class="token punctuation">,</span> exports<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>desc<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 定义暴露的方法</span>
+<span class="token punctuation">}</span>
+
+<span class="token function">NAPI_MODULE</span><span class="token punctuation">(</span>hello<span class="token punctuation">,</span> Init<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 注册扩展，扩展名叫做hello，Init为扩展的初始化方法</span>
+</code></pre></div><h2 id="_3、编译扩展"><a href="#_3、编译扩展" class="header-anchor">#</a> 3、编译扩展</h2> <p>首先，创建编译描述文件<code>binding.gyp</code>。</p> <div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+  <span class="token property">"targets"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"target_name"</span><span class="token operator">:</span> <span class="token string">"hello"</span><span class="token punctuation">,</span>
+      <span class="token property">"sources"</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">"./src/hello.cc"</span> <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>然后，运行如下命令进行编译。</p> <div class="language-bash extra-class"><pre class="language-bash"><code>node-gyp rebuild
+</code></pre></div><h2 id="_4、调用扩展"><a href="#_4、调用扩展" class="header-anchor">#</a> 4、调用扩展</h2> <p>未方便调用扩展，先安装<code>bindings</code>。</p> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">npm</span> <span class="token function">install</span> --save bindings
+</code></pre></div><p>然后，创建<code>app.js</code>，调用刚编译的扩展。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> addon <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'bindings'</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token string">'hello'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span> addon<span class="token punctuation">.</span><span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// world</span>
+</code></pre></div><p>运行代码，由于N-API当前尚处于Experimental阶段，记得加上<code>--napi-modules</code>标记。</p> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token function">node</span> --napi-modules app.js
+</code></pre></div><p>输出如下</p> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token punctuation">{</span><span class="token string">"path"</span><span class="token builtin class-name">:</span><span class="token string">"/data/github/abi-stable-node-addon-examples/1_hello_world/napi/build/Release/hello.node"</span><span class="token punctuation">}</span>
+world
+<span class="token punctuation">(</span>node:6500<span class="token punctuation">)</span> Warning: N-API is an experimental feature and could change at any time.
+</code></pre></div><h2 id="相关链接"><a href="#相关链接" class="header-anchor">#</a> 相关链接</h2> <p>N-API：https://nodejs.org/api/n-api.html</p> <p>C++ Addons：https://nodejs.org/api/addons.html</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

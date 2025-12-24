@@ -1,0 +1,36 @@
+<!-- Section: # 6 实现apply方法 -->
+<div class="section-content" data-section-id="_6-实现apply方法">
+<h2 id="_6-实现apply方法"><a href="#_6-实现apply方法" class="header-anchor">#</a> 6 实现apply方法</h2>
+<blockquote><p>思路: 利用<code>this</code>的上下文特性。<code>apply</code>其实就是改一下参数的问题</p></blockquote>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token class-name">Function</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">myApply</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">context <span class="token operator">=</span> window<span class="token punctuation">,</span> args</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  <span class="token comment">// 这里传参和call传参不一样</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> context <span class="token operator">!==</span> <span class="token string">'object'</span><span class="token punctuation">)</span> context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Object</span><span class="token punctuation">(</span>context<span class="token punctuation">)</span> <span class="token comment">// 值类型，变为对象</span>
+
+  <span class="token comment">// args 传递过来的参数</span>
+  <span class="token comment">// this 表示调用call的函数</span>
+  <span class="token comment">// context 是apply传入的this</span>
+
+  <span class="token comment">// 在context上加一个唯一值，不会出现属性名称的覆盖</span>
+  <span class="token keyword">let</span> fnKey <span class="token operator">=</span> <span class="token function">Symbol</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  context<span class="token punctuation">[</span>fnKey<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span> <span class="token comment">// this 就是当前的函数</span>
+  
+  <span class="token comment">// 绑定了this</span>
+  <span class="token keyword">let</span> result <span class="token operator">=</span> context<span class="token punctuation">[</span>fnKey<span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span> 
+
+  <span class="token comment">// 清理掉 fn ，防止污染</span>
+  <span class="token keyword">delete</span> context<span class="token punctuation">[</span>fnKey<span class="token punctuation">]</span><span class="token punctuation">;</span> 
+
+  <span class="token comment">// 返回结果</span>
+  <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 使用</span>
+<span class="token keyword">function</span> <span class="token function">f</span><span class="token punctuation">(</span><span class="token parameter">a<span class="token punctuation">,</span>b</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+ console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span>b<span class="token punctuation">)</span>
+ console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>name<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">let</span> obj<span class="token operator">=</span><span class="token punctuation">{</span>
+ <span class="token literal-property property">name</span><span class="token operator">:</span><span class="token string">'张三'</span>
+<span class="token punctuation">}</span>
+f<span class="token punctuation">.</span><span class="token function">myApply</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div>
+</div>

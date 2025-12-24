@@ -1,0 +1,48 @@
+<!-- Section: # 14 实现Ajax -->
+<div class="section-content" data-section-id="_14-实现ajax">
+<h2 id="_14-实现ajax"><a href="#_14-实现ajax" class="header-anchor">#</a> 14 实现Ajax</h2>
+<p><strong>步骤</strong></p>
+<ul><li>创建 <code>XMLHttpRequest</code> 实例</li> <li>发出 HTTP 请求</li> <li>服务器返回 XML 格式的字符串</li> <li>JS 解析 XML，并更新局部页面</li> <li>不过随着历史进程的推进，XML 已经被淘汰，取而代之的是 JSON。</li></ul>
+<p>了解了属性和方法之后，根据 AJAX 的步骤，手写最简单的 GET 请求。</p>
+<h3 id="_1-原生实现"><a href="#_1-原生实现" class="header-anchor">#</a> 1 原生实现</h3>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">ajax</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> xhr <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">XMLHttpRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//实例化，以调用方法</span>
+  xhr<span class="token punctuation">.</span><span class="token function">open</span><span class="token punctuation">(</span><span class="token string">'get'</span><span class="token punctuation">,</span> <span class="token string">'https://www.google.com'</span><span class="token punctuation">)</span>  <span class="token comment">//参数2，url。参数三：异步</span>
+  xhr<span class="token punctuation">.</span><span class="token function-variable function">onreadystatechange</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>  <span class="token comment">//每当 readyState 属性改变时，就会调用该函数。</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>xhr<span class="token punctuation">.</span>readyState <span class="token operator">===</span> <span class="token number">4</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  <span class="token comment">//XMLHttpRequest 代理当前所处状态。</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>xhr<span class="token punctuation">.</span>status <span class="token operator">&gt;=</span> <span class="token number">200</span> <span class="token operator">&amp;&amp;</span> xhr<span class="token punctuation">.</span>status <span class="token operator">&lt;</span> <span class="token number">300</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  <span class="token comment">//200-300请求成功</span>
+        <span class="token keyword">let</span> string <span class="token operator">=</span> request<span class="token punctuation">.</span>responseText
+        <span class="token comment">//JSON.parse() 方法用来解析JSON字符串，构造由字符串描述的JavaScript值或对象</span>
+        <span class="token keyword">let</span> object <span class="token operator">=</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>string<span class="token punctuation">)</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  request<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//用于实际发出 HTTP 请求。不带参数为GET请求</span>
+<span class="token punctuation">}</span>
+</code></pre></div>
+<h3 id="_2-promise实现"><a href="#_2-promise实现" class="header-anchor">#</a> 2 Promise实现</h3>
+<p>基于<code>Promise</code>封装<code>Ajax</code></p>
+<ul><li>返回一个新的<code>Promise</code>实例</li> <li>创建<code>HMLHttpRequest</code>异步对象</li> <li>调用<code>open</code>方法，打开<code>url</code>，与服务器建立链接（发送前的一些处理）</li> <li>监听<code>Ajax</code>状态信息</li> <li>如果<code>xhr.readyState == 4</code>（表示服务器响应完成，可以获取使用服务器的响应了）
+<ul><li><code>xhr.status == 200</code>，返回<code>resolve</code>状态</li> <li><code>xhr.status == 404</code>，返回<code>reject</code>状态</li></ul></li> <li><code>xhr.readyState !== 4</code>，把请求主体的信息基于<code>send</code>发送给服务器</li></ul>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">ajax</span><span class="token punctuation">(</span><span class="token parameter">url</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> xhr <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">XMLHttpRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    xhr<span class="token punctuation">.</span><span class="token function">open</span><span class="token punctuation">(</span><span class="token string">'get'</span><span class="token punctuation">,</span> url<span class="token punctuation">)</span>
+    xhr<span class="token punctuation">.</span><span class="token function-variable function">onreadystatechange</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>xhr<span class="token punctuation">.</span>readyState <span class="token operator">==</span> <span class="token number">4</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>xhr<span class="token punctuation">.</span>status <span class="token operator">&gt;=</span> <span class="token number">200</span> <span class="token operator">&amp;&amp;</span> xhr<span class="token punctuation">.</span>status <span class="token operator">&lt;=</span> <span class="token number">300</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>xhr<span class="token punctuation">.</span>responseText<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+          <span class="token function">reject</span><span class="token punctuation">(</span><span class="token string">'请求出错'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    xhr<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment">//发送hppt请求</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">let</span> url <span class="token operator">=</span> <span class="token string">'/data.json'</span>
+<span class="token function">ajax</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">res</span> <span class="token operator">=&gt;</span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">catch</span><span class="token punctuation">(</span><span class="token parameter">reason</span> <span class="token operator">=&gt;</span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>reason<span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre></div>
+</div>

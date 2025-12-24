@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue CLI3之pages 构建多页应用 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Vue CLI3之pages 构建多页应用</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>Vue CLI3之pages 构建多页应用</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、概念"><a href="#一、概念" class="header-anchor">#</a> 一、概念</h2> <blockquote><p>首先我们可以把多页应用理解为由多个单页构成的应用，而何谓多个单页呢？其实你可以把一个单页看成是一个 <code>html</code> 文件，那么多个单页便是多个 <code>html</code> 文件，多页应用便是由多个 <code>html</code> 组成的应用，如下图所示</p></blockquote> <p><img src="https://s.poetries.top/gitee/2020/09/79.png" alt=""></p> <blockquote><p>既然多页应用拥有多个 <code>html</code>，那么同样其应该拥有多个独立的入口文件、组件、路由、<code>vuex</code> 等。没错，说简单一点就是多页应用的每个单页都可以拥有单页应用 <code>src</code> 目录下的文件及功能，我们来看一下一个基础多页应用的目录结构</p></blockquote> <div class="language-bash extra-class"><pre class="language-bash"><code>├── node_modules               <span class="token comment"># 项目依赖包目录</span>
+├── build                      <span class="token comment"># 项目 webpack 功能目录</span>
+├── config                     <span class="token comment"># 项目配置项文件夹</span>
+├── src                        <span class="token comment"># 前端资源目录</span>
+│   ├── images                 <span class="token comment"># 图片目录</span>
+│   ├── components             <span class="token comment"># 公共组件目录</span>
+│   ├── pages                  <span class="token comment"># 页面目录</span>
+│   │   ├── page1              <span class="token comment"># page1 目录</span>
+│   │   │   ├── components     <span class="token comment"># page1 组件目录</span>
+│   │   │   ├── router         <span class="token comment"># page1 路由目录</span>
+│   │   │   ├── views          <span class="token comment"># page1 页面目录</span>
+│   │   │   ├── page1.html     <span class="token comment"># page1 html 模板</span>
+│   │   │   ├── page1.vue      <span class="token comment"># page1 vue 配置文件</span>
+│   │   │   └── page1.js       <span class="token comment"># page1 入口文件</span>
+│   │   ├── page2              <span class="token comment"># page2 目录</span>
+│   │   └── index              <span class="token comment"># index 目录</span>
+│   ├── common                 <span class="token comment"># 公共方法目录</span>
+│   └── store                  <span class="token comment"># 状态管理 store 目录</span>
+├── .gitignore                 <span class="token comment"># git 忽略文件</span>
+├── .env                       <span class="token comment"># 全局环境配置文件</span>
+├── .env.dev                   <span class="token comment"># 开发环境配置文件</span>
+├── .postcssrc.js              <span class="token comment"># postcss 配置文件</span>
+├── babel.config.js            <span class="token comment"># babel 配置文件</span>
+├── package.json               <span class="token comment"># 包管理文件</span>
+├── vue.config.js              <span class="token comment"># CLI 配置文件</span>
+└── yarn.lock                  <span class="token comment"># yarn 依赖信息文件</span>
+</code></pre></div><h2 id="二、多入口"><a href="#二、多入口" class="header-anchor">#</a> 二、多入口</h2> <blockquote><p>在单页应用中，我们的入口文件只有一个，<code>CLI</code> 默认配置的是 <code>main.js</code>，但是到了多页应用，我们的入口文件便包含了 <code>page1.js</code>、<code>page2.js</code>、<code>index.js</code>等，数量取决于 <code>pages</code> 文件夹下目录的个数，这时候为了项目的可拓展性，我们需要自动计算入口文件的数量并解析路径配置到 <code>webpack</code> 中的 <code>entry</code> 属性上，如：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token operator">...</span>
+    
+    <span class="token literal-property property">entry</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">page1</span><span class="token operator">:</span> <span class="token string">'/xxx/pages/page1/page1.js'</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">page2</span><span class="token operator">:</span> <span class="token string">'/xxx/pages/page2/page2.js'</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">index</span><span class="token operator">:</span> <span class="token string">'/xxx/pages/index/index.js'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    
+    <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>那么我们如何读取并解析这样的路径呢，这里就需要使用工具和函数来解决了。我们可以在根目录新建 <code>build</code> 文件夹存放 <code>utils.js</code> 这样共用的 <code>webpack</code> 功能性文件，并加入多入口读取解析方法</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/* utils.js */</span>
+<span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// glob 是 webpack 安装时依赖的一个第三方模块，该模块允许你使用 * 等符号,</span>
+<span class="token comment">// 例如 lib/*.js 就是获取 lib 文件夹下的所有 js 后缀名的文件</span>
+<span class="token keyword">const</span> glob <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'glob'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 取得相应的页面路径，因为之前的配置，所以是 src 文件夹下的 pages 文件夹</span>
+<span class="token keyword">const</span> <span class="token constant">PAGE_PATH</span> <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'../src/pages'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">/* 
+* 多入口配置
+* 通过 glob 模块读取 pages 文件夹下的所有对应文件夹下的 js * 后缀文件，如果该文件存在
+* 那么就作为入口处理
+*/</span>
+exports<span class="token punctuation">.</span><span class="token function-variable function">getEntries</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> entryFiles <span class="token operator">=</span> glob<span class="token punctuation">.</span><span class="token function">sync</span><span class="token punctuation">(</span><span class="token constant">PAGE_PATH</span> <span class="token operator">+</span> <span class="token string">'/*/*.js'</span><span class="token punctuation">)</span> <span class="token comment">// 同步读取所有入口文件</span>
+    <span class="token keyword">let</span> map <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+    
+    <span class="token comment">// 遍历所有入口文件</span>
+    entryFiles<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">filePath</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token comment">// 获取文件名</span>
+        <span class="token keyword">let</span> filename <span class="token operator">=</span> filePath<span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span>filePath<span class="token punctuation">.</span><span class="token function">lastIndexOf</span><span class="token punctuation">(</span><span class="token string">'\/'</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> filePath<span class="token punctuation">.</span><span class="token function">lastIndexOf</span><span class="token punctuation">(</span><span class="token string">'.'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        
+        <span class="token comment">// 以键值对的形式存储</span>
+        map<span class="token punctuation">[</span>filename<span class="token punctuation">]</span> <span class="token operator">=</span> filePath 
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">return</span> map
+<span class="token punctuation">}</span>
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2020/09/80.png" alt=""></p> <blockquote><p>读取并存储完毕后，我们得到了一个入口文件的对象集合，这个对象我们便可以将其设置到 <code>webpack</code> 的 <code>entry</code> 属性上，这里我们需要修改 <code>vue.config.js</code> 的配置来间接修改 <code>webpack</code> 的值</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/* vue.config.js */</span>
+
+<span class="token keyword">const</span> utils <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./build/utils'</span><span class="token punctuation">)</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token operator">...</span>
+    
+    <span class="token function-variable function">configureWebpack</span><span class="token operator">:</span> <span class="token parameter">config</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        config<span class="token punctuation">.</span>entry <span class="token operator">=</span> utils<span class="token punctuation">.</span><span class="token function">getEntries</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    
+    <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>这样我们多入口的设置便完成了，当然这并不是 CLI 所希望的操作，后面我们会进行改进。</p></blockquote> <h2 id="三、多模板"><a href="#三、多模板" class="header-anchor">#</a> 三、多模板</h2> <blockquote><p>相对于多入口来说，多模板的配置也是大同小异，这里所说的模板便是每个 <code>page</code> 下的 <code>html</code> 模板文件，而模板文件的作用主要用于 <code>webpack</code> 中 <code>html-webpack-plugin</code> 插件的配置，其会根据模板文件生产一个编译后的 <code>html</code> 文件并自动加入携带 hash 的脚本和样式，基本配置如下</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/* webpack 配置文件 */</span>
+<span class="token keyword">const</span> HtmlWebpackPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'html-webpack-plugin'</span><span class="token punctuation">)</span> <span class="token comment">// 安装并引用插件</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token operator">...</span>
+    
+    <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token keyword">new</span> <span class="token class-name">HtmlWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+            <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'My Page'</span><span class="token punctuation">,</span> <span class="token comment">// 生成 html 中的 title</span>
+            <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">'demo.html'</span><span class="token punctuation">,</span> <span class="token comment">// 生成 html 的文件名</span>
+            <span class="token literal-property property">template</span><span class="token operator">:</span> <span class="token string">'xxx/xxx/demo.html'</span><span class="token punctuation">,</span> <span class="token comment">// 模板路径</span>
+            <span class="token literal-property property">chunks</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'manifest'</span><span class="token punctuation">,</span> <span class="token string">'vendor'</span><span class="token punctuation">,</span> <span class="token string">'demo'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment">// 所要包含的模块</span>
+            <span class="token literal-property property">inject</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token comment">// 是否注入资源</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">]</span>
+    
+    <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>以上是单模板的配置，那么如果是多模板只要继续往 <code>plugins</code> 数组中添加 <code>HtmlWebpackPlugin</code> 即可，但是为了和多入口一样能够灵活的获取 <code>pages</code> 目录下所有模板文件并进行配置，我们可以在 <code>utils.js</code> 中添加多模板的读取解析方法</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/* utils.js */</span>
+
+<span class="token comment">// 多页面输出配置</span>
+<span class="token comment">// 与上面的多页面入口配置相同，读取 page 文件夹下的对应的 html 后缀文件，然后放入数组中</span>
+exports<span class="token punctuation">.</span><span class="token function-variable function">htmlPlugin</span> <span class="token operator">=</span> <span class="token parameter">configs</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> entryHtml <span class="token operator">=</span> glob<span class="token punctuation">.</span><span class="token function">sync</span><span class="token punctuation">(</span><span class="token constant">PAGE_PATH</span> <span class="token operator">+</span> <span class="token string">'/*/*.html'</span><span class="token punctuation">)</span>
+    <span class="token keyword">let</span> arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    
+    entryHtml<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">filePath</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">let</span> filename <span class="token operator">=</span> filePath<span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span>filePath<span class="token punctuation">.</span><span class="token function">lastIndexOf</span><span class="token punctuation">(</span><span class="token string">'\/'</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> filePath<span class="token punctuation">.</span><span class="token function">lastIndexOf</span><span class="token punctuation">(</span><span class="token string">'.'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">let</span> conf <span class="token operator">=</span> <span class="token punctuation">{</span>
+            <span class="token literal-property property">template</span><span class="token operator">:</span> filePath<span class="token punctuation">,</span> <span class="token comment">// 模板路径</span>
+            <span class="token literal-property property">filename</span><span class="token operator">:</span> filename <span class="token operator">+</span> <span class="token string">'.html'</span><span class="token punctuation">,</span> <span class="token comment">// 生成 html 的文件名</span>
+            <span class="token literal-property property">chunks</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'manifest'</span><span class="token punctuation">,</span> <span class="token string">'vendor'</span><span class="token punctuation">,</span>  filename<span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">inject</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+        <span class="token punctuation">}</span>
+        
+        <span class="token comment">// 如果有自定义配置可以进行 merge</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>configs<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            conf <span class="token operator">=</span> <span class="token function">merge</span><span class="token punctuation">(</span>conf<span class="token punctuation">,</span> configs<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+        
+        <span class="token comment">// 针对生产环境配置</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">===</span> <span class="token string">'production'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            conf <span class="token operator">=</span> <span class="token function">merge</span><span class="token punctuation">(</span>conf<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+                <span class="token literal-property property">minify</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                    <span class="token literal-property property">removeComments</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token comment">// 删除 html 中的注释代码</span>
+                    <span class="token literal-property property">collapseWhitespace</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token comment">// 删除 html 中的空白符</span>
+                    <span class="token comment">// removeAttributeQuotes: true // 删除 html 元素中属性的引号</span>
+                <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">chunksSortMode</span><span class="token operator">:</span> <span class="token string">'manual'</span> <span class="token comment">// 按 manual 的顺序引入</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+        
+        arr<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">HtmlWebpackPlugin</span><span class="token punctuation">(</span>conf<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">return</span> arr
+<span class="token punctuation">}</span>
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2020/09/81.png" alt=""></p> <ul><li>以上我们仍然是使用 <code>glob</code> 读取所有模板文件，然后将其遍历并设置每个模板的 <code>config</code>，同时针对一些自定义配置和生产环境的配置进行了 <code>merge</code> 处理，其中自定义配置的功能我会在下节进行介绍，这里介绍一下生产环境下 <code>minify</code> 配置的作用：将 <code>html-minifier</code> 的选项作为对象来缩小输出。</li> <li><code>html-minifier</code> 是一款用于缩小 <code>html</code> 文件大小的工具，其有很多配置项功能，包括上述所列举的常用的删除注释、空白、引号等。</li> <li>当我们编写完了多模板的方法后，我们同样可以在 <code>vue.config.js</code> 中进行配置，与多入口不同的是我们在 <code>configureWebpack</code> 中不能直接替换 <code>plugins</code> 的值，因为它还包含了其他插件</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/* vue.config.js */</span>
+
+<span class="token keyword">const</span> utils <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./build/utils'</span><span class="token punctuation">)</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token operator">...</span>
+    
+    <span class="token function-variable function">configureWebpack</span><span class="token operator">:</span> <span class="token parameter">config</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        config<span class="token punctuation">.</span>entry <span class="token operator">=</span> utils<span class="token punctuation">.</span><span class="token function">getEntries</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 直接覆盖 entry 配置</span>
+        
+        <span class="token comment">// 使用 return 一个对象会通过 webpack-merge 进行合并，plugins 不会置空</span>
+        <span class="token keyword">return</span> <span class="token punctuation">{</span>
+            <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token operator">...</span>utils<span class="token punctuation">.</span><span class="token function">htmlPlugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    
+    <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>如此我们多页应用的多入口和多模板的配置就完成了，这时候我们运行命令 <code>yarn build</code> 后你会发现 <code>dist</code> 目录下生成了 <code>3</code> 个 <code>html</code> 文件，分别是 <code>index.html</code>、<code>page1.html</code> 和 <code>page2.html</code></p></blockquote> <h2 id="四、使用-pages-配置"><a href="#四、使用-pages-配置" class="header-anchor">#</a> 四、使用 pages 配置</h2> <blockquote><p>其实，在 <code>vue.config.js</code> 中，我们还有一个配置没有使用，便是 <code>pages</code>。<code>pages</code> 对象允许我们为应用配置多个入口及模板，这就为我们的多页应用提供了开放的配置入口。官方示例代码如下</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/* vue.config.js */</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">pages</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">index</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token comment">// page 的入口</span>
+            <span class="token literal-property property">entry</span><span class="token operator">:</span> <span class="token string">'src/index/main.js'</span><span class="token punctuation">,</span>
+            <span class="token comment">// 模板来源</span>
+            <span class="token literal-property property">template</span><span class="token operator">:</span> <span class="token string">'public/index.html'</span><span class="token punctuation">,</span>
+            <span class="token comment">// 在 dist/index.html 的输出</span>
+            <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">'index.html'</span><span class="token punctuation">,</span>
+            <span class="token comment">// 当使用 title 选项时，</span>
+            <span class="token comment">// template 中的 title 标签需要是 &lt;title&gt;&lt;%= htmlWebpackPlugin.options.title %&gt;&lt;/title&gt;</span>
+            <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Index Page'</span><span class="token punctuation">,</span>
+            <span class="token comment">// 在这个页面中包含的块，默认情况下会包含</span>
+            <span class="token comment">// 提取出来的通用 chunk 和 vendor chunk。</span>
+            <span class="token literal-property property">chunks</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'chunk-vendors'</span><span class="token punctuation">,</span> <span class="token string">'chunk-common'</span><span class="token punctuation">,</span> <span class="token string">'index'</span><span class="token punctuation">]</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token comment">// 当使用只有入口的字符串格式时，</span>
+        <span class="token comment">// 模板会被推导为 `public/subpage.html`</span>
+        <span class="token comment">// 并且如果找不到的话，就回退到 `public/index.html`。</span>
+        <span class="token comment">// 输出文件名会被推导为 `subpage.html`。</span>
+        <span class="token literal-property property">subpage</span><span class="token operator">:</span> <span class="token string">'src/subpage/main.js'</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>我们不难发现，<code>pages</code> 对象中的 <code>key</code> 就是入口的别名，而其 <code>value</code> 对象其实是入口 <code>entry</code> 和模板属性的合并，这样我们上述介绍的获取多入口和多模板的方法就可以合并成一个函数来进行多页的处理，合并后的 <code>setPages</code> 方法如下</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// pages 多入口配置</span>
+exports<span class="token punctuation">.</span><span class="token function-variable function">setPages</span> <span class="token operator">=</span> <span class="token parameter">configs</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> entryFiles <span class="token operator">=</span> glob<span class="token punctuation">.</span><span class="token function">sync</span><span class="token punctuation">(</span><span class="token constant">PAGE_PATH</span> <span class="token operator">+</span> <span class="token string">'/*/*.js'</span><span class="token punctuation">)</span>
+    <span class="token keyword">let</span> map <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+
+    entryFiles<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">filePath</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">let</span> filename <span class="token operator">=</span> filePath<span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span>filePath<span class="token punctuation">.</span><span class="token function">lastIndexOf</span><span class="token punctuation">(</span><span class="token string">'\/'</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> filePath<span class="token punctuation">.</span><span class="token function">lastIndexOf</span><span class="token punctuation">(</span><span class="token string">'.'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">let</span> tmp <span class="token operator">=</span> filePath<span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> filePath<span class="token punctuation">.</span><span class="token function">lastIndexOf</span><span class="token punctuation">(</span><span class="token string">'\/'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">let</span> conf <span class="token operator">=</span> <span class="token punctuation">{</span>
+            <span class="token comment">// page 的入口</span>
+            <span class="token literal-property property">entry</span><span class="token operator">:</span> filePath<span class="token punctuation">,</span> 
+            <span class="token comment">// 模板来源</span>
+            <span class="token literal-property property">template</span><span class="token operator">:</span> tmp <span class="token operator">+</span> <span class="token string">'.html'</span><span class="token punctuation">,</span> 
+            <span class="token comment">// 在 dist/index.html 的输出</span>
+            <span class="token literal-property property">filename</span><span class="token operator">:</span> filename <span class="token operator">+</span> <span class="token string">'.html'</span><span class="token punctuation">,</span> 
+            <span class="token comment">// 页面模板需要加对应的js脚本，如果不加这行则每个页面都会引入所有的js脚本</span>
+            <span class="token literal-property property">chunks</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'manifest'</span><span class="token punctuation">,</span> <span class="token string">'vendor'</span><span class="token punctuation">,</span> filename<span class="token punctuation">]</span><span class="token punctuation">,</span> 
+            <span class="token literal-property property">inject</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>configs<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            conf <span class="token operator">=</span> <span class="token function">merge</span><span class="token punctuation">(</span>conf<span class="token punctuation">,</span> configs<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">===</span> <span class="token string">'production'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            conf <span class="token operator">=</span> <span class="token function">merge</span><span class="token punctuation">(</span>conf<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+                <span class="token literal-property property">minify</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                    <span class="token literal-property property">removeComments</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token comment">// 删除 html 中的注释代码</span>
+                    <span class="token literal-property property">collapseWhitespace</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token comment">// 删除 html 中的空白符</span>
+                    <span class="token comment">// removeAttributeQuotes: true // 删除 html 元素中属性的引号</span>
+                <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">chunksSortMode</span><span class="token operator">:</span> <span class="token string">'manual'</span><span class="token comment">// 按 manual 的顺序引入</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+
+        map<span class="token punctuation">[</span>filename<span class="token punctuation">]</span> <span class="token operator">=</span> conf
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> map
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>上述代码我们 <code>return</code> 出的 <code>map</code> 对象就是 <code>pages</code> 所需要的配置项结构，我们只需在 <code>vue.config.js</code> 中引用即可</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/* vue.config.js */</span>
+
+<span class="token keyword">const</span> utils <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./build/utils'</span><span class="token punctuation">)</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token operator">...</span>
+    
+    <span class="token literal-property property">pages</span><span class="token operator">:</span> utils<span class="token punctuation">.</span><span class="token function">setPages</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    
+    <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>这样我们多页应用基于 <code>pages</code> 配置的改进就大功告成了，当你运行打包命令来查看输出结果的时候，你会发现和之前的方式相比并没有什么变化，这就说明这两种方式都适用于多页的构建，但是这里还是推荐大家使用更便捷的 <code>pages</code> 配置</p></blockquote></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

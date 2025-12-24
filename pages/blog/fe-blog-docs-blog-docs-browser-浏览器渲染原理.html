@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浏览器渲染原理 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>浏览器渲染原理</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>浏览器渲染原理</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、浏览器如何渲染网页"><a href="#一、浏览器如何渲染网页" class="header-anchor">#</a> 一、浏览器如何渲染网页</h2> <p><strong>概述：浏览器渲染一共有五步</strong></p> <ol><li>处理 <code>HTML</code> 并构建 <code>DOM</code> 树。</li> <li>处理 <code>CSS</code>构建 <code>CSSOM</code> 树。</li> <li>将 <code>DOM</code> 与 <code>CSSOM</code> 合并成一个渲染树。</li> <li>根据渲染树来布局，计算每个节点的位置。</li> <li>调用 <code>GPU</code> 绘制，合成图层，显示在屏幕上</li></ol> <blockquote><p>第四步和第五步是最耗时的部分，这两步合起来，就是我们通常所说的渲染</p></blockquote> <p>具体如下图过程如下图所示</p> <p><img src="https://s.poetries.top/gitee/2019/10/19.png" alt=""></p> <p><img src="https://s.poetries.top/gitee/2019/10/20.png" alt=""></p> <p><strong>渲染</strong></p> <ul><li>网页生成的时候，至少会渲染一次</li> <li>在用户访问的过程中，还会不断重新渲染</li></ul> <blockquote><p>重新渲染需要重复之前的第四步(重新生成布局)+第五步(重新绘制)或者只有第五个步(重新绘制)</p></blockquote> <ul><li>在构建 <code>CSSOM</code> 树时，会阻塞渲染，直至 <code>CSSOM</code>树构建完成。并且构建 <code>CSSOM</code> 树是一个十分消耗性能的过程，所以应该尽量保证层级扁平，减少过度层叠，越是具体的 <code>CSS</code> 选择器，执行速度越慢</li> <li>当 <code>HTML</code> 解析到 <code>script</code> 标签时，会暂停构建 <code>DOM</code>，完成后才会从暂停的地方重新开始。也就是说，如果你想首屏渲染的越快，就越不应该在首屏就加载 <code>JS</code> 文件。并且<code>CSS</code>也会影响 <code>JS</code> 的执行，只有当解析完样式表才会执行 <code>JS</code>，所以也可以认为这种情况下，<code>CSS</code> 也会暂停构建 <code>DOM</code></li></ul> <h2 id="二、浏览器渲染五个阶段"><a href="#二、浏览器渲染五个阶段" class="header-anchor">#</a> 二、浏览器渲染五个阶段</h2> <h3 id="_2-1-第一步-解析html标签-构建dom树"><a href="#_2-1-第一步-解析html标签-构建dom树" class="header-anchor">#</a> 2.1 第一步：解析HTML标签，构建DOM树</h3> <blockquote><p>在这个阶段，引擎开始解析<code>html</code>，解析出来的结果会成为一棵<code>dom</code>树
+<code>dom</code>的目的至少有<code>2</code>个</p></blockquote> <ul><li>作为下个阶段渲染树状图的输入</li> <li>成为网页和脚本的交互界面。(最常用的就是<code>getElementById</code>等等)</li></ul> <p><strong>当解析器到达script标签的时候，发生下面四件事情</strong></p> <ol><li><code>html</code>解析器停止解析,</li> <li>如果是外部脚本，就从外部网络获取脚本代码</li> <li>将控制权交给<code>js</code>引擎，执行<code>js</code>代码</li> <li>恢复<code>html</code>解析器的控制权</li></ol> <blockquote><p>由此可以得到第一个结论1</p></blockquote> <ul><li>由于<code>&lt;script&gt;</code>标签是阻塞解析的，将脚本放在网页尾部会加速代码渲染。</li> <li><code>defer</code>和<code>async</code>属性也能有助于加载外部脚本。</li> <li><code>defer</code>使得脚本会在<code>dom</code>完整构建之后执行；</li> <li><code>async</code>标签使得脚本只有在完全<code>available</code>才执行，并且是以非阻塞的方式进行的</li></ul> <h3 id="_2-2-第二步-解析css标签-构建cssom树"><a href="#_2-2-第二步-解析css标签-构建cssom树" class="header-anchor">#</a> 2.2 第二步：解析CSS标签，构建CSSOM树</h3> <ul><li>我们已经看到<code>html</code>解析器碰到脚本后会做的事情，接下来我们看下<code>html</code>解析器碰到样式表会发生的情况</li> <li><code>js</code>会阻塞解析，因为它会修改文档(<code>document</code>)。<code>css</code>不会修改文档的结构，如果这样的话，似乎看起来<code>css</code>样式不会阻塞浏览器<code>html</code>解析。但是事实上 <code>css</code>样式表是阻塞的。阻塞是指当<code>cssom</code>树建立好之后才会进行下一步的解析渲染</li></ul> <p><strong>通过以下手段可以减轻cssom带来的影响</strong></p> <ul><li>将<code>script</code>脚本放在页面底部</li> <li>尽可能快的加载<code>css</code>样式表</li> <li>将样式表按照<code>media type</code>和<code>media query</code>区分，这样有助于我们将<code>css</code>资源标记成非阻塞渲染的资源。</li> <li>非阻塞的资源还是会被浏览器下载，只是优先级较低</li></ul> <h3 id="_2-3-第三步-把dom和cssom组合成渲染树-render-tree"><a href="#_2-3-第三步-把dom和cssom组合成渲染树-render-tree" class="header-anchor">#</a> 2.3 第三步：把DOM和CSSOM组合成渲染树（render tree）</h3> <p><img src="https://s.poetries.top/gitee/2019/10/21.png" alt=""></p> <h3 id="_2-4-第四步-在渲染树的基础上进行布局-计算每个节点的几何结构"><a href="#_2-4-第四步-在渲染树的基础上进行布局-计算每个节点的几何结构" class="header-anchor">#</a> 2.4 第四步：在渲染树的基础上进行布局，计算每个节点的几何结构</h3> <blockquote><p>布局(<code>layout</code>)：定位坐标和大小，是否换行，各种<code>position</code>, <code>overflow</code>, <code>z-index</code>属性</p></blockquote> <h3 id="_2-5-调用-gpu-绘制-合成图层-显示在屏幕上"><a href="#_2-5-调用-gpu-绘制-合成图层-显示在屏幕上" class="header-anchor">#</a> 2.5 调用 GPU 绘制，合成图层，显示在屏幕上</h3> <blockquote><p>将渲染树的各个节点绘制到屏幕上，这一步被称为绘制<code>painting</code></p></blockquote> <h2 id="三、渲染优化相关"><a href="#三、渲染优化相关" class="header-anchor">#</a> 三、渲染优化相关</h2> <h3 id="_3-1-load-和-domcontentloaded-区别"><a href="#_3-1-load-和-domcontentloaded-区别" class="header-anchor">#</a> 3.1 Load 和 DOMContentLoaded 区别</h3> <ul><li><code>Load</code> 事件触发代表页面中的 <code>DOM</code>，<code>CSS</code>，<code>JS</code>，图片已经全部加载完毕。</li> <li><code>DOMContentLoaded</code> 事件触发代表初始的 <code>HTML</code> 被完全加载和解析，不需要等待 <code>CSS</code>，<code>JS</code>，图片加载</li></ul> <h3 id="_3-2-图层"><a href="#_3-2-图层" class="header-anchor">#</a> 3.2 图层</h3> <blockquote><p>一般来说，可以把普通文档流看成一个图层。特定的属性可以生成一个新的图层。不同的图层渲染互不影响，所以对于某些频繁需要渲染的建议单独生成一个新图层，提高性能。但也不能生成过多的图层，会引起反作用。</p></blockquote> <p><strong>通过以下几个常用属性可以生成新图层</strong></p> <ul><li><code>3D</code> 变换：<code>translate3d</code>、<code>translateZ</code></li> <li><code>will-change</code></li> <li><code>video</code>、<code>iframe</code> 标签</li> <li>通过动画实现的 <code>opacity</code> 动画转换</li> <li><code>position: fixed</code></li></ul> <h3 id="_3-3-重绘-repaint-和回流-reflow"><a href="#_3-3-重绘-repaint-和回流-reflow" class="header-anchor">#</a> 3.3 重绘（Repaint）和回流（Reflow）</h3> <blockquote><p>重绘和回流是渲染步骤中的一小节，但是这两个步骤对于性能影响很大</p></blockquote> <ul><li>重绘是当节点需要更改外观而不会影响布局的，比如改变 <code>color</code> 就叫称为重绘</li> <li>回流是布局或者几何属性需要改变就称为回流。</li></ul> <blockquote><p>回流必定会发生重绘，重绘不一定会引发回流。回流所需的成本比重绘高的多，改变深层次的节点很可能导致父节点的一系列回流</p></blockquote> <p><strong>以下几个动作可能会导致性能问题</strong></p> <ul><li>改变 <code>window</code> 大小</li> <li>改变字体</li> <li>添加或删除样式</li> <li>文字改变</li> <li>定位或者浮动</li> <li>盒模型</li></ul> <p><strong>很多人不知道的是，重绘和回流其实和 Event loop 有关</strong></p> <ul><li>当 <code>Event loop</code> 执行完<code>Microtasks</code> 后，会判断 <code>document</code> 是否需要更新。因为浏览器是 <code>60Hz</code> 的刷新率，每 <code>16ms</code> 才会更新一次。</li> <li>然后判断是否有 <code>resize</code> 或者 <code>scroll</code> ，有的话会去触发事件，所以 <code>resize</code> 和 <code>scroll</code> 事件也是至少 <code>16ms</code>才会触发一次，并且自带节流功能。</li> <li>判断是否触发了 <code>media query</code></li> <li>更新动画并且发送事件</li> <li>判断是否有全屏操作事件</li> <li>执行 <code>requestAnimationFrame</code> 回调</li> <li>执行 <code>IntersectionObserver</code> 回调，该方法用于判断元素是否可见，可以用于懒加载上，但是兼容性不好</li> <li>更新界面</li> <li>以上就是一帧中可能会做的事情。如果在一帧中有空闲时间，就会去执行 <code>requestIdleCallback</code> 回调</li></ul> <p><strong>常见的引起重绘的属性</strong></p> <ul><li><code>color</code></li> <li><code>border-style</code></li> <li><code>visibility</code></li> <li><code>background</code></li> <li><code>text-decoration</code></li> <li><code>background-image</code></li> <li><code>background-position</code></li> <li><code>background-repeat</code></li> <li><code>outline-color</code></li> <li><code>outline</code></li> <li><code>outline-style</code></li> <li><code>border-radius</code></li> <li><code>outline-width</code></li> <li><code>box-shadow</code></li> <li><code>background-size</code></li></ul> <h3 id="_3-4-常见引起回流属性和方法"><a href="#_3-4-常见引起回流属性和方法" class="header-anchor">#</a> 3.4 常见引起回流属性和方法</h3> <blockquote><p>任何会改变元素几何信息(元素的位置和尺寸大小)的操作，都会触发重排，下面列一些栗子</p></blockquote> <ul><li>添加或者删除可见的<code>DOM</code>元素；</li> <li>元素尺寸改变——边距、填充、边框、宽度和高度</li> <li>内容变化，比如用户在<code>input</code>框中输入文字</li> <li>浏览器窗口尺寸改变——<code>resize</code>事件发生时</li> <li>计算 <code>offsetWidth</code> 和 <code>offsetHeight</code> 属性</li> <li>设置 <code>style</code> 属性的值</li></ul> <p><strong>回流影响的范围</strong></p> <blockquote><p>由于浏览器渲染界面是基于流失布局模型的，所以触发重排时会对周围DOM重新排列，影响的范围有两种</p></blockquote> <ul><li>全局范围：从根节点<code>html</code>开始对整个渲染树进行重新布局。</li> <li>局部范围：对渲染树的某部分或某一个渲染对象进行重新布局</li></ul> <p><strong>全局范围回流</strong></p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>hello<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h4</span><span class="token punctuation">&gt;</span></span>hello<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h4</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>strong</span><span class="token punctuation">&gt;</span></span>Name:<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>strong</span><span class="token punctuation">&gt;</span></span>BDing<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h5</span><span class="token punctuation">&gt;</span></span>male<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h5</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ol</span><span class="token punctuation">&gt;</span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">&gt;</span></span>coding<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">&gt;</span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">&gt;</span></span>loving<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ol</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><blockquote><p>当<code>p</code>节点上发生<code>reflow</code>时，<code>hello</code>和<code>body</code>也会重新渲染，甚至<code>h5</code>和<code>ol</code>都会收到影响</p></blockquote> <p><strong>局部范围回流</strong></p> <blockquote><p>用局部布局来解释这种现象：把一个<code>dom</code>的宽高之类的几何信息定死，然后在<code>dom</code>内部触发重排，就只会重新渲染该<code>dom</code>内部的元素，而不会影响到外界</p></blockquote> <h3 id="_3-5-减少重绘和回流"><a href="#_3-5-减少重绘和回流" class="header-anchor">#</a> 3.5 减少重绘和回流</h3> <blockquote><p>使用 <code>translate</code> 替代 <code>top</code></p></blockquote> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>test<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>style</span><span class="token punctuation">&gt;</span></span><span class="token style"><span class="token language-css">
+    <span class="token selector">.test</span> <span class="token punctuation">{</span>
+        <span class="token property">position</span><span class="token punctuation">:</span> absolute<span class="token punctuation">;</span>
+        <span class="token property">top</span><span class="token punctuation">:</span> 10px<span class="token punctuation">;</span>
+        <span class="token property">width</span><span class="token punctuation">:</span> 100px<span class="token punctuation">;</span>
+        <span class="token property">height</span><span class="token punctuation">:</span> 100px<span class="token punctuation">;</span>
+        <span class="token property">background</span><span class="token punctuation">:</span> red<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>style</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+    <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token comment">// 引起回流</span>
+        document<span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">'.test'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>style<span class="token punctuation">.</span>top <span class="token operator">=</span> <span class="token string">'100px'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><ul><li>使用 <code>visibility</code> 替换 <code>display: none</code> ，因为前者只会引起重绘，后者会引发回流（改变了布局）</li> <li>把 <code>DOM</code> 离线后修改，比如：先把 <code>DOM</code> 给 <code>display:none</code> (有一次 <code>Reflow)</code>，然后你修改<code>100</code>次，然后再把它显示出来</li> <li>不要把 <code>DOM</code> 结点的属性值放在一个循环里当成循环里的变量</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">1000</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 获取 offsetTop 会导致回流，因为需要去获取正确的值</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>document<span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">'.test'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>style<span class="token punctuation">.</span>offsetTop<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>不要使用 <code>table</code> 布局，可能很小的一个小改动会造成整个 <code>table</code> 的重新布局</li> <li>动画实现的速度的选择，动画速度越快，回流次数越多，也可以选择使用 <code>requestAnimationFrame</code></li> <li><code>CSS</code>选择符从右往左匹配查找，避免 <code>DOM</code>深度过深</li> <li>将频繁运行的动画变为图层，图层能够阻止该节点回流影响别的元素。比如对于 <code>video</code>标签，浏览器会自动将该节点变为图层。</li></ul> <p><img src="https://s.poetries.top/gitee/2019/10/22.png" alt=""></p> <p><img src="https://s.poetries.top/gitee/2019/10/23.png" alt=""></p> <blockquote><p><a href="http://blog.poetries.top/2018/01/12/fed-performance-optimization/#%E5%85%AD%E3%80%81%E9%87%8D%E7%BB%98%E4%B8%8E%E5%9B%9E%E6%B5%81" target="_blank" rel="noopener noreferrer">重绘与回流<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></blockquote></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

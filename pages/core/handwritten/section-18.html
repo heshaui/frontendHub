@@ -1,0 +1,34 @@
+<!-- Section: # 18 实现ES6的const -->
+<div class="section-content" data-section-id="_18-实现es6的const">
+<h2 id="_18-实现es6的const"><a href="#_18-实现es6的const" class="header-anchor">#</a> 18 实现ES6的const</h2>
+<blockquote><p>由于ES5环境没有<code>block</code>的概念，所以是无法百分百实现<code>const</code>，只能是挂载到某个对象下，要么是全局的<code>windo</code>w，要么就是自定义一个<code>object</code>来当容器</p></blockquote>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> <span class="token function-variable function">__const</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token function">__const</span> <span class="token punctuation">(</span><span class="token parameter">data<span class="token punctuation">,</span> value</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    window<span class="token punctuation">.</span>data <span class="token operator">=</span> value <span class="token comment">// 把要定义的data挂载到window下，并赋值value</span>
+    Object<span class="token punctuation">.</span><span class="token function">defineProperty</span><span class="token punctuation">(</span>window<span class="token punctuation">,</span> data<span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token comment">// 利用Object.defineProperty的能力劫持当前对象，并修改其属性描述符</span>
+      <span class="token literal-property property">enumerable</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">configurable</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token function-variable function">get</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> value
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token function-variable function">set</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">data</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>data <span class="token operator">!==</span> value<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 当要对当前属性进行赋值时，则抛出错误！</span>
+          <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">TypeError</span><span class="token punctuation">(</span><span class="token string">'Assignment to constant variable.'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+          <span class="token keyword">return</span> value
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token function">__const</span><span class="token punctuation">(</span><span class="token string">'a'</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span>
+  <span class="token keyword">delete</span> a
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> item <span class="token keyword">in</span> window<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 因为const定义的属性在global下也是不存在的，所以用到了enumerable: false来模拟这一功能</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>item <span class="token operator">===</span> <span class="token string">'a'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 因为不可枚举，所以不执行</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>window<span class="token punctuation">[</span>item<span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  a <span class="token operator">=</span> <span class="token number">20</span> <span class="token comment">// 报错</span>
+</code></pre></div>
+<blockquote><p><code>Vue</code>目前双向绑定的核心实现思路就是利用<code>Object.defineProperty</code>对<code>get</code>跟<code>set</code>进行劫持，监听用户对属性进行调用以及赋值时的具体情况，从而实现的双向绑定</p></blockquote>
+</div>

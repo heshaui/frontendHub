@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nginx基础配置篇 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Nginx基础配置篇</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>Nginx基础配置篇</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><blockquote><p>Nginx 配置文件在线生成: https://nginxconfig.io/</p></blockquote> <h3 id="nginx的启动、停止与重启"><a href="#nginx的启动、停止与重启" class="header-anchor">#</a> Nginx的启动、停止与重启</h3> <ul><li>建立软连接<code>Nginx</code>到<code>/usr/bin</code>目录下 <code>ln -s /usr/sbin/nginx /usr/bin</code></li></ul> <h4 id="启动"><a href="#启动" class="header-anchor">#</a> 启动</h4> <ul><li>启动代码格式：<code>nginx</code>安装目录地址 <code>-c nginx</code>配置文件地址</li></ul> <div class="language- extra-class"><pre class="language-text"><code>[root@LinuxServer sbin]# /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+</code></pre></div><h4 id="停止"><a href="#停止" class="header-anchor">#</a> 停止</h4> <blockquote><p>nginx的停止有三种方式</p></blockquote> <p><strong>从容停止</strong></p> <ul><li>查看进程号 <code>ps -ef|grep nginx</code></li></ul> <p><img src="http://images2015.cnblogs.com/blog/848552/201601/848552-20160102182744854-1291053517.png" alt=""></p> <ul><li>杀死进程 kill -QUIT 2072</li></ul> <p><img src="http://images2015.cnblogs.com/blog/848552/201601/848552-20160102182652354-960281274.png" alt=""></p> <p><strong>快速停止</strong></p> <ul><li>查看进程号 <code>ps -ef|grep nginx</code></li></ul> <p><img src="http://images2015.cnblogs.com/blog/848552/201601/848552-20160102183103651-1859453208.png" alt=""></p> <ul><li>杀死进程 <code>kill -TERM 2132</code> <code>kill -INT 2132</code></li></ul> <p><img src="http://images2015.cnblogs.com/blog/848552/201601/848552-20160102183340010-2024212451.png" alt=""></p> <ul><li>强制停止 <code>pkill -9 nginx</code></li></ul> <p><strong>重启</strong></p> <blockquote><p>验证<code>nginx</code>配置文件是否正确</p></blockquote> <ul><li>方法一：进入<code>nginx</code>安装目录<code>sbin</code>下，输入命令<code>./nginx -t</code>
+看到如下显示<code>nginx.conf syntax is ok nginx.conf test is successful</code>说明配置文件正确</li></ul> <p><img src="http://images2015.cnblogs.com/blog/848552/201601/848552-20160102184633432-1268782338.png" alt=""></p> <ul><li>方法二：在启动命令<code>-c</code>前加<code>-t</code></li></ul> <p><img src="http://images2015.cnblogs.com/blog/848552/201601/848552-20160102185023385-456612180.png" alt=""></p> <p><strong>重启Nginx服务</strong></p> <ul><li>方法一：进入<code>nginx</code>可执行目录<code>sbin</code>下，输入命令<code>./nginx -s reload</code>即可</li></ul> <p><img src="http://images2015.cnblogs.com/blog/848552/201601/848552-20160102185521057-1341380905.png" alt=""></p> <ul><li>方法二：查找当前<code>nginx</code>进程号，然后输入命令：<code>kill -HUP</code> 进程号 实现重启<code>nginx</code>服务</li></ul> <p><img src="http://images2015.cnblogs.com/blog/848552/201601/848552-20160102185838167-234856506.png" alt=""></p> <h3 id="nginx基础配置"><a href="#nginx基础配置" class="header-anchor">#</a> Nginx基础配置</h3> <ul><li>在<code>Nginx</code>目录下的<code>vhost或conf.d</code>目录下新建一个配置文件（如<code>poetries-80.conf</code>）</li> <li>把server的内容配置进去</li> <li>在<code>Nginx.conf</code>中的<code>http</code>下<code>include</code>配置文件</li> <li>检测配置文件是否出错 <code>切换到/etc/nginx下 nginx -t</code></li> <li>重新加载配置文件 <code>nginx -c /usr/local/etc/nginx/nginx.conf</code></li> <li>在重启<code>Nginx</code> <code>nginx -s reload</code></li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>user  root<span class="token punctuation">;</span>  <span class="token comment">//Nginx需要有有一个用户</span>
+worker_processes  <span class="token number">2</span><span class="token punctuation">;</span> <span class="token comment">// Nginx进程数 最大1024</span>
+pid        conf<span class="token operator">/</span>nginx<span class="token punctuation">.</span>pid<span class="token punctuation">;</span> 
+worker_rlimit_nofile <span class="token number">2048</span><span class="token punctuation">;</span>
+events <span class="token punctuation">{</span>
+    use epoll<span class="token punctuation">;</span>
+    worker_connections  <span class="token number">2048</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+http <span class="token punctuation">{</span>
+ 
+
+	server <span class="token punctuation">{</span>
+       listen       <span class="token number">80</span><span class="token punctuation">;</span>
+       server_name  <span class="token number">119.29</span><span class="token number">.145</span><span class="token number">.252</span><span class="token punctuation">;</span>
+	   
+       location <span class="token operator">/</span> <span class="token punctuation">{</span>
+           root   <span class="token operator">/</span>usr<span class="token operator">/</span>local<span class="token operator">/</span>nginx<span class="token operator">/</span>html<span class="token punctuation">;</span>
+           index  index<span class="token punctuation">.</span>html index<span class="token punctuation">.</span>htm<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+   <span class="token punctuation">}</span>
+   server <span class="token punctuation">{</span>
+       listen       <span class="token number">3001</span><span class="token punctuation">;</span>
+       server_name  <span class="token number">119.29</span><span class="token number">.145</span><span class="token number">.252</span><span class="token punctuation">;</span>
+	   
+       location <span class="token operator">/</span> <span class="token punctuation">{</span>
+           root   <span class="token operator">/</span>usr<span class="token operator">/</span>local<span class="token operator">/</span>nginx<span class="token operator">/</span>book<span class="token punctuation">;</span>
+           index  index<span class="token punctuation">.</span>html index<span class="token punctuation">.</span>htm<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+   <span class="token punctuation">}</span>
+   server <span class="token punctuation">{</span>
+       listen       <span class="token number">9000</span><span class="token punctuation">;</span>
+       server_name  <span class="token number">119.29</span><span class="token number">.145</span><span class="token number">.252</span><span class="token punctuation">;</span>
+	   
+       location <span class="token operator">/</span> <span class="token punctuation">{</span>
+           root   <span class="token operator">/</span>usr<span class="token operator">/</span>local<span class="token operator">/</span>nginx<span class="token operator">/</span>vue<span class="token punctuation">;</span>
+           index  index<span class="token punctuation">.</span>html index<span class="token punctuation">.</span>htm<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+   <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span>
+
+</code></pre></div><h3 id="一些错误"><a href="#一些错误" class="header-anchor">#</a> 一些错误</h3> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">nginx</span><span class="token operator">:</span> <span class="token punctuation">[</span>error<span class="token punctuation">]</span> invalid <span class="token constant">PID</span> number “” <span class="token keyword">in</span> “<span class="token operator">/</span>usr<span class="token operator">/</span>local<span class="token operator">/</span><span class="token keyword">var</span><span class="token operator">/</span>run<span class="token operator">/</span>nginx<span class="token operator">/</span>nginx<span class="token punctuation">.</span>pid”
+</code></pre></div><ul><li>解决办法：<code>nginx -c /usr/local/etc/nginx/nginx.conf</code></li> <li><code>nginx -s reload</code></li></ul> <p><strong>权限问题导致Nginx 403 Forbidden错误的解决方法</strong></p> <ul><li>在<code>nginx.conf</code>头部加入一行 <code>user root;</code></li> <li>重启<code>nginx</code>再访问，就可以正常访问了</li></ul></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

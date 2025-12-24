@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>session登录态判断处理 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>session登录态判断处理</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>session登录态判断处理</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h1 id="session登录态判断处理"><a href="#session登录态判断处理" class="header-anchor">#</a> session登录态判断处理</h1> <h2 id="使用session中间件"><a href="#使用session中间件" class="header-anchor">#</a> 使用session中间件</h2> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// code ...</span>
+<span class="token keyword">const</span> session <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'koa-session-minimal'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> MysqlStore <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'koa-mysql-session'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> config <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./../config'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// code ...</span>
+
+<span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Koa</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// session存储配置</span>
+<span class="token keyword">const</span> sessionMysqlConfig<span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">user</span><span class="token operator">:</span> config<span class="token punctuation">.</span>database<span class="token punctuation">.</span><span class="token constant">USERNAME</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">password</span><span class="token operator">:</span> config<span class="token punctuation">.</span>database<span class="token punctuation">.</span><span class="token constant">PASSWORD</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">database</span><span class="token operator">:</span> config<span class="token punctuation">.</span>database<span class="token punctuation">.</span><span class="token constant">DATABASE</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">host</span><span class="token operator">:</span> config<span class="token punctuation">.</span>database<span class="token punctuation">.</span><span class="token constant">HOST</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 配置session中间件</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">session</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token literal-property property">key</span><span class="token operator">:</span> <span class="token string">'USER_SID'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">store</span><span class="token operator">:</span> <span class="token keyword">new</span> <span class="token class-name">MysqlStore</span><span class="token punctuation">(</span>sessionMysqlConfig<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment">// code ...</span>
+</code></pre></div><h2 id="登录成功后设置session到mysql和设置sessionid到cookie"><a href="#登录成功后设置session到mysql和设置sessionid到cookie" class="header-anchor">#</a> 登录成功后设置session到MySQL和设置sessionId到cookie</h2> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">let</span> session <span class="token operator">=</span> ctx<span class="token punctuation">.</span>session
+session<span class="token punctuation">.</span>isLogin <span class="token operator">=</span> <span class="token boolean">true</span>
+session<span class="token punctuation">.</span>userName <span class="token operator">=</span> userResult<span class="token punctuation">.</span>name
+session<span class="token punctuation">.</span>userId <span class="token operator">=</span> userResult<span class="token punctuation">.</span>id
+</code></pre></div><h2 id="需要判断登录态页面进行session判断"><a href="#需要判断登录态页面进行session判断" class="header-anchor">#</a> 需要判断登录态页面进行session判断</h2> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">async</span> <span class="token function">indexPage</span> <span class="token punctuation">(</span> <span class="token parameter">ctx</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 判断是否有session</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> ctx<span class="token punctuation">.</span>session <span class="token operator">&amp;&amp;</span> ctx<span class="token punctuation">.</span>session<span class="token punctuation">.</span>isLogin <span class="token operator">&amp;&amp;</span> ctx<span class="token punctuation">.</span>session<span class="token punctuation">.</span>userName <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> title <span class="token operator">=</span> <span class="token string">'work页面'</span>
+      <span class="token keyword">await</span> ctx<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token string">'work'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+        title<span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 没有登录态则跳转到错误页面</span>
+      ctx<span class="token punctuation">.</span><span class="token function">redirect</span><span class="token punctuation">(</span><span class="token string">'/error'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

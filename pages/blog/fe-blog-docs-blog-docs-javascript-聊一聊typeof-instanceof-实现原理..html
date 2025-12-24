@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聊一聊typeof instanceof 实现原理 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>聊一聊typeof instanceof 实现原理</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>聊一聊typeof instanceof 实现原理</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="数据类型"><a href="#数据类型" class="header-anchor">#</a> 数据类型</h2> <p>最新的 ECMAScript 标准定义了 8 种数据类型:</p> <ul><li><p>7 种</p> <p>原始类型:</p> <ul><li><a href="https://developer.mozilla.org/zh-CN/docs/Glossary/Boolean" target="_blank" rel="noopener noreferrer">Boolean<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://developer.mozilla.org/zh-CN/docs/Glossary/Null" target="_blank" rel="noopener noreferrer">Null<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://developer.mozilla.org/zh-CN/docs/Glossary/undefined" target="_blank" rel="noopener noreferrer">Undefined<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://developer.mozilla.org/zh-CN/docs/Glossary/Number" target="_blank" rel="noopener noreferrer">Number<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/BigInt" target="_blank" rel="noopener noreferrer">BigInt<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://developer.mozilla.org/zh-CN/docs/Glossary/%E5%AD%97%E7%AC%A6%E4%B8%B2" target="_blank" rel="noopener noreferrer">String<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://developer.mozilla.org/zh-CN/docs/Glossary/Symbol" target="_blank" rel="noopener noreferrer">Symbol<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li></ul></li> <li><p>和 <a href="https://developer.mozilla.org/zh-CN/docs/Glossary/Object" target="_blank" rel="noopener noreferrer">Object<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></li></ul> <p>可能大家对BigInt原始数据类型比较默认,它的提出解决了一部分问题，比如大于<code>253 - 1</code> 的整数。这原本是 Javascript中可以用 <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number" target="_blank" rel="noopener noreferrer"><code>Number</code><span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 表示的最大数字。<strong>BigInt</strong> 可以表示任意大的整数。</p> <p>了解了数据类型后,我们接下来就来看看如何检测数据类型吧。</p> <h2 id="检测数据类型"><a href="#检测数据类型" class="header-anchor">#</a> 检测数据类型</h2> <h3 id="typeof"><a href="#typeof" class="header-anchor">#</a> <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/typeof" target="_blank" rel="noopener noreferrer">typeof<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></h3> <p><strong>typeof</strong> 操作符返回一个字符串，表示未经计算的操作数的类型。</p> <h4 id="总结一下可能的返回值"><a href="#总结一下可能的返回值" class="header-anchor">#</a> 总结一下可能的返回值：</h4> <ul><li>"undefined"</li> <li>"object"</li> <li>"boolean"</li> <li>"number"</li> <li>"bigint"</li> <li>"string"</li> <li>"symbol"</li> <li>"function"</li></ul> <h4 id="附加信息"><a href="#附加信息" class="header-anchor">#</a> 附加信息：</h4> <div class="language- extra-class"><pre class="language-text"><code>typeof null === 'object';
+</code></pre></div><p>这可能说是一个JavaScript设计的Bug吧。MDN规范是这么解释的：</p> <p>在 JavaScript 最初的实现中，JavaScript 中的值是由一个表示类型的标签和实际数据值表示的。对象的类型标签是 0。由于 <code>null</code> 代表的是空指针（大多数平台下值为 0x00），因此，null 的类型标签是 0，<code>typeof null</code> 也因此返回 <code>"object"</code>。</p> <p>typeof在判断object类型的数据的时候，不能准确的告知我们具体是哪一种Object，而且在判断null的时候,也会上述的附加信息。对于判断是哪一种object的时候，我们需要用到instanceof这个操作符来判断,我们后面会说到。</p> <p>说一说typeof的原理吧,说到这里,我们应该考虑一下,JavaScript是怎么存储数据的呢,又或者说,对于一个变量,它的数据类型权衡的标准是什么呢？</p> <p>查阅了相关的资料,其实这个是一个历史遗留的bug，在 javascript 的最初版本中，使用的 32 位系统，为了性能考虑使用低位存储了变量的类型信息：</p> <ul><li>000：对象</li> <li>010：浮点数</li> <li>100：字符串</li> <li>110：布尔</li> <li>1：整数</li></ul> <p>but, 对于 <code>undefined</code> 和 <code>null</code> 来说，这两个值的信息存储是有点特殊的。</p> <p><code>null</code>：对应机器码的 NULL 指针，一般是全零。</p> <p><code>undefined</code>：用 −2^30 整数来表示!</p> <p>所以，<code>typeof</code> 在判断 <code>null</code> 的时候就出现问题了，由于 <code>null</code> 的所有机器码均为0，因此直接被当做了对象来看待。</p> <p>所以,似乎懂了一点皮毛了(●'◡'●)</p> <h3 id="instanceof"><a href="#instanceof" class="header-anchor">#</a> instanceof</h3> <p><strong>instanceof</strong> <strong>运算符</strong>用于检测构造函数的 <code>prototype</code> 属性是否出现在某个实例对象的原型链上。</p> <h4 id="语法"><a href="#语法" class="header-anchor">#</a> 语法</h4> <div class="language- extra-class"><pre class="language-text"><code>object instanceof constructor
+object 某个实例对象
+construtor 某个构造函数
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 定义构造函数</span>
+<span class="token keyword">function</span> <span class="token constant">C</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span> 
+<span class="token keyword">function</span> <span class="token constant">D</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span> 
+
+<span class="token keyword">var</span> o <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">C</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+o <span class="token keyword">instanceof</span> <span class="token class-name">C</span><span class="token punctuation">;</span> <span class="token comment">// true，因为 Object.getPrototypeOf(o) === C.prototype</span>
+
+
+o <span class="token keyword">instanceof</span> <span class="token class-name">D</span><span class="token punctuation">;</span> <span class="token comment">// false，因为 D.prototype 不在 o 的原型链上</span>
+
+o <span class="token keyword">instanceof</span> <span class="token class-name">Object</span><span class="token punctuation">;</span> <span class="token comment">// true，因为 Object.prototype.isPrototypeOf(o) 返回 true</span>
+<span class="token class-name">C</span><span class="token punctuation">.</span>prototype <span class="token keyword">instanceof</span> <span class="token class-name">Object</span> <span class="token comment">// true，同上</span>
+
+<span class="token class-name">C</span><span class="token punctuation">.</span>prototype <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> o2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">C</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+o2 <span class="token keyword">instanceof</span> <span class="token class-name">C</span><span class="token punctuation">;</span> <span class="token comment">// true</span>
+
+o <span class="token keyword">instanceof</span> <span class="token class-name">C</span><span class="token punctuation">;</span> <span class="token comment">// false，C.prototype 指向了一个空对象,这个空对象不在 o 的原型链上.</span>
+
+<span class="token class-name">D</span><span class="token punctuation">.</span>prototype <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">C</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 继承</span>
+<span class="token keyword">var</span> o3 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">D</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+o3 <span class="token keyword">instanceof</span> <span class="token class-name">D</span><span class="token punctuation">;</span> <span class="token comment">// true</span>
+o3 <span class="token keyword">instanceof</span> <span class="token class-name">C</span><span class="token punctuation">;</span> <span class="token comment">// true 因为 C.prototype 现在在 o3 的原型链上</span>
+</code></pre></div><p>需要注意的是，如果表达式 <code>obj instanceof Foo</code> 返回 <code>true</code>，则并不意味着该表达式会永远返回 <code>true</code>，因为 <code>Foo.prototype</code> 属性的值有可能会改变，改变之后的值很有可能不存在于 <code>obj</code> 的原型链上，这时原表达式的值就会成为 <code>false</code>。另外一种情况下，原表达式的值也会改变，就是改变对象 <code>obj</code> 的原型链的情况，虽然在目前的ES规范中，我们只能读取对象的原型而不能改变它，但借助于非标准的 <code>__proto__</code> 伪属性，是可以实现的。比如执行 <code>obj.__proto__ = {}</code> 之后，<code>obj instanceof Foo</code> 就会返回 <code>false</code> 了。</p> <h4 id="原理浅析"><a href="#原理浅析" class="header-anchor">#</a> 原理浅析</h4> <p>要想理解instanceof原理的话,我们需要从两个方面去了解:</p> <ul><li>语言规范中是如何定义运算符的</li> <li>JavaScript原型继承机制</li></ul> <p>这里，我直接将规范定义翻译为 JavaScript 代码如下：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">new_instance_of</span><span class="token punctuation">(</span><span class="token parameter">leftVaule<span class="token punctuation">,</span> rightVaule</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> rightProto <span class="token operator">=</span> rightVaule<span class="token punctuation">.</span>prototype<span class="token punctuation">,</span>
+        leftVaule <span class="token operator">=</span> leftVaule<span class="token punctuation">.</span>__proto__<span class="token punctuation">;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>leftVaule <span class="token operator">===</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>leftVaule <span class="token operator">===</span> rightProto<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        leftVaule <span class="token operator">=</span> leftVaule<span class="token punctuation">.</span>__proto__
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>从上面的代码看得出来,instanceof主要的原理就是:</p> <p>只要右边的prototype在左边的原型链上及可,也就是返回true。因此,instanceof在查询的过程中会遍历左边变量的原型链,直到找到右边变量的prototype,如果查找失败的话,返回false,告诉我们左边的变量并非是右边变量的实例。</p> <p>接下来我们看一看有趣的例子:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">Foo</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>Object <span class="token keyword">instanceof</span> <span class="token class-name">Object</span><span class="token punctuation">)</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>Function <span class="token keyword">instanceof</span> <span class="token class-name">Function</span><span class="token punctuation">)</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>Function <span class="token keyword">instanceof</span> <span class="token class-name">Object</span><span class="token punctuation">)</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>Foo <span class="token keyword">instanceof</span> <span class="token class-name">Object</span><span class="token punctuation">)</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>Foo <span class="token keyword">instanceof</span> <span class="token class-name">Function</span><span class="token punctuation">)</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>Foo <span class="token keyword">instanceof</span> <span class="token class-name">Foo</span><span class="token punctuation">)</span>
+</code></pre></div><h4 id="javascript-的原型继承原理"><a href="#javascript-的原型继承原理" class="header-anchor">#</a> <strong>JavaScript 的原型继承原理</strong></h4> <p>关于原型继承的原理，我简单用一张图来表示</p> <p><img src="https://s.poetries.top/gitee/2020/09/11.png" alt=""></p> <p><strong>这个图很重要,对于原型链不理解的，可以看看这篇文章:</strong></p> <p><a href="https://juejin.im/post/5ef4ba2a5188252e8406cc03" target="_blank" rel="noopener noreferrer">浅谈JavaScript原型<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h4 id="举个例子分析一个有趣的instanceof例子"><a href="#举个例子分析一个有趣的instanceof例子" class="header-anchor">#</a> 举个例子分析一个有趣的instanceof例子</h4> <p>Object instanceof Object</p> <div class="language- extra-class"><pre class="language-text"><code>由图可知，Object 的 prototype 属性是 Object.prototype, 而由于 Object 本身是一个函数，由 Function 所创建，所以 Object.__proto__ 的值是 Function.prototype，而 Function.prototype 的 __proto__ 属性是 Object.prototype，所以我们可以判断出，Object instanceof Object 的结果是 true 。用代码简单的表示一下
+</code></pre></div><div class="language- extra-class"><pre class="language-text"><code>leftValue = Object.__proto__ = Function.prototype;
+rightValue = Object.prototype;
+// 第一次判断
+leftValue != rightValue
+leftValue = Function.prototype.__proto__ = Object.prototype
+// 第二次判断
+leftValue === rightValue
+// 返回 true
+</code></pre></div><p>剩下的Function instanceof Object等有趣的例子可以自己手动去实现一下🤭</p> <h3 id="object-prototype-tostring"><a href="#object-prototype-tostring" class="header-anchor">#</a> Object.prototype.toString</h3> <h4 id="es5-规范中的描述"><a href="#es5-规范中的描述" class="header-anchor">#</a> ES5 规范中的描述</h4> <p><img src="https://s.poetries.top/gitee/2020/09/12.png" alt=""></p> <p>可以知道，Object.prototype.toString 最终会返回形式如 [object,class] 的字符串，class 指代的是其检测出的数据类型，这个是我们判断数据类型的关键。</p> <div class="language- extra-class"><pre class="language-text"><code>var toString=Object.prototype.toString;
+
+console.log(toString.call(und));  // [object Undefined]
+console.log(toString.call(nul));  // [object Null]
+console.log(toString.call(boo));  // [object Boolean]
+console.log(toString.call(num));  // [object Number]
+console.log(toString.call(str));  // [object String]
+console.log(toString.call(obj));  // [object Object]
+console.log(toString.call(arr));  // [object Array]
+console.log(toString.call(fun));  // [object Function]
+console.log(toString.call(date));  // [object Date]
+console.log(toString.call(reg));  // [object RegExp]
+console.log(toString.call(err));  // [object Error]
+console.log(toString.call(arg));  // [object Arguments]
+</code></pre></div><h4 id="数据类型检测终极方法"><a href="#数据类型检测终极方法" class="header-anchor">#</a> 数据类型检测终极方法</h4> <div class="language-javaScript extra-class"><pre class="language-javascript"><code><span class="token comment">/**
+ * @desc 数据类型检测
+ * @param obj 待检测的数据
+ * @return {String} 类型字符串
+ */</span>
+<span class="token keyword">let</span> <span class="token function-variable function">type</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">obj</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token keyword">typeof</span> obj <span class="token operator">!==</span> <span class="token string">'object'</span> <span class="token operator">?</span> <span class="token keyword">typeof</span> <span class="token literal-property property">obj</span> <span class="token operator">:</span> <span class="token class-name">Object</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">,</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h4 id="数据类型的单独检测"><a href="#数据类型的单独检测" class="header-anchor">#</a> 数据类型的单独检测</h4> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">let</span> <span class="token function-variable function">isUndefined</span> <span class="token operator">=</span> <span class="token parameter">obj</span> <span class="token operator">=&gt;</span> obj <span class="token operator">===</span> <span class="token keyword">void</span> <span class="token number">0</span>
+        <span class="token keyword">let</span> <span class="token function-variable function">isNull</span> <span class="token operator">=</span> <span class="token parameter">obj</span> <span class="token operator">=&gt;</span> obj <span class="token operator">===</span> Null
+        <span class="token keyword">let</span> <span class="token function-variable function">isBoolean</span> <span class="token operator">=</span> <span class="token parameter">obj</span> <span class="token operator">=&gt;</span> <span class="token keyword">typeof</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token string">'boolean'</span>
+        <span class="token keyword">let</span> <span class="token function-variable function">isNumber</span> <span class="token operator">=</span> <span class="token parameter">obj</span> <span class="token operator">=&gt;</span> <span class="token keyword">typeof</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token string">'number'</span>
+        <span class="token keyword">let</span> <span class="token function-variable function">isString</span> <span class="token operator">=</span> <span class="token parameter">obj</span> <span class="token operator">=&gt;</span> <span class="token keyword">typeof</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token string">'string'</span>
+        <span class="token keyword">let</span> <span class="token function-variable function">isObject</span> <span class="token operator">=</span> <span class="token parameter">obj</span> <span class="token operator">=&gt;</span> <span class="token class-name">Object</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token string">'[object Object]'</span>
+        <span class="token keyword">let</span> <span class="token function-variable function">isArray</span> <span class="token operator">=</span> <span class="token parameter">obj</span> <span class="token operator">=&gt;</span> <span class="token class-name">Object</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token string">'[object Array]'</span>
+        <span class="token keyword">let</span> <span class="token function-variable function">isFunction</span> <span class="token operator">=</span> <span class="token parameter">obj</span> <span class="token operator">=&gt;</span> <span class="token keyword">typeof</span> obj <span class="token operator">===</span> <span class="token string">'function'</span>
+        <span class="token keyword">let</span> <span class="token function-variable function">isDate</span> <span class="token operator">=</span> <span class="token parameter">obj</span> <span class="token operator">=&gt;</span> <span class="token class-name">Object</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token string">'[object Date]'</span>
+        <span class="token keyword">let</span> <span class="token function-variable function">isRegExp</span> <span class="token operator">=</span> <span class="token parameter">obj</span> <span class="token operator">=&gt;</span> <span class="token class-name">Object</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token string">'[object RegExp]'</span>
+        <span class="token keyword">let</span> <span class="token function-variable function">isError</span> <span class="token operator">=</span> <span class="token parameter">obj</span> <span class="token operator">=&gt;</span> <span class="token class-name">Object</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token string">'[object Error]'</span>
+        <span class="token keyword">let</span> <span class="token function-variable function">isArguments</span> <span class="token operator">=</span> <span class="token parameter">obj</span> <span class="token operator">=&gt;</span> <span class="token class-name">Object</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token string">'[object Arguments]'</span>
+</code></pre></div><h2 id="结论"><a href="#结论" class="header-anchor">#</a> 结论</h2> <ul><li>使用 typeof 来判断基本数据类型是 ok 的,需要注意的是typeof判断null类型时的问题</li> <li>判断一个对象的话具体考虑用instanceof,但是instanceof判断一个数组的时候,它可以被instanceof判断为Obeject</li> <li>比较准确的的判断对象实例的类型,采取Object.prototype.toString.call()方法</li></ul></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基础调试 console - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>基础调试 console</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>基础调试 console</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="模块概览"><a href="#模块概览" class="header-anchor">#</a> 模块概览</h2> <p>console模块提供了基础的调试功能。使用很简单，常用的API主要有 console.log()、console.error()。</p> <p>此外，可以基于Console类，方便的扩展出自己的console实例，比如把调试信息打印到文件里，而部署输出在控制台上。</p> <p>直接看例子。</p> <h2 id="基础例子"><a href="#基础例子" class="header-anchor">#</a> 基础例子</h2> <p>无特殊说明，日志都是默认打印到控制台。最常用的是console.log()、console.error()两个方法。</p> <ul><li>console.log(msg)：普通日志打印。</li> <li>console.error(msg)：错误日志打印。</li> <li>console.info(msg)：等同于console.log(msg)</li> <li>console.warn(msg)：等同于console.error(msg)</li></ul> <p>例子如下：</p> <div class="language-js extra-class"><pre class="language-js"><code>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'log: hello'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'log: hello'</span><span class="token punctuation">,</span> <span class="token string">'chyingp'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'log: hello %s'</span><span class="token punctuation">,</span> <span class="token string">'chyingp'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">'error: hello'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">'error: hello'</span><span class="token punctuation">,</span> <span class="token string">'chyingp'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">'error: hello %s'</span><span class="token punctuation">,</span> <span class="token string">'chyingp'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 输出如下：</span>
+<span class="token comment">// log: hello</span>
+<span class="token comment">// log: hello chyingp</span>
+<span class="token comment">// log: hello chyingp</span>
+<span class="token comment">// error: hello</span>
+<span class="token comment">// error: hello chyingp</span>
+<span class="token comment">// error: hello chyingp</span>
+</code></pre></div><h2 id="自定义stdout"><a href="#自定义stdout" class="header-anchor">#</a> 自定义stdout</h2> <p>可以通过 new console.Console(stdout, stderr) 来创建自定义的console实例，这个功能很实用。</p> <p>比如你想将调试信息打印到本地文件，那么，就可以通过如下代码实现。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> file <span class="token operator">=</span> fs<span class="token punctuation">.</span><span class="token function">createWriteStream</span><span class="token punctuation">(</span><span class="token string">'./stdout.txt'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> logger <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">console<span class="token punctuation">.</span>Console</span><span class="token punctuation">(</span>file<span class="token punctuation">,</span> file<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+logger<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'hello'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+logger<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'word'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 备注：内容输出到 stdout.txt里，而不是打印到控制台</span>
+</code></pre></div><h2 id="计时"><a href="#计时" class="header-anchor">#</a> 计时</h2> <p>通过<code>console.time(label)</code>和<code>console.timeEnd(label)</code>，来打印出两个时间点之间的时间差，单位是毫秒，例子如下。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> timeLabel <span class="token operator">=</span> <span class="token string">'hello'</span>
+
+console<span class="token punctuation">.</span><span class="token function">time</span><span class="token punctuation">(</span>timeLabel<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">setTimeout</span><span class="token punctuation">(</span>console<span class="token punctuation">.</span>timeEnd<span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">,</span> timeLabel<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 输入出入：</span>
+<span class="token comment">// hello: 1005.505ms</span>
+</code></pre></div><h2 id="断言"><a href="#断言" class="header-anchor">#</a> 断言</h2> <p>通过 console.assert(value, message) 进行断言。如果value不为true，那么抛出<code>AssertionError</code>异常，并中断程序执行。</p> <p>如下代码所示，第二个断言报错，程序停止执行。</p> <div class="language-js extra-class"><pre class="language-js"><code>console<span class="token punctuation">.</span><span class="token function">assert</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token string">'1、right'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">assert</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">'2、right'</span><span class="token punctuation">,</span> <span class="token string">'2、wrong'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 输出如下：</span>
+<span class="token comment">// assert.js:90</span>
+<span class="token comment">//   throw new assert.AssertionError({</span>
+<span class="token comment">//     ^</span>
+<span class="token comment">//     AssertionError: 2、right 2、wrong</span>
+<span class="token comment">//         at Console.assert (console.js:95:23)</span>
+</code></pre></div><p>为避免程序异常退出，需要对上面的异常进行处理，比如：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">try</span><span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">assert</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token string">'error occurred'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token keyword">catch</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 输出如下：</span>
+<span class="token comment">// error occurred</span>
+</code></pre></div><h2 id="打印错误堆栈-console-trace-msg"><a href="#打印错误堆栈-console-trace-msg" class="header-anchor">#</a> 打印错误堆栈：console.trace(msg)</h2> <p>将msg打印到标准错误输出流里，包含当前代码的位置和堆栈信息。</p> <div class="language-js extra-class"><pre class="language-js"><code>console<span class="token punctuation">.</span><span class="token function">trace</span><span class="token punctuation">(</span><span class="token string">'trace is called'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 输出如下：</span>
+<span class="token comment">// Trace: trace is called</span>
+<span class="token comment">//     at Object.&lt;anonymous&gt; (/Users/a/Documents/git-code/nodejs-learning-guide/examples/2016.12.01-console/trace.js:1:71)</span>
+<span class="token comment">//     at Module._compile (module.js:541:32)</span>
+<span class="token comment">//     at Object.Module._extensions..js (module.js:550:10)</span>
+<span class="token comment">//     at Module.load (module.js:456:32)</span>
+<span class="token comment">//     at tryModuleLoad (module.js:415:12)</span>
+<span class="token comment">//     at Function.Module._load (module.js:407:3)</span>
+<span class="token comment">//     at Function.Module.runMain (module.js:575:10)</span>
+<span class="token comment">//     at startup (node.js:160:18)</span>
+<span class="token comment">//     at node.js:445:3</span>
+</code></pre></div><h2 id="深层打印"><a href="#深层打印" class="header-anchor">#</a> 深层打印</h2> <p>很少关注 console.dir(obj)，因为大部分时候表现跟 console.log(obj) 差不多，看例子</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> obj <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">nick</span><span class="token operator">:</span> <span class="token string">'chyingp'</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 输出：{ nick: 'chyingp' }</span>
+console<span class="token punctuation">.</span><span class="token function">dir</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 输出：{ nick: 'chyingp' }</span>
+</code></pre></div><p>但当obj的层级比较深时，用处就出来了。可以通过<code>depth</code>自定义打印的层级数，默认是2，这对于调试很有帮助。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> obj2 <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">human</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">man</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token literal-property property">info</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                <span class="token literal-property property">nick</span><span class="token operator">:</span> <span class="token string">'chyingp'</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj2<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 输出：{ human: { man: { info: [Object] } } }</span>
+console<span class="token punctuation">.</span><span class="token function">dir</span><span class="token punctuation">(</span>obj2<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 输出：{ human: { man: { info: [Object] } } }</span>
+
+console<span class="token punctuation">.</span><span class="token function">dir</span><span class="token punctuation">(</span>obj2<span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">depth</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 输出：{ human: { man: { info: { nick: 'chyingp' } } } }</span>
+</code></pre></div><h2 id="相关链接"><a href="#相关链接" class="header-anchor">#</a> 相关链接</h2> <p>官方文档：https://nodejs.org/api/console.html</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

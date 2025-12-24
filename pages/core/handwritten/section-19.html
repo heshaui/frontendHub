@@ -1,0 +1,92 @@
+<!-- Section: # 19 实现一个迭代器生成函数 -->
+<div class="section-content" data-section-id="_19-实现一个迭代器生成函数">
+<h2 id="_19-实现一个迭代器生成函数"><a href="#_19-实现一个迭代器生成函数" class="header-anchor">#</a> 19 实现一个迭代器生成函数</h2>
+<h3 id="_1-es6对迭代器的实现"><a href="#_1-es6对迭代器的实现" class="header-anchor">#</a> 1 ES6对迭代器的实现</h3>
+<p>JS原生的集合类型数据结构，只有<code>Array</code>（数组）和<code>Object</code>（对象）；而<code>ES6</code>中，又新增了<code>Map</code>和<code>Set</code>。四种数据结构各自有着自己特别的内部实现，但我们仍期待以同样的一套规则去遍历它们，所以<code>ES6</code>在推出新数据结构的同时也推出了一套<strong>统一的接口机制</strong>——迭代器（<code>Iterator</code>）。</p>
+<blockquote><p><code>ES6</code>约定，任何数据结构只要具备<code>Symbol.iterator</code>属性（这个属性就是<code>Iterator</code>的具体实现，它本质上是当前数据结构默认的迭代器生成函数），就可以被遍历——准确地说，是被<code>for...of...</code>循环和迭代器的next方法遍历。 事实上，<code>for...of...</code>的背后正是对<code>next</code>方法的反复调用。</p></blockquote>
+<p>在ES6中，针对<code>Array</code>、<code>Map</code>、<code>Set</code>、<code>String</code>、<code>TypedArray</code>、函数的 <code>arguments</code> 对象、<code>NodeList</code> 对象这些原生的数据结构都可以通过<code>for...of...</code>进行遍历。原理都是一样的，此处我们拿最简单的数组进行举例，当我们用<code>for...of...</code>遍历数组时：</p>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span>
+<span class="token keyword">const</span> len <span class="token operator">=</span> arr<span class="token punctuation">.</span>length
+<span class="token keyword">for</span><span class="token punctuation">(</span>item <span class="token keyword">of</span> arr<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">当前元素是</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>item<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div>
+<blockquote><p>之所以能够按顺序一次一次地拿到数组里的每一个成员，是因为我们借助数组的<code>Symbol.iterator</code>生成了它对应的迭代器对象，通过反复调用迭代器对象的<code>next</code>方法访问了数组成员，像这样：</p></blockquote>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span>
+<span class="token comment">// 通过调用iterator，拿到迭代器对象</span>
+<span class="token keyword">const</span> iterator <span class="token operator">=</span> arr<span class="token punctuation">[</span>Symbol<span class="token punctuation">.</span>iterator<span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 对迭代器对象执行next，就能逐个访问集合的成员</span>
+iterator<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+iterator<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+iterator<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div>
+<p>丢进控制台，我们可以看到<code>next</code>每次会按顺序帮我们访问一个集合成员：</p>
+<p><img alt="" src="https://s.poetries.top/images/20210327213037.png"></p>
+<blockquote><p>而<code>for...of...</code>做的事情，基本等价于下面这通操作：</p></blockquote>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 通过调用iterator，拿到迭代器对象</span>
+<span class="token keyword">const</span> iterator <span class="token operator">=</span> arr<span class="token punctuation">[</span>Symbol<span class="token punctuation">.</span>iterator<span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 初始化一个迭代结果</span>
+<span class="token keyword">let</span> now <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token literal-property property">done</span><span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span>
+
+<span class="token comment">// 循环往外迭代成员</span>
+<span class="token keyword">while</span><span class="token punctuation">(</span><span class="token operator">!</span>now<span class="token punctuation">.</span>done<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    now <span class="token operator">=</span> iterator<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>now<span class="token punctuation">.</span>done<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">现在遍历到了</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>now<span class="token punctuation">.</span>value<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div>
+<blockquote><p>可以看出，<code>for...of...</code>其实就是<code>iterator</code>循环调用换了种写法。在ES6中我们之所以能够开心地用<code>for...of...</code>遍历各种各种的集合，全靠迭代器模式在背后给力。</p></blockquote>
+<p>ps：此处推荐阅读<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Iteration_protocols" target="_blank" rel="noopener noreferrer">迭代协议<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>，相信大家读过后会对迭代器在ES6中的实现有更深的理解。</p>
+<h3 id="_2-实现迭代器生成函数"><a href="#_2-实现迭代器生成函数" class="header-anchor">#</a> 2 实现迭代器生成函数</h3>
+<p>我们说<strong>迭代器对象</strong>全凭<strong>迭代器生成函数</strong>帮我们生成。在<code>ES6</code>中，实现一个迭代器生成函数并不是什么难事儿，因为ES6早帮我们考虑好了全套的解决方案，内置了贴心的<strong>生成器</strong>（<code>Generator</code>）供我们使用：</p>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 编写一个迭代器生成函数</span>
+<span class="token keyword">function</span> <span class="token operator">*</span><span class="token function">iteratorGenerator</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">yield</span> <span class="token string">'1号选手'</span>
+    <span class="token keyword">yield</span> <span class="token string">'2号选手'</span>
+    <span class="token keyword">yield</span> <span class="token string">'3号选手'</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> iterator <span class="token operator">=</span> <span class="token function">iteratorGenerator</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+iterator<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+iterator<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+iterator<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div>
+<p>丢进控制台，不负众望：</p>
+<p><img alt="" src="https://s.poetries.top/images/20210327213223.png"></p>
+<p>写一个生成器函数并没有什么难度，但在面试的过程中，面试官往往对生成器这种语法糖背后的实现逻辑更感兴趣。下面我们要做的，不仅仅是写一个迭代器对象，而是用<code>ES5</code>去写一个能够生成迭代器对象的迭代器生成函数（解析在注释里）：</p>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 定义生成器函数，入参是任意集合</span>
+<span class="token keyword">function</span> <span class="token function">iteratorGenerator</span><span class="token punctuation">(</span><span class="token parameter">list</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// idx记录当前访问的索引</span>
+    <span class="token keyword">var</span> idx <span class="token operator">=</span> <span class="token number">0</span>
+    <span class="token comment">// len记录传入集合的长度</span>
+    <span class="token keyword">var</span> len <span class="token operator">=</span> list<span class="token punctuation">.</span>length
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+        <span class="token comment">// 自定义next方法</span>
+        <span class="token function-variable function">next</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment">// 如果索引还没有超出集合长度，done为false</span>
+            <span class="token keyword">var</span> done <span class="token operator">=</span> idx <span class="token operator">&gt;=</span> len
+            <span class="token comment">// 如果done为false，则可以继续取值</span>
+            <span class="token keyword">var</span> value <span class="token operator">=</span> <span class="token operator">!</span>done <span class="token operator">?</span> list<span class="token punctuation">[</span>idx<span class="token operator">++</span><span class="token punctuation">]</span> <span class="token operator">:</span> <span class="token keyword">undefined</span>
+            
+            <span class="token comment">// 将当前值与遍历是否完毕（done）返回</span>
+            <span class="token keyword">return</span> <span class="token punctuation">{</span>
+                <span class="token literal-property property">done</span><span class="token operator">:</span> done<span class="token punctuation">,</span>
+                <span class="token literal-property property">value</span><span class="token operator">:</span> value
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> iterator <span class="token operator">=</span> <span class="token function">iteratorGenerator</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'1号选手'</span><span class="token punctuation">,</span> <span class="token string">'2号选手'</span><span class="token punctuation">,</span> <span class="token string">'3号选手'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+iterator<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+iterator<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+iterator<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div>
+<p>此处为了记录每次遍历的位置，我们实现了一个闭包，借助自由变量来做我们的迭代过程中的“游标”。</p>
+<p>运行一下我们自定义的迭代器，结果符合预期：</p>
+<p><img alt="" src="https://s.poetries.top/images/20210327213700.png"></p>
+</div>

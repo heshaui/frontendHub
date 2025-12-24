@@ -1,0 +1,70 @@
+<!-- Section: # 7 实现bind方法 -->
+<div class="section-content" data-section-id="_7-实现bind方法">
+<h2 id="_7-实现bind方法"><a href="#_7-实现bind方法" class="header-anchor">#</a> 7 实现bind方法</h2>
+<blockquote><p><code>bind</code> 的实现对比其他两个函数略微地复杂了一点，涉及到参数合并(类似函数柯里化)，因为 <code>bind</code> 需要返回一个函数，需要判断一些边界问题，以下是 <code>bind</code> 的实现</p></blockquote>
+<ul><li><code>bind</code> 返回了一个函数，对于函数来说有两种方式调用，一种是直接调用，一种是通过 <code>new</code> 的方式，我们先来说直接调用的方式</li> <li>对于直接调用来说，这里选择了 <code>apply</code> 的方式实现，但是对于参数需要注意以下情况：因为 <code>bind</code> 可以实现类似这样的代码 <code>f.bind(obj, 1)(2)</code>，所以我们需要将两边的参数拼接起来</li> <li>最后来说通过 <code>new</code> 的方式，对于 <code>new</code> 的情况来说，不会被任何方式改变 <code>this</code>，所以对于这种情况我们需要忽略传入的 <code>this</code></li> <li>箭头函数的底层是<code>bind</code>，无法改变<code>this</code>，只能改变参数</li></ul>
+<p><strong>简洁版本</strong></p>
+<ul><li>对于普通函数，绑定<code>this</code>指向</li> <li>对于构造函数，要保证原函数的原型对象上的属性不能丢失</li></ul>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token class-name">Function</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">myBind</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">context <span class="token operator">=</span> window<span class="token punctuation">,</span> <span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// context 是 bind 传入的 this</span>
+  <span class="token comment">// args 是 bind 传入的各个参数</span>
+  <span class="token comment">// this表示调用bind的函数</span>
+  <span class="token keyword">let</span> self <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span> <span class="token comment">// fn.bind(obj) self就是fn</span>
+
+  <span class="token comment">//返回了一个函数，...innerArgs为实际调用时传入的参数</span>
+  <span class="token keyword">let</span> <span class="token function-variable function">fBound</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>innerArgs</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+      <span class="token comment">//this instanceof fBound为true表示构造函数的情况。如new func.bind(obj)</span>
+      <span class="token comment">// 当作为构造函数时，this 指向实例，此时 this instanceof fBound 结果为 true，可以让实例获得来自绑定函数的值</span>
+      <span class="token comment">// 当作为普通函数时，this 默认指向 window，此时结果为 false，将绑定函数的 this 指向 context</span>
+      <span class="token keyword">return</span> <span class="token function">self</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span> <span class="token comment">// 函数执行</span>
+        <span class="token keyword">this</span> <span class="token keyword">instanceof</span> <span class="token class-name">fBound</span> <span class="token operator">?</span> <span class="token keyword">this</span> <span class="token operator">:</span> context<span class="token punctuation">,</span> 
+        args<span class="token punctuation">.</span><span class="token function">concat</span><span class="token punctuation">(</span>innerArgs<span class="token punctuation">)</span> <span class="token comment">// 拼接参数</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// 如果绑定的是构造函数，那么需要继承构造函数原型属性和方法：保证原函数的原型对象上的属性不丢失</span>
+  <span class="token comment">// 实现继承的方式: 使用Object.create</span>
+  fBound<span class="token punctuation">.</span>prototype <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>prototype<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> fBound<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 测试用例</span>
+
+<span class="token keyword">function</span> <span class="token function">Person</span><span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span> age</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Person name：'</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Person age：'</span><span class="token punctuation">,</span> age<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Person this：'</span><span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 构造函数this指向实例对象</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 构造函数原型的方法</span>
+<span class="token class-name">Person</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">say</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'person say'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 普通函数</span>
+<span class="token keyword">function</span> <span class="token function">normalFun</span><span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span> age</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'普通函数 name：'</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span> 
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'普通函数 age：'</span><span class="token punctuation">,</span> age<span class="token punctuation">)</span><span class="token punctuation">;</span> 
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'普通函数 this：'</span><span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 普通函数this指向绑定bind的第一个参数 也就是例子中的obj</span>
+<span class="token punctuation">}</span>
+
+
+<span class="token keyword">var</span> obj <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'poetries'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">18</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 先测试作为构造函数调用</span>
+<span class="token keyword">var</span> bindFun <span class="token operator">=</span> Person<span class="token punctuation">.</span><span class="token function">myBind</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> <span class="token string">'poetry1'</span><span class="token punctuation">)</span> <span class="token comment">// undefined</span>
+<span class="token keyword">var</span> a <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">bindFun</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span> <span class="token comment">// Person name: poetry1、Person age: 10、Person this: fBound {}</span>
+a<span class="token punctuation">.</span><span class="token function">say</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// person say</span>
+
+<span class="token comment">// 再测试作为普通函数调用</span>
+<span class="token keyword">var</span> bindNormalFun <span class="token operator">=</span> normalFun<span class="token punctuation">.</span><span class="token function">myBind</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> <span class="token string">'poetry2'</span><span class="token punctuation">)</span> <span class="token comment">// undefined</span>
+<span class="token function">bindNormalFun</span><span class="token punctuation">(</span><span class="token number">12</span><span class="token punctuation">)</span> 
+<span class="token comment">// 普通函数name: poetry2 </span>
+<span class="token comment">// 普通函数 age: 12 </span>
+<span class="token comment">// 普通函数 this: {name: 'poetries', age: 18}</span>
+</code></pre></div>
+<blockquote><p><strong>注意</strong>： <code>bind</code>之后不能再次修改<code>this</code>的指向（箭头函数的底层实现原理依赖<code>bind</code>绑定this后不能再次修改<code>this</code>的特性），<code>bind</code>多次后执行，函数<code>this</code>还是指向第一次<code>bind</code>的对象</p></blockquote>
+</div>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浅谈styled components - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>浅谈styled components</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>浅谈styled components</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、简介"><a href="#一、简介" class="header-anchor">#</a> 一、简介</h2> <blockquote><p><code>styled components</code>一种全新的控制样式的编程方式，它能解决<code>CSS</code>全局作用域的问题，而且移除了样式和组件间的映射关系</p></blockquote> <ul><li>我们要理清一件事情：<code>styled-components</code> 只是 <code>CSS</code> 层面的高度抽象。它只是解析定义在 <code>JavaScript</code>中的 <code>CSS</code>，然后生成对应 <code>CSS</code> 的 <code>JSX</code>元素</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> React <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> styled <span class="token keyword">from</span> <span class="token string">'styled-components'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> render <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-dom'</span><span class="token punctuation">;</span>
+ 
+<span class="token keyword">const</span> Title <span class="token operator">=</span> styled<span class="token punctuation">.</span>h1<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+    font-size: 1.5em;
+    text-align: center;
+    color: palevioletred;
+</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+
+WrapSearchBox<span class="token operator">=</span>styled<span class="token punctuation">.</span>div<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+    width : 200px;
+    // 媒体查询
+    @media (max-width : 800px){
+    	width : 100%;
+    	padding-left:15px;	
+    	margin-top:-14px;
+    }
+    &gt;div{
+    	@media (max-width : 800px){
+    		width : 100%  !important;
+    	}
+    }
+    &gt;div&gt;input {
+    	width:200px !important;
+    	padding-left:25px !important;
+    	@media (max-width : 800px){
+    		width : 100%  !important;
+    	}
+}
+</span><span class="token template-punctuation string">`</span></span>
+ 
+<span class="token keyword">class</span> <span class="token class-name">App</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+    <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token punctuation">(</span>
+            <span class="token operator">&lt;</span>Title<span class="token operator">&gt;</span>Hello world<span class="token operator">&lt;</span><span class="token operator">/</span>Title<span class="token operator">&gt;</span>
+        <span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+ 
+<span class="token function">render</span><span class="token punctuation">(</span>
+    <span class="token operator">&lt;</span>App <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">,</span>
+    document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'app'</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+ 
+</code></pre></div><ul><li><code>styled.h1</code>是一个标签模板函数</li></ul> <blockquote><p><code>styled.h1</code>函数返回一个<code>React Component</code>，<code>styled components</code>会为这个<code>React Component</code>添加一个<code>class</code>，该<code>class</code>的值为一个随机字符串。传给styled.h1的模板字符串参数的值实际上是CSS语法，这些CSS会附加到该<code>React Component</code>的<code>class</code>中，从而为<code>React Component</code>添加样式</p></blockquote> <p><img src="https://s.poetries.top/gitee/2019/10/469.png" alt=""></p> <h2 id="二、基于-props-定制主题"><a href="#二、基于-props-定制主题" class="header-anchor">#</a> 二、基于 props 定制主题</h2> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> Button <span class="token operator">=</span> styled<span class="token punctuation">.</span>button<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  background: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token parameter">props</span> <span class="token operator">=&gt;</span> props<span class="token punctuation">.</span>primary <span class="token operator">?</span> <span class="token string">'palevioletred'</span> <span class="token operator">:</span> <span class="token string">'white'</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">;
+  color: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token parameter">props</span> <span class="token operator">=&gt;</span> props<span class="token punctuation">.</span>primary <span class="token operator">?</span> <span class="token string">'white'</span> <span class="token operator">:</span> <span class="token string">'palevioletred'</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">;
+  font-size: 1em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 2px solid palevioletred;
+  border-radius: 3px;
+</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+
+<span class="token function">render</span><span class="token punctuation">(</span>
+  <span class="token operator">&lt;</span>div<span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span>Button<span class="token operator">&gt;</span>Normal<span class="token operator">&lt;</span><span class="token operator">/</span>Button<span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span>Button primary<span class="token operator">&gt;</span>Primary<span class="token operator">&lt;</span><span class="token operator">/</span>Button<span class="token operator">&gt;</span>
+  <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token keyword">const</span> StyledSlider <span class="token operator">=</span> <span class="token function">styled</span><span class="token punctuation">(</span>Slider<span class="token punctuation">)</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+	</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token parameter">props</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+		<span class="token keyword">const</span> theme <span class="token operator">=</span> props<span class="token punctuation">.</span>theme<span class="token punctuation">.</span>slider<span class="token punctuation">;</span>
+
+		<span class="token keyword">return</span> css<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+			div.rc-slider-track {
+				background-color: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>theme<span class="token punctuation">.</span>themeColor<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">;
+			}
+			div.rc-slider-handle {
+				border: 2px solid </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>theme<span class="token punctuation">.</span>themeColor<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">;
+			}
+			span.rc-slider-dot-active {
+				border-color: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>theme<span class="token punctuation">.</span>themeColor<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">;
+			}
+		</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+	<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">}
+</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token keyword">const</span> SmallSelectWrapper <span class="token operator">=</span> styled<span class="token punctuation">.</span>div <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  
+  // div下面的类样式
+  .Select-control {
+    height: 30px;
+  }
+  .Select-input {
+    height: 28px;
+  }
+  .Select-value,
+  .Select-placeholder {
+    line-height: 28px !important;
+  }
+  .Select-menu-outer {
+    max-height: 270px;
+    .Select-option.is-disabled {
+      cursor: default;
+      padding-left: .5em;
+      font-weight: bold;
+      color: #333;
+      background: #f8f8f8;
+    }
+  }
+  .Select-menu {
+    max-height:268px;
+  }
+  text-align: left;
+</span><span class="token template-punctuation string">`</span></span>
+</code></pre></div><blockquote><p>我们在组件中传入的所有 <code>props</code> 都可以在定义组件时获取到，这样就可以很容易实现组件主题的定制。如果没有 <code>styled-components</code>的情况下，需要使用组件 <code>style</code> 属性或者定义多个 <code>class</code> 的方式来实现</p></blockquote> <h2 id="三、组件样式继承"><a href="#三、组件样式继承" class="header-anchor">#</a> 三、组件样式继承</h2> <blockquote><p>通常在 <code>css</code> 中一般会通过给 <code>class</code>传入多个 <code>name</code> 通过空格分隔的方式来复用 <code>class</code> 定义，类似 <code>class="button tomato"</code>。在 <code>styled-components</code>中利用了 <code>js</code> 的继承实现了这种样式的复用：</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> Button <span class="token operator">=</span> styled<span class="token punctuation">.</span>button<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  color: palevioletred;
+  font-size: 1em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 2px solid palevioletred;
+  border-radius: 3px;
+</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> TomatoButton <span class="token operator">=</span> Button<span class="token punctuation">.</span>extend<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  color: tomato;
+  border-color: tomato;
+</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+</code></pre></div><blockquote><p>子组件中的属性会覆盖父组件中同名的属性</p></blockquote> <h2 id="四、组件内部使用-classname"><a href="#四、组件内部使用-classname" class="header-anchor">#</a> 四、组件内部使用 className</h2> <blockquote><p>在日常开发中总会出现覆盖组件内部样式的需求，你可能想在 <code>styled-components</code> 中使用 <code>className</code>，或者在使用第三方组件时。</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token operator">&lt;</span>Wrapper<span class="token operator">&gt;</span>
+  <span class="token operator">&lt;</span>h4<span class="token operator">&gt;</span>Hello Word<span class="token operator">&lt;</span><span class="token operator">/</span>h4<span class="token operator">&gt;</span>
+  <span class="token operator">&lt;</span>div className<span class="token operator">=</span><span class="token string">"detail"</span><span class="token operator">&gt;</span><span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>Wrapper<span class="token operator">&gt;</span>
+</code></pre></div><h2 id="五、组件中维护其他属性"><a href="#五、组件中维护其他属性" class="header-anchor">#</a> 五、组件中维护其他属性</h2> <blockquote><p><code>styled-components</code> 同时支持为组件传入 <code>html</code> 元素的其他属性，比如为 <code>input</code> 元素指定一个 <code>type</code> 属性，我们可以使用 <code>attrs</code> 方法来完成</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> Password <span class="token operator">=</span> styled<span class="token punctuation">.</span>input<span class="token punctuation">.</span><span class="token function">attrs</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'password'</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  color: palevioletred;
+  font-size: 1em;
+  border: 2px solid palevioletred;
+  border-radius: 3px;
+</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+</code></pre></div><ul><li>在实际开发中，这个方法还有一个有用处，用来引用第三方类库的 <code>css</code>样式：</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> Button <span class="token operator">=</span> styled<span class="token punctuation">.</span>button<span class="token punctuation">.</span><span class="token function">attrs</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token literal-property property">className</span><span class="token operator">:</span> <span class="token string">'small'</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  background: black;
+  color: white;
+  cursor: pointer;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 2px solid black;
+  border-radius: 3px;
+</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+</code></pre></div><ul><li>编译后的 <code>html</code> 结构如下：</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token operator">&lt;</span>button <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"sc-gPEVay small gYllyG"</span><span class="token operator">&gt;</span>
+  Styled Components
+<span class="token operator">&lt;</span><span class="token operator">/</span>button<span class="token operator">&gt;</span>
+</code></pre></div><blockquote><p>可以用这种方式来使用在别处定义的 <code>small</code> 样式，或者单纯为了识别自己定义的 <code>class</code>，因为正常情况下我们得到的 <code>class</code>名是不可读的编码</p></blockquote> <h2 id="六、css-动画支持"><a href="#六、css-动画支持" class="header-anchor">#</a> 六、CSS 动画支持</h2> <ul><li><code>styled-components</code> 同样对 <code>css</code> 动画中的 <code>@keyframe</code> 做了很好的支持。</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> <span class="token punctuation">{</span> keyframes <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'styled-components'</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> fadeIn <span class="token operator">=</span> keyframes<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> FadeInButton <span class="token operator">=</span> styled<span class="token punctuation">.</span>button<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  animation: 1s </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>fadeIn<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> ease-out;
+</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="七、兼容现在已有的-react-components-和-css-框架"><a href="#七、兼容现在已有的-react-components-和-css-框架" class="header-anchor">#</a> 七、兼容现在已有的 react components 和 css 框架</h2> <blockquote><p><code>styled-components</code> 采用的 <code>css-module</code> 的模式有另外一个好处就是可以很好的与其他的主题库进行兼容。因为大部分的 <code>css</code> 框架或者<code>css</code>主题都是以 <code>className</code> 的方式进行样式处理的，额外的 <code>className</code> 和主题的 <code>className</code> 并不会有太大的冲突</p></blockquote> <ul><li><code>styled-components</code> 的语法同样支持对一个 <code>React</code>组件进行扩展</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> StyledDiv <span class="token operator">=</span> <span class="token function">styled</span><span class="token punctuation">(</span>Row<span class="token punctuation">)</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  position: relative;
+  height: 100%;
+  .image img {
+    width: 100%;
+  }
+  .content {
+    min-height: 30em;
+    overflow: auto;
+  }
+  .content h2 {
+    font-size: 1.8em;
+    color: black;
+    margin-bottom: 1em;
+  }
+</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="八、实战篇"><a href="#八、实战篇" class="header-anchor">#</a> 八、实战篇</h2> <p><strong>extend与styled</strong></p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token comment">/*基础组件button*/</span>
+export const Button = styled.button`
+    <span class="token property">border-radius</span><span class="token punctuation">:</span> 3px<span class="token punctuation">;</span>
+    <span class="token property">padding</span><span class="token punctuation">:</span> 0.25em 1em<span class="token punctuation">;</span>
+    <span class="token property">margin</span><span class="token punctuation">:</span> 0 1em<span class="token punctuation">;</span>
+    <span class="token selector">background: $</span><span class="token punctuation">{</span>props=&gt;props.primary?<span class="token string">"palevioletred"</span><span class="token punctuation">:</span><span class="token string">"transparent"</span><span class="token punctuation">}</span><span class="token selector">;
+    color: $</span><span class="token punctuation">{</span>props=&gt;props.primary?<span class="token string">"white"</span><span class="token punctuation">:</span><span class="token string">"palevioletred"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token property">border</span><span class="token punctuation">:</span> 2px solid palevioletred<span class="token punctuation">;</span>
+`<span class="token punctuation">;</span>
+
+<span class="token comment">/*扩展按钮的属性，不再原来基础上修改 如在&lt;button class="abc con"&gt;上添加一个con类一样*/</span>
+export const AButton = <span class="token function">styled</span><span class="token punctuation">(</span>Button<span class="token punctuation">)</span>`
+    <span class="token property">width</span><span class="token punctuation">:</span>200px<span class="token punctuation">;</span>
+    <span class="token property">height</span><span class="token punctuation">:</span>20px<span class="token punctuation">;</span>
+    <span class="token property">padding</span><span class="token punctuation">:</span>20px<span class="token punctuation">;</span>
+`
+
+<span class="token comment">/*扩展的结果*/</span>
+<span class="token selector">button</span> <span class="token punctuation">{</span>
+    <span class="token property">border-radius</span><span class="token punctuation">:</span> 3px<span class="token punctuation">;</span>
+    <span class="token property">padding</span><span class="token punctuation">:</span> 0.25em 1em<span class="token punctuation">;</span>
+    <span class="token property">margin</span><span class="token punctuation">:</span> 0 1em<span class="token punctuation">;</span>
+    <span class="token property">background</span><span class="token punctuation">:</span> transparent<span class="token punctuation">;</span>
+    <span class="token property">color</span><span class="token punctuation">:</span> palevioletred<span class="token punctuation">;</span>
+    <span class="token property">border</span><span class="token punctuation">:</span> 2px solid palevioletred<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment">/**添加的扩展属性**/</span>
+<span class="token selector">.con</span> <span class="token punctuation">{</span>
+    <span class="token property">background</span><span class="token punctuation">:</span> yellow<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+
+<span class="token comment">/*继承按钮的样式并且在原来基础上修改  如在&lt;button class="con"&gt;.con类上叠加属性一样**/</span>
+export const TomatoButton = Button.extend`
+    <span class="token property">width</span><span class="token punctuation">:</span>200px<span class="token punctuation">;</span>
+    <span class="token property">height</span><span class="token punctuation">:</span>10%<span class="token punctuation">;</span>
+`
+<span class="token comment">/*继承的结果  子组件中的属性会覆盖父组件中同名的属性*/</span>
+<span class="token selector">button</span> <span class="token punctuation">{</span>
+    <span class="token property">border-radius</span><span class="token punctuation">:</span> 3px<span class="token punctuation">;</span>
+    <span class="token property">padding</span><span class="token punctuation">:</span> 0.25em 1em<span class="token punctuation">;</span>
+    <span class="token property">margin</span><span class="token punctuation">:</span> 0 1em<span class="token punctuation">;</span>
+    <span class="token property">background</span><span class="token punctuation">:</span> transparent<span class="token punctuation">;</span>
+    <span class="token property">color</span><span class="token punctuation">:</span> palevioletred<span class="token punctuation">;</span>
+    <span class="token property">border</span><span class="token punctuation">:</span> 2px solid palevioletred<span class="token punctuation">;</span>
+    <span class="token comment">/*添加的继承属性*/</span>
+    <span class="token property">width</span><span class="token punctuation">:</span> 200px<span class="token punctuation">;</span>
+    <span class="token property">height</span><span class="token punctuation">:</span> 10%<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-css extra-class"><pre class="language-css"><code>const Button = styled.button`
+  <span class="token property">padding</span><span class="token punctuation">:</span> 10px<span class="token punctuation">;</span>
+`<span class="token punctuation">;</span>
+const TomatoButton = Button.extend`
+  <span class="token property">color</span><span class="token punctuation">:</span> #f00<span class="token punctuation">;</span>
+`<span class="token punctuation">;</span>
+
+<span class="token comment">/** css写法 **/</span>
+<span class="token selector">button</span> <span class="token punctuation">{</span>
+  <span class="token property">padding</span><span class="token punctuation">:</span> 10px<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">button.tomato-button</span> <span class="token punctuation">{</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> #f00<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><strong>传递属性的两中写法</strong></p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Button</span> <span class="token attr-name">primary</span> <span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Button</span> <span class="token attr-name">secondary</span> <span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Button</span> <span class="token attr-name">primary</span> <span class="token attr-name">active</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span>{true}</span> <span class="token punctuation">/&gt;</span></span>
+</code></pre></div><div class="language-css extra-class"><pre class="language-css"><code><span class="token comment">/*对单个属性的值做判断赋值*/</span>
+<span class="token selector">styled.Button`
+  background: $</span><span class="token punctuation">{</span>props =&gt; props.primary ? <span class="token string">'#f00'</span> <span class="token punctuation">:</span> props.secondary ? <span class="token string">'#0f0'</span> <span class="token punctuation">:</span> <span class="token string">'#00f'</span><span class="token punctuation">}</span><span class="token selector">;
+  color: $</span><span class="token punctuation">{</span>props =&gt; props.primary ? <span class="token string">'#fff'</span> <span class="token punctuation">:</span> props.secondary ? <span class="token string">'#fff'</span> <span class="token punctuation">:</span> <span class="token string">'#000'</span><span class="token punctuation">}</span><span class="token selector">;
+  opacity: $</span><span class="token punctuation">{</span>props =&gt; props.active ? 1 <span class="token punctuation">:</span> 0<span class="token punctuation">}</span><span class="token punctuation">;</span>
+`<span class="token punctuation">;</span>
+
+
+
+const Button = styled.button`
+	<span class="token property">border-radius</span><span class="token punctuation">:</span> 3px<span class="token punctuation">;</span>
+	<span class="token property">padding</span><span class="token punctuation">:</span> 0.25em 1em<span class="token punctuation">;</span>
+	<span class="token property">margin</span><span class="token punctuation">:</span> 0 1em<span class="token punctuation">;</span>
+	<span class="token property">background</span><span class="token punctuation">:</span> transparent<span class="token punctuation">;</span>
+	<span class="token property">color</span><span class="token punctuation">:</span> palevioletred<span class="token punctuation">;</span>
+	<span class="token property">border</span><span class="token punctuation">:</span> 2px solid palevioletred<span class="token punctuation">;</span>
+    
+    <span class="token comment">/*可以写一堆属性*/</span>
+	<span class="token selector">$</span><span class="token punctuation">{</span>props =&gt; props.primary &amp;&amp; css`
+		<span class="token property">background</span><span class="token punctuation">:</span> palevioletred<span class="token punctuation">;</span>
+		<span class="token property">color</span><span class="token punctuation">:</span> white<span class="token punctuation">;</span>
+	`<span class="token punctuation">}</span>
+`<span class="token punctuation">;</span>
+
+
+
+<span class="token comment">/**css写法**/</span>
+<span class="token selector">button</span> <span class="token punctuation">{</span>
+  <span class="token property">background</span><span class="token punctuation">:</span> #00f<span class="token punctuation">;</span>
+  <span class="token property">opacity</span><span class="token punctuation">:</span> 0<span class="token punctuation">;</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> #000<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">button.primary,
+button.seconary</span> <span class="token punctuation">{</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> #fff<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">button.primary</span> <span class="token punctuation">{</span>
+  <span class="token property">background</span><span class="token punctuation">:</span> #f00<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">button.secondary</span> <span class="token punctuation">{</span>
+  <span class="token property">background</span><span class="token punctuation">:</span> #0f0<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">button.active</span> <span class="token punctuation">{</span>
+  <span class="token property">opacity</span><span class="token punctuation">:</span> 1<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>使用</li></ul> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Button</span> <span class="token attr-name">primary</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Button</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><h2 id="九、总结"><a href="#九、总结" class="header-anchor">#</a> 九、总结</h2> <ul><li>提出了 <code>container</code> 和 <code>components</code> 的概念，移除了组件和样式之间的映射关系，符合关注度分离的模式；</li> <li>可以在样式定义中直接引用到 <code>js</code> 变量，共享变量，非常便利；</li> <li>支持组件之间继承，方便代码复用，提升可维护性；</li> <li>兼容现有的 <code>className</code> 方式，升级无痛；</li></ul></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

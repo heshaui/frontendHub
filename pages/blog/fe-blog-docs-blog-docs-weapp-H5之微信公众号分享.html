@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H5之微信公众号分享 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>H5之微信公众号分享</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>H5之微信公众号分享</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><blockquote><p>使用微信的分享功能，需要使用微信<code>JS-SDK</code>来完成。且只能点击微信右上角的<code>...</code>调起分享面板，不能直接由页面行为唤起！本教程使用js-sdk最新版</p></blockquote> <p><a href="https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html" target="_blank" rel="noopener noreferrer">微信JS-SDK<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>是微信公众平台面向网页开发者提供的基于微信内的网页开发工具包。通过使用微信<code>JS-SDK</code>，网页开发者可借助微信高效地使用拍照、选图、语音、位置等手机系统的能力，同时可以直接使用微信分享、扫一扫、卡券、支付等微信特有的能力</p> <h2 id="一、jssdk使用步骤"><a href="#一、jssdk使用步骤" class="header-anchor">#</a> 一、JSSDK使用步骤</h2> <p><strong>1. 步骤一：绑定域名</strong></p> <blockquote><p>登录微信公众平台 --&gt; 公众号设置 --&gt; 功能设置 --&gt; 填写“JS接口安全域名”</p></blockquote> <p><strong>2. 步骤二：引入JS文件</strong></p> <ul><li>在需要调用JS接口的页面引入如下JS文件，（支持https）：http://res.wx.qq.com/open/js/jweixin-1.6.0.js</li> <li>如需进一步提升服务稳定性，当上述资源不可访问时，可改访问：http://res2.wx.qq.com/open/js/jweixin-1.6.0.js （支持https）。</li> <li>备注：支持使用 AMD/CMD 标准模块加载方法加载</li></ul> <p><strong>3. 步骤三：通过config接口注入权限验证配置</strong></p> <blockquote><p>所有需要使用JS-SDK的页面必须先注入配置信息，否则将无法调用</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code>wx<span class="token punctuation">.</span><span class="token function">config</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token literal-property property">debug</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token comment">// 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。</span>
+  <span class="token literal-property property">appId</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span> <span class="token comment">// 必填，公众号的唯一标识</span>
+  <span class="token literal-property property">timestamp</span><span class="token operator">:</span> <span class="token punctuation">,</span> <span class="token comment">// 必填，生成签名的时间戳</span>
+  <span class="token literal-property property">nonceStr</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span> <span class="token comment">// 必填，生成签名的随机串</span>
+  <span class="token literal-property property">signature</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span><span class="token comment">// 必填，签名</span>
+  <span class="token literal-property property">jsApiList</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token comment">// 必填，需要使用的JS接口列表</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><ul><li><code>config</code>是一个客户端的异步操作</li> <li>在<code>JS-SDK</code>后调用，也应该尽可能早的调用</li> <li>同一个<code>url</code>仅需调用一次</li> <li>对于变化<code>url</code>的<code>SPA</code>的<code>web app</code>可在每次<code>url</code>变化时进行调用</li> <li>低于<code>Android6.2</code>版本的微信客户端，不支持<code>pushState</code>的H5新特性，使用pushState来实现web app的页面会导致签名失败</li></ul> <p><strong>4. 步骤四：通过ready接口处理成功验证</strong></p> <div class="language-js extra-class"><pre class="language-js"><code>wx<span class="token punctuation">.</span><span class="token function">ready</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  <span class="token comment">// config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><blockquote><p>由于config是一个异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中</p></blockquote> <p><strong>注</strong>：无论<code>config</code>成功或失败，<code>ready</code>中的内容都会被执行！</p> <p><strong>5. 步骤五：通过error接口处理失败验证</strong></p> <div class="language-js extra-class"><pre class="language-js"><code>wx<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">res</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  <span class="token comment">// config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p><strong>6. 通用参数：</strong></p> <blockquote><p>所有接口通过<code>wx</code>对象(也可使用<code>jWeixin</code>对象)来调用，参数是一个对象，除了每个接口本身需要传的参数之外，还有以下通用函数参数：</p></blockquote> <ul><li><code>success</code> 接口调用成功时执行的回调函数。</li> <li><code>fail</code> 接口调用失败时执行的回调函数。</li> <li><code>complete</code> 接口调用完成时执行的回调函数，无论成功或失败都会执行。</li> <li><code>cancel</code> 用户点击取消时的回调函数，仅部分有用户取消操作的api才会用到。</li> <li><code>trigger</code> 监听Menu中的按钮点击时触发的方法，该方法仅支持Menu中的相关接口。</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 回调参数：</span>
+
+<span class="token punctuation">{</span>
+    <span class="token literal-property property">xxx</span><span class="token operator">:</span> xxx<span class="token punctuation">,</span>
+    <span class="token literal-property property">errMsg</span><span class="token operator">:</span> <span class="token string">''</span> <span class="token comment">// 接口调用成功/失败信息</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="二、微信分享"><a href="#二、微信分享" class="header-anchor">#</a> 二、微信分享</h2> <blockquote><p>用户调用微信的分享功能，可以自定义分享的title和描述，以及小图标和链接。可以分享到群、好友、朋友圈、QQ、QQ空间等</p></blockquote> <p><strong>分享设计规范</strong></p> <ul><li>分享标题：14字以内，建议使用朋友般亲切的口吻</li> <li>分享图标：尺寸<code>120*120</code>，大小不超过<code>10K</code>，不支持<code>GIF</code>格式。必须采用<code>https</code>协议。</li> <li>分享描述：<code>20</code>字以内，对标题的简要解读。</li> <li>分享链接：外链页面所在服务器至少能支持每秒<code>1500</code>次的访问压力，且每次访问的响应时间<code>200ms</code>以内。必须采用<code>https</code>协议。</li> <li>分享行为：<strong>页面上无分享按钮</strong>，页面上无诱导分享行为，包含但不限于分享后才能看到特定的信息，分享后才能进行下一步流程，分享后可以获得奖励等</li> <li>分享文案：分享时“文案”和“图片”可以正常显示，分享后链接可以访问。</li> <li>分享标题和描述不能出现敏感词汇，否则会导致部分不可预知的问题。比如分享者可以看到分享图标，被分享者看不到图标等。</li></ul> <blockquote><p>敏感词举例：红包、现金、到账等</p></blockquote> <p><strong>注：</strong> 分享的图标链接和分享链接尽量保持为同一域名下的资源。否则可能会出现分享不成功或分享图标不显示的情况。</p> <blockquote><p>由于不能由页面直接唤起微信的分享面板，所以就需要一个弹窗浮层来引导用户用户去点击<code>...</code>按钮唤起分享面板。注意这个弹窗浮层不能出现诱导分享的内容。</p></blockquote> <p><strong>分享或广告文案禁止内容：</strong></p> <ul><li>特殊字符：不允许使用特殊字符与符号 ，例如：<code>“：）” “-。-”</code>等； 不允许使用 <code>emoji</code> 表情</li> <li>诱导或引导操作： 不允许出现诱导或引导用户操作的描述。包含但不限于以下文案：“请点击查看详情”、 “赶快戳开看一看”、“点一下下面你就知道是什么”、“点击下方了解公众号”</li> <li>微信产品功能词汇：未经微信官方授权，禁止使用以下产品功能词汇及其谐音词汇。包含但不限于以下内容：“朋友圈” 、“点赞” 、“评论” 、“公众号”、 “微信”、 “红包”</li> <li><code>URL</code>：不允许直接放URL链接内容</li> <li>电话号码：不允许出现电话号码</li> <li>破折号：不允许出现破折号，破折号在移动端显示容易产生歧义</li> <li>空行&amp;空格：不允许使用空行或空格</li> <li>不规范折行：不允许出现单个词语或文字折行</li> <li>股票代码：不允许出现公司股票代码</li> <li>非简体中文文字&amp;方言&amp;小语种：不允许使用非简体中文文字（单字、词语、成语）。暂不支持使用方言和小语种作为文案。</li> <li>产品销量数据：不允许使用任何维度的产品销量数据。</li></ul> <h2 id="三、分享接口"><a href="#三、分享接口" class="header-anchor">#</a> 三、分享接口</h2> <p><strong>3.1 自定义“分享给朋友”及“分享到QQ”按钮的分享内容（1.4.0）</strong></p> <div class="language-js extra-class"><pre class="language-js"><code>wx<span class="token punctuation">.</span><span class="token function">ready</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>   <span class="token comment">//需在用户可能点击分享按钮前就先调用</span>
+  wx<span class="token punctuation">.</span><span class="token function">updateAppMessageShareData</span><span class="token punctuation">(</span><span class="token punctuation">{</span> 
+    <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span> <span class="token comment">// 分享标题</span>
+    <span class="token literal-property property">desc</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span> <span class="token comment">// 分享描述</span>
+    <span class="token literal-property property">link</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span> <span class="token comment">// 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致</span>
+    <span class="token literal-property property">imgUrl</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span> <span class="token comment">// 分享图标</span>
+    <span class="token function-variable function">success</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 设置成功</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p><strong>3.2 自定义“分享到朋友圈”及“分享到QQ空间”按钮的分享内容（1.4.0）</strong></p> <div class="language-js extra-class"><pre class="language-js"><code>wx<span class="token punctuation">.</span><span class="token function">ready</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>      <span class="token comment">//需在用户可能点击分享按钮前就先调用</span>
+  wx<span class="token punctuation">.</span><span class="token function">updateTimelineShareData</span><span class="token punctuation">(</span><span class="token punctuation">{</span> 
+    <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span> <span class="token comment">// 分享标题</span>
+    <span class="token literal-property property">link</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span> <span class="token comment">// 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致</span>
+    <span class="token literal-property property">imgUrl</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span> <span class="token comment">// 分享图标</span>
+    <span class="token function-variable function">success</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 设置成功</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="四、分享开发调试时注意事项"><a href="#四、分享开发调试时注意事项" class="header-anchor">#</a> 四、分享开发调试时注意事项</h2> <ul><li>分享出去的外链的域名必须和公众号后台配置的JS安全域名一致，否则会导致分享的失败</li> <li>享出去的外链，会自动给加上微信标识，导致二次分享失败</li></ul> <div class="language- extra-class"><pre class="language-text"><code>如打开页面：
+
+https://www.xxx.com/m/#/activity/invite/friends
+分享出去链接：
+</code></pre></div><blockquote><p>https://www.xxx.com/m/?from=groupmessage&amp;isappinstalled=0#/activity/invite/friends 微信自动在分享后边加上了<code>query</code>字符串：</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>from=groupmessage   分享到群
+from=timeline  分享到朋友圈
+from=singlemessage  分享到好友
+isappinstalled=0    0或1，表示是否安装了app
+</code></pre></div><p><strong>注：安卓手机分享到朋友圈的链接</strong>，只会带<code>from=timeline</code></p> <blockquote><p>由于微信的签名生成时，需要传一个<code>url</code>参数，而这个<code>url</code>则是通过</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code>location<span class="token punctuation">.</span>href<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">'#'</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+</code></pre></div><blockquote><p>获取的<code>url</code>，取的是<code>url</code>的<code>#</code>前边的部分来生成签名，第一次分享成功，生成签名的<code>url</code>不带<code>query</code>字段。通过一次分享出去的链接，带上了<code>query</code>后，生成的签名就无效了，导致二次分享失败。</p></blockquote> <p><strong>解决办法：</strong></p> <ol><li>替换路径</li></ol> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">let</span> href <span class="token operator">=</span> window<span class="token punctuation">.</span>location<span class="token punctuation">.</span>href<span class="token punctuation">;</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span>href<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'groupmessage'</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token operator">||</span> href<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'singlemessage'</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token operator">||</span> href<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'timeline'</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    href <span class="token operator">=</span> href<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\?from=(groupmessage|singlemessage|timeline)(\S*)#</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span> <span class="token string">'#'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    window<span class="token punctuation">.</span>location<span class="token punctuation">.</span>href <span class="token operator">=</span> href<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>不过这样，会导致页面请求两次，细心的用户可能会感知到。或者用户网络不稳定时，可能他会感觉到两次页面的刷新</p></blockquote> <ol start="2"><li>生成签名的时候，动态的获取url，传给生成签名的接口</li></ol> <blockquote><p>每次打开页面时，都获取到url的#前边部分传给签名生成接口，保证每次的签名都是有效的</p></blockquote> <h2 id="五、实战"><a href="#五、实战" class="header-anchor">#</a> 五、实战</h2> <blockquote><p>hash路由形式分享链接到朋友圈，需要特殊处理url</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 请求后台接口 获取微信配置信息</span>
+<span class="token operator">*</span><span class="token function">getWxSignature</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> payload<span class="token punctuation">,</span> callback <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> call<span class="token punctuation">,</span> put<span class="token punctuation">,</span> select <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> res <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">call</span><span class="token punctuation">(</span>rGetWxSign<span class="token punctuation">,</span> payload<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">if</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>code <span class="token operator">!==</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token keyword">return</span><span class="token punctuation">;</span><span class="token punctuation">}</span>
+
+  <span class="token comment">// 通过config接口注入权限验证配置</span>
+  wx<span class="token punctuation">.</span><span class="token function">config</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">debug</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token comment">// 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。</span>
+    <span class="token literal-property property">appId</span><span class="token operator">:</span> res<span class="token punctuation">.</span>data<span class="token punctuation">.</span>appId<span class="token punctuation">,</span> <span class="token comment">// 必填，公众号的唯一标识</span>
+    <span class="token literal-property property">timestamp</span><span class="token operator">:</span> res<span class="token punctuation">.</span>data<span class="token punctuation">.</span>timestamp<span class="token punctuation">,</span> <span class="token comment">// 必填，生成签名的时间戳</span>
+    <span class="token literal-property property">nonceStr</span><span class="token operator">:</span> res<span class="token punctuation">.</span>data<span class="token punctuation">.</span>nonceStr<span class="token punctuation">,</span> <span class="token comment">// 必填，生成签名的随机串</span>
+    <span class="token literal-property property">signature</span><span class="token operator">:</span> res<span class="token punctuation">.</span>data<span class="token punctuation">.</span>signature<span class="token punctuation">,</span> <span class="token comment">// 必填，签名，见附录1</span>
+    <span class="token literal-property property">jsApiList</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">'updateTimelineShareData'</span><span class="token punctuation">,</span> 
+      <span class="token string">'updateAppMessageShareData'</span>
+    <span class="token punctuation">]</span> <span class="token comment">// 必填，需要使用的JS接口列表，所有JS接口列表见附录2</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 获取微信签名</span>
+<span class="token function">getWxSignature</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> url <span class="token operator">=</span> location<span class="token punctuation">.</span>href
+  <span class="token comment">// 如果页面url是hash路由形式 需要处理一下参数</span>
+  <span class="token keyword">let</span> i <span class="token operator">=</span> url<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'#'</span><span class="token punctuation">)</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">!==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    url <span class="token operator">=</span> url<span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token punctuation">{</span> 
+    <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>namespace<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">/getWxSignature</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span> 
+    <span class="token literal-property property">payload</span><span class="token operator">:</span> <span class="token punctuation">{</span>url<span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 页面加载完成就执行初始化监听</span>
+<span class="token function-variable function">handleWxShare</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">=&gt;</span><span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token punctuation">{</span><span class="token literal-property property">pagedata</span><span class="token operator">:</span> <span class="token punctuation">{</span>mainData<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>projectInfo<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> <span class="token punctuation">{</span>pagequery<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state
+
+    wx<span class="token punctuation">.</span><span class="token function">ready</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'wx.ready:'</span><span class="token punctuation">,</span>projectInfo<span class="token punctuation">)</span>
+      <span class="token comment">// config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。</span>
+      <span class="token keyword">let</span> linkUrl <span class="token operator">=</span> location<span class="token punctuation">.</span>href
+
+      <span class="token comment">// 监听右上角分享到朋友圈事件</span>
+      <span class="token comment">// 自定义“分享到朋友圈”及“分享到QQ空间”按钮的分享内容（1.4.0）</span>
+      wx<span class="token punctuation">.</span><span class="token function">updateTimelineShareData</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        <span class="token literal-property property">title</span><span class="token operator">:</span> mainData<span class="token punctuation">.</span>title<span class="token punctuation">,</span> <span class="token comment">// 分享标题</span>
+        <span class="token literal-property property">desc</span><span class="token operator">:</span> <span class="token punctuation">(</span>projectInfo<span class="token punctuation">.</span>project <span class="token operator">||</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span>projectName <span class="token operator">||</span> <span class="token string">''</span><span class="token punctuation">,</span> <span class="token comment">// 分享描述</span>
+        <span class="token literal-property property">link</span><span class="token operator">:</span> linkUrl<span class="token punctuation">,</span> <span class="token comment">// 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致</span>
+        <span class="token literal-property property">imgUrl</span><span class="token operator">:</span> mainData<span class="token punctuation">.</span>sharePicUrl<span class="token punctuation">,</span> <span class="token comment">// 分享图标</span>
+        <span class="token function-variable function">success</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+          <span class="token comment">// 用户确认分享后执行的回调函数</span>
+          console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'分享成功'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token function-variable function">cancel</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+          <span class="token comment">// 用户取消分享后执行的回调函数</span>
+          console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'取消分享'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+       <span class="token comment">// 监听右上角发送给朋友事件</span>
+       <span class="token comment">// 自定义“分享给朋友”及“分享到QQ”按钮的分享内容</span>
+       wx<span class="token punctuation">.</span><span class="token function">updateAppMessageShareData</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        <span class="token literal-property property">title</span><span class="token operator">:</span> mainData<span class="token punctuation">.</span>title<span class="token punctuation">,</span> <span class="token comment">// 分享标题</span>
+        <span class="token literal-property property">desc</span><span class="token operator">:</span> <span class="token punctuation">(</span>projectInfo<span class="token punctuation">.</span>project <span class="token operator">||</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span>projectName <span class="token operator">||</span> <span class="token string">''</span><span class="token punctuation">,</span> <span class="token comment">// 分享描述</span>
+        <span class="token literal-property property">link</span><span class="token operator">:</span> linkUrl<span class="token punctuation">,</span> <span class="token comment">// 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致</span>
+        <span class="token literal-property property">imgUrl</span><span class="token operator">:</span> mainData<span class="token punctuation">.</span>sharePicUrl<span class="token punctuation">,</span> <span class="token comment">// 分享图标</span>
+        <span class="token function-variable function">success</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+          <span class="token comment">// 用户确认分享后执行的回调函数</span>
+          console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'分享成功'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token function-variable function">cancel</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+          <span class="token comment">// 用户取消分享后执行的回调函数</span>
+          console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'取消分享'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    wx<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">res</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+      <span class="token comment">// config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>res<span class="token punctuation">,</span><span class="token string">'wx error'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token function">componentDidMount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 微信分享到朋友圈、发送朋友分享的链接带上微信加上的参数 导致分享不了 </span>
+    <span class="token keyword">let</span> href <span class="token operator">=</span> window<span class="token punctuation">.</span>location<span class="token punctuation">.</span>href
+    <span class="token comment">// from=groupmessage   分享到群</span>
+    <span class="token comment">// from=timeline  分享到朋友圈</span>
+    <span class="token comment">// from=singlemessage  分享到好友</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">~</span>href<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'from=timeline'</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token operator">~</span>href<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'from=singlemessage'</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token operator">~</span>href<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'from=groupmessage'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 带有hash路由的链接分享到朋友圈会被微信带上?from=timeline 导致二次分享的链接打不开 需要重新处理</span>
+      <span class="token comment">// 如果是history模式下的路由 不需要另外处理</span>
+      <span class="token comment">// https://zmjtest.kaisasso.com/wxapp/?from=timeline#/dsb/article?id=286&amp;pid=20&amp;uid=110</span>
+      window<span class="token punctuation">.</span>location<span class="token punctuation">.</span>href <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>location<span class="token punctuation">.</span>origin<span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>location<span class="token punctuation">.</span>pathname<span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>location<span class="token punctuation">.</span>hash<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span> 
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

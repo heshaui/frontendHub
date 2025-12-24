@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一篇不是标题党的CommonJS和ES6模块规范讲解 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>一篇不是标题党的CommonJS和ES6模块规范讲解</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>一篇不是标题党的CommonJS和ES6模块规范讲解</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h3 id="原始写法"><a href="#原始写法" class="header-anchor">#</a> 原始写法</h3> <p>在没有<code>CommonJS</code>和<code>ES6</code>的时候，我们想要达到模块化的效果可能有这么三种：</p> <h4 id="_1-一个函数就是一个模块"><a href="#_1-一个函数就是一个模块" class="header-anchor">#</a> 1. 一个函数就是一个模块</h4> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+  <span class="token keyword">function</span> <span class="token function">m1</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ...</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">function</span> <span class="token function">m2</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ...</span>
+  <span class="token punctuation">}</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><blockquote><p>缺点：污染了全局变量，无法保证不会与其它模块发生冲突，而且模块成员之间看不出直接关系。</p></blockquote> <h4 id="_2-一个对象就是一个模块"><a href="#_2-一个对象就是一个模块" class="header-anchor">#</a> 2. 一个对象就是一个模块</h4> <p>对象写法 为了解决上面的缺点，可以把模块写成一个对象，所有的模块成员都放到这个对象里面。</p> <p><strong>index.html</strong></p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+  <span class="token keyword">var</span> module1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Object</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">_sum</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    <span class="token function-variable function">foo1</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token function-variable function">foo2</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><blockquote><p>缺点：会暴露所有模块成员，内部的状态可能被改写。</p></blockquote> <p>例如，我们如果只是想暴露出两个方法而不暴露出<code>_sum</code>，就做不到。</p> <p>而此时，<code>_sum</code>可能被外部改写：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module1<span class="token punctuation">.</span>_sum <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+</code></pre></div><h4 id="_3-立即执行函数为一个模块"><a href="#_3-立即执行函数为一个模块" class="header-anchor">#</a> 3. 立即执行函数为一个模块</h4> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+  <span class="token keyword">var</span> module1 <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> _sum <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> <span class="token function-variable function">foo1</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> <span class="token function-variable function">foo2</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">foo1</span><span class="token operator">:</span> foo1<span class="token punctuation">,</span>
+      <span class="token literal-property property">foo2</span><span class="token operator">:</span> foo2
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p>利用立即执行函数内的作用域已经闭包来实现模块功能，导出我们想要导出的成员。</p> <p>此时外部代码就不能读取到<code>_sum</code>了：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>module1<span class="token punctuation">.</span>_sum<span class="token punctuation">)</span> <span class="token comment">// undefined</span>
+</code></pre></div><h3 id="commonjs规范"><a href="#commonjs规范" class="header-anchor">#</a> CommonJS规范</h3> <p>这里不做具体的介绍了，我只把一些重要的知识点以及混淆点例举出来。</p> <p>主要是从这四个方面说：</p> <ul><li>暴露模块</li> <li>引用模块</li> <li>模块标识符</li> <li>CommonJS规范的特点</li></ul> <h4 id="_1-暴露-定义-模块"><a href="#_1-暴露-定义-模块" class="header-anchor">#</a> 1. 暴露(定义)模块</h4> <p><strong>正确的暴露方式：</strong></p> <p>暴露模块有两种方式：</p> <ul><li><code>module.exports = {}</code></li> <li><code>exports.xxx = 'xxx'</code></li></ul> <p>例如有一个<code>m1.js</code>文件：</p> <p>第一种暴露方式：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'lindaidai'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">sex</span><span class="token operator">:</span> <span class="token string">'boy'</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>第二种暴露方式：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>exports<span class="token punctuation">.</span>name <span class="token operator">=</span> <span class="token string">'lindaidai'</span><span class="token punctuation">;</span>
+exports<span class="token punctuation">.</span>sex <span class="token operator">=</span> <span class="token string">'boy'</span>
+</code></pre></div><p>为什么可以有这两种写法呢？</p> <p>我是这样理解的：<code>module</code>这个变量它代表的就是整个模块，也就是<code>m1.js</code>。而其实这个<code>module</code>变量是有一个属性<code>exports</code>的，它是一个叫做<code>exports</code>变量的引用，我们可以写一下伪代码：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> exports <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> module <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">exports</span><span class="token operator">:</span> exports
+<span class="token punctuation">}</span>
+<span class="token keyword">return</span> module<span class="token punctuation">.</span>exports
+</code></pre></div><p>(当然这只是伪代码啊，实际你这么去用会发现没有效果)</p> <p>最后导出的是<code>module.exports</code>，而不是<code>exports</code>。</p> <p><strong>容易混淆的暴露方式：</strong></p> <p>如果你在代码中试图<code>exports = { name: 'lindaidai' }</code>，你会发现在引入的地方根本获取不到<code>name</code>属性。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// m1.js</span>
+exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'lindaidai'</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// test.js</span>
+<span class="token keyword">const</span> math <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./m1.js'</span><span class="token punctuation">)</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>m1<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// {}</span>
+</code></pre></div><p>在控制台执行<code>node test.js</code>，发现打印出来的<code>m1</code>是一个空的对象。</p> <p>我是这样理解的：整个模块的导出是靠<code>module.exports</code>的，如果你重新对整个<code>exports</code>对象赋值的话，它和<code>module.exports</code>就不是同一个对象了，因为它们指向的引用地址都不同：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span>exports <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token comment">// 指向一个空的对象</span>
+exports <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'lindaidai'</span> <span class="token punctuation">}</span> <span class="token comment">// 指向的是另一个对象</span>
+</code></pre></div><p>所以你对<code>exports = {}</code>做任何操作都影响不到<code>module.exports</code>。</p> <p>让我们来看几个正确和错误的示例吧：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// m1.js</span>
+<span class="token comment">// 1. 正确</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'lindaidai'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">sex</span><span class="token operator">:</span> <span class="token string">'boy'</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 2. 正确</span>
+exports<span class="token punctuation">.</span>name <span class="token operator">=</span> <span class="token string">'lindaidai'</span><span class="token punctuation">;</span>
+exports<span class="token punctuation">.</span>sex <span class="token operator">=</span> <span class="token string">'boy'</span>
+
+<span class="token comment">// 3. 正确</span>
+module<span class="token punctuation">.</span>exports<span class="token punctuation">.</span>name <span class="token operator">=</span> <span class="token string">'lindaidai'</span><span class="token punctuation">;</span>
+module<span class="token punctuation">.</span>exports<span class="token punctuation">.</span>sex <span class="token operator">=</span> <span class="token string">'boy'</span>
+
+<span class="token comment">// 4. 无效</span>
+exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'lindaidai'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">sex</span><span class="token operator">:</span> <span class="token string">'boy'</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>可以看到</p> <ul><li><code>exports.name = xxx</code>是<code>module.exports.name = xxx</code>的缩写。</li> <li><code>exports = {}</code>确不是<code>module.exports = {}</code>的缩写。</li></ul> <h4 id="_2-引用-引入-模块"><a href="#_2-引用-引入-模块" class="header-anchor">#</a> 2. 引用(引入)模块</h4> <p>对于模块的引用使用全局方法<code>require()</code>就可以了。</p> <p>注意⚠️这个全局方法是<code>node</code>中的方法哈，它不是<code>window</code>下面的，所以如果你没做任何处理想直接在<code>html</code>里用肯定就是不行的了：</p> <p><strong>index.html</strong>:</p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+        <span class="token keyword">var</span> m1 <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./m1.js'</span><span class="token punctuation">)</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>m1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    </span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p>例如上面👆这样你打开页面控制台肯定就报错了：</p> <div class="language- extra-class"><pre class="language-text"><code>Uncaught ReferenceError: require is not defined
+	at index.html:11
+</code></pre></div><p>而如果你是在另一个<code>js</code>文件中引用(例如<code>test.js</code>)，并在终端执行<code>node test.js</code>是可以用的：</p> <p><strong>test.js</strong>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> m1 <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./m1.js'</span><span class="token punctuation">)</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>m1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>那是因为你的电脑上全局安装了<code>Node.js</code>，所以可以这样玩。</p> <p><strong>所以我们可以发现<code>require()</code>它是<code>Node.js</code>中的一个全局方法，并不是CommonJS独有的，CommonJS只是众多规范中的其中一种。</strong></p> <p>这种规范允许我们：</p> <ul><li>使用<code>module.exports = {}</code>或者<code>exports.name = xxx</code>导出模块</li> <li>使用<code>const m1 = require('./m1')</code>引入模块</li></ul> <p>注意⚠️：</p> <p>另外还有一点比较重要，那就是<code>require()</code>的参数甚至能允许你是一个表达式。</p> <p>也就是说你可以把它设置为一个变量：</p> <p><strong>test.js</strong>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> m1Url <span class="token operator">=</span> <span class="token string">'./m1.js'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> m1 <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span>m1Url<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 甚至做一些字符串拼接：</span>
+<span class="token keyword">var</span> m1 <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./m'</span> <span class="token operator">+</span> <span class="token string">'1.js'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>但是需要注意咯，这个传参可以为表达式并不是<code>require</code>特有的。因为<code>JS</code>语言是传值调用，函数或者方法在调用的时候参数会被先计算出来，因此在我们使用<code>require</code>方法并传入表达式的时候，会先计算出表达式的值再传递给<code>require</code>。(感谢掘友<a href="https://juejin.im/user/5a91606ef265da4e7e10d527" target="_blank" rel="noopener noreferrer">骑自行车<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>的指出)</p> <h4 id="_3-模块标识符-标识"><a href="#_3-模块标识符-标识" class="header-anchor">#</a> 3. 模块标识符(标识)</h4> <p>模块标识符其实就是你在引入模块时调用<code>require()</code>函数的参数。</p> <p>你会看到我们经常会有这样的用法：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 直接导入</span>
+<span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 相对路径</span>
+<span class="token keyword">const</span> m1 <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./m1.js'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 直接导入</span>
+<span class="token keyword">const</span> lodash <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'lodash'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>这其实是因为我们引入的模块会有不同的分类，像<code>path</code>这种它是<code>Node.js</code>就自带的模块，<code>m1</code>是路径模块，<code>lodash</code>是我们使用<code>npm i lodash</code>下载到<code>node_modules</code>里的模块。</p> <p>分为以下三种：</p> <ul><li>核心模块(<code>Node.js</code>自带的模块)</li> <li>路径模块(相对或绝对定位开始的模块)</li> <li>自定义模块(<code>node_modules</code>里的模块)</li></ul> <p>三种模块的查找方式：</p> <ul><li>核心模块，直接跳过路径分析和文件定位</li> <li>路径模块，直接得出相对路径就好了</li> <li>自定义模块，先在当前目录的<code>node_modules</code>里找这个模块，如果没有，它会往上一级目录查找，查找上一级的<code>node_modules</code>，依次往上，直到根目录下都没有, 就抛出错误。</li></ul> <p><strong>自定义模块的查找过程：</strong></p> <p>这个过程其实也叫做<strong>路径分析</strong>。</p> <p>现在我把刚刚的<code>test.js</code>来改一下：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// var m1 = require('./m1.js');</span>
+
+<span class="token comment">// console.log(m1);</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>module<span class="token punctuation">.</span>paths<span class="token punctuation">)</span>
+</code></pre></div><p>然后在终端执行：</p> <div class="language- extra-class"><pre class="language-text"><code>node test.js
+</code></pre></div><p>会发现输出了下面的一个数组：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">LinDaiDaideMBP</span><span class="token operator">:</span>commonJS lindaidai$ node test<span class="token punctuation">.</span>js
+<span class="token punctuation">[</span>
+  <span class="token string">'/Users/lindaidai/codes/test/CommonJS和ES6/commonJS/node_modules'</span><span class="token punctuation">,</span>
+  <span class="token string">'/Users/lindaidai/codes/test/CommonJS和ES6/node_modules'</span><span class="token punctuation">,</span>
+  <span class="token string">'/Users/lindaidai/codes/test/node_modules'</span><span class="token punctuation">,</span>
+  <span class="token string">'/Users/lindaidai/codes/node_modules'</span><span class="token punctuation">,</span>
+  <span class="token string">'/Users/lindaidai/node_modules'</span><span class="token punctuation">,</span>
+  <span class="token string">'/Users/node_modules'</span><span class="token punctuation">,</span>
+  <span class="token string">'/node_modules'</span>
+<span class="token punctuation">]</span>
+</code></pre></div><p>这里所说的查找，是指查找你现在用的这个模块，我现在用的是<code>test.js</code>，你可能看不出什么效果。现在让我们来模拟一个我们使用<code>npm i</code>安装的一个自定义模块功能。</p> <p>首先，我在根目录下新建了一个名叫<code>node_modules</code>的文件夹，并在其中新建了一个名叫<code>lindaidai.js</code>的文件，用来模拟一个<code>npm</code>安装的依赖。</p> <p>目录结构：</p> <p><img src="https://s.poetries.top/gitee/2020/09/136.png" alt=""></p> <p>稍微编写一下<code>lindaidai.js</code>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token function-variable function">print</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'lindaidai'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'lindaidai模块：'</span><span class="token punctuation">,</span> module<span class="token punctuation">.</span>paths<span class="token punctuation">)</span>
+</code></pre></div><p>然后在<code>test.js</code>中引入这个<code>lindaidai</code>模块:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// var m1 = require('./m1.js');</span>
+<span class="token comment">// console.log(m1);</span>
+<span class="token comment">// console.log(module.paths)</span>
+
+<span class="token keyword">var</span> lindaidai <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'lindaidai'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+lindaidai<span class="token punctuation">.</span><span class="token function">print</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>现在执行<code>node test.js</code>，会发现输出了：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">LinDaiDaideMBP</span><span class="token operator">:</span>commonJS lindaidai$ node test<span class="token punctuation">.</span>js
+lindaidai模块： <span class="token punctuation">[</span>
+  <span class="token string">'/Users/lindaidai/codes/test/CommonJS和ES6/commonJS/node_modules'</span><span class="token punctuation">,</span>
+  <span class="token string">'/Users/lindaidai/codes/test/CommonJS和ES6/node_modules'</span><span class="token punctuation">,</span>
+  <span class="token string">'/Users/lindaidai/codes/test/node_modules'</span><span class="token punctuation">,</span>
+  <span class="token string">'/Users/lindaidai/codes/node_modules'</span><span class="token punctuation">,</span>
+  <span class="token string">'/Users/lindaidai/node_modules'</span><span class="token punctuation">,</span>
+  <span class="token string">'/Users/node_modules'</span><span class="token punctuation">,</span>
+  <span class="token string">'/node_modules'</span>
+<span class="token punctuation">]</span>
+lindaidai
+</code></pre></div><p>所以现在你可以知道，平常我们使用这种依赖的时候，它是怎样的一个查找顺序了吧，它其实就是按照自定义模块的顺序来进行查找。</p> <p><strong>文件定位：</strong></p> <p>上面👆已经介绍完了路径分析，但是还有一个问题，就是我们导入的模块它的后缀(扩展名)是可以省略的啊，那<code>Node</code>怎么知道我们是导入了一个<code>js</code>还是一个<code>json</code>呢？这其实就涉及到了文件定位。</p> <p>在NodeJS中, 省略了扩展名的文件, 会依次补充上.js, .node, .json来尝试, 如果传入的是一个目录, 那么NodeJS会把它当成一个包来看待, 会采用以下方式确定文件名</p> <p>第一步, 找出目录下的package.json, 用JSON.parse()解析出main字段</p> <p>第二步, 如果main字段指定的文件还是省略了扩展, 那么会依次补充.js, .node, .json尝试.</p> <p>第三部, 如果main字段制定的文件不存在, 或者根本就不存在package.json, 那么会默认加载这个目录下的index.js, index.node, index.json文件.</p> <p>以上就是文件定位的过程, 再搭配上路径分析的过程, 进行排列组合, 这得有多少种可能呀. 所以说, 自定义模块的引入, 是最费性能的.</p> <p>(总结来源：https://zhuanlan.zhihu.com/p/27644026)</p> <h4 id="_4-commonjs规范的特点"><a href="#_4-commonjs规范的特点" class="header-anchor">#</a> 4. CommonJS规范的特点</h4> <p>我先把<code>CommonJS</code>规范的一些特点列举出来吧，然后我们再一点一点的去看例子。</p> <ul><li><p>所有代码都运行在模块作用域，不会污染全局作用域；</p></li> <li><p>模块是同步加载的，即只有加载完成，才能执行后面的操作；</p></li> <li><p>模块在首次执行后就会缓存，再次加载只返回缓存结果，如果想要再次执行，可清除缓存；</p></li> <li><p>CommonJS输出是值的拷贝(即，<code>require</code>返回的值是被输出的值的拷贝，模块内部的变化也不会影响这个值)。</p></li></ul> <p>(总结来源：https://juejin.im/post/5db95e3a6fb9a020704bcd8d)</p> <p>第一点还是好理解的，咱模块的一个重要的功能不就是这个吗。</p> <p>第二点<strong>同步加载</strong>，这个写个案例我们来验证一下。</p> <p><strong>同步加载案例</strong>：</p> <p><em>m1.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'我是m1模块'</span><span class="token punctuation">)</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'lindaidai'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">sex</span><span class="token operator">:</span> <span class="token string">'boy'</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><em>test.js</em></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> m1 <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./m1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'我是test模块'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>可以看到，<code>test</code>模块依赖于<code>m1</code>，且是先下载的<code>m1</code>模块，所以如果我执行<code>node test.js</code>，会有以下的执行结果：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">LinDaiDaideMBP</span><span class="token operator">:</span>commonJS lindaidai$ node test<span class="token punctuation">.</span>js
+我是m1模块
+我是test模块
+</code></pre></div><p>这也就验证了<code>CommonJS</code>中，模块是同步加载的，即只有加载完成，才能执行后面的操作。</p> <p>第三点<strong>模块首次执行后会缓存</strong>，我们也可以写个案例来验证一下。</p> <p><strong>模块首次执行后会缓存案例：</strong></p> <p><em>m1.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> name <span class="token operator">=</span> <span class="token string">'lindaidai'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> sex <span class="token operator">=</span> <span class="token string">'boy'</span><span class="token punctuation">;</span>
+
+exports<span class="token punctuation">.</span>name <span class="token operator">=</span> name<span class="token punctuation">;</span>
+exports<span class="token punctuation">.</span>sex <span class="token operator">=</span> sex<span class="token punctuation">;</span>
+</code></pre></div><p><em>test.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> m1 <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./m1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+m1<span class="token punctuation">.</span>sex <span class="token operator">=</span> <span class="token string">'girl'</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>m1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> m2 <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./m1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>m2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p><code>test</code>同样依赖于<code>m1</code>，但是我会在其中导入两次<code>m1</code>，第一次导入的时候修改了<code>m1.sex</code>的值，第二次的时候命名为<code>m2</code>，但是结果<code>m1</code>和<code>m2</code>竟然是相等的：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">LinDaiDaideMBP</span><span class="token operator">:</span>commonJS lindaidai$ node test<span class="token punctuation">.</span>js
+<span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'lindaidai'</span><span class="token punctuation">,</span> <span class="token literal-property property">sex</span><span class="token operator">:</span> <span class="token string">'girl'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'lindaidai'</span><span class="token punctuation">,</span> <span class="token literal-property property">sex</span><span class="token operator">:</span> <span class="token string">'girl'</span> <span class="token punctuation">}</span>
+</code></pre></div><p>也就是说模块在首次执行后就会缓存，再次加载只返回缓存结果，这里我是用了改变<code>m1.sex</code>的值来证明它确实是取了缓存结果。</p> <p>那么就有小伙伴会疑惑了，其实你这样写也并不能证明啊，因为你改变了<code>m1.sex</code>也可能是影响原本<code>m1</code>模块里的<code>sex</code>属性呀，这样的话第二次<code>m2</code>拿到的肯定就是被改变的值了。</p> <p>唔...我正想证明来着呢。因为<code>CommonJS</code>的第四个特点就可以很好的解决你这个疑问。</p> <p>第四点<strong>CommonJS输出是值的拷贝</strong>，也就是说你用<code>require()</code>引入了模块，但是你在最新的模块中怎样去改变，也不会影响你已经<code>require()</code>的模块。来看个案例。</p> <p><strong>CommonJS输出是值的拷贝案例</strong>：</p> <p><em>m1.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> name <span class="token operator">=</span> <span class="token string">'lindaidai'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> sex <span class="token operator">=</span> <span class="token string">'boy'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> advantage <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'handsome'</span><span class="token punctuation">]</span>
+
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  sex <span class="token operator">=</span> <span class="token string">'girl'</span><span class="token punctuation">;</span>
+  advantage<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token string">'cute'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">500</span><span class="token punctuation">)</span>
+
+exports<span class="token punctuation">.</span>name <span class="token operator">=</span> name<span class="token punctuation">;</span>
+exports<span class="token punctuation">.</span>sex <span class="token operator">=</span> sex<span class="token punctuation">;</span>
+exports<span class="token punctuation">.</span>advantage <span class="token operator">=</span> advantage<span class="token punctuation">;</span>
+</code></pre></div><p><em>test.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> m1 <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./m1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'read count after 1000ms in commonjs is'</span><span class="token punctuation">,</span> m1<span class="token punctuation">.</span>sex<span class="token punctuation">)</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'read count after 1000ms in commonjs is'</span><span class="token punctuation">,</span> m1<span class="token punctuation">.</span>advantage<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span>
+</code></pre></div><p>执行<code>node test.js</code>之后的执行结果是：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">LinDaiDaideMBP</span><span class="token operator">:</span>commonJS lindaidai$ node test<span class="token punctuation">.</span>js
+read count after 1000ms <span class="token keyword">in</span> commonjs is boy
+read count after 1000ms <span class="token keyword">in</span> commonjs is <span class="token punctuation">[</span> <span class="token string">'handsome'</span><span class="token punctuation">,</span> <span class="token string">'cute'</span> <span class="token punctuation">]</span>
+</code></pre></div><p>也就是说，在开始<code>var m1 = require('./m1')</code>的时候，<code>m1</code>已经被引入进来了，但是过了<code>500ms</code>后我改变了原本<code>m1</code>里的一些属性，<code>sex</code>这种基本数据类型是不会被改变的，但是<code>advantage</code>这种引用类型共用的还是同一个内存地址。（这种复制的关系让我想到了之前学原型链继承的时候，它那里也是，会影响<code>Father.prototype</code>上的引用类型）</p> <p>如果这里你是这样写的话：</p> <p><em>m1.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> name <span class="token operator">=</span> <span class="token string">'lindaidai'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> sex <span class="token operator">=</span> <span class="token string">'boy'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> advantage <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'handsome'</span><span class="token punctuation">]</span>
+
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  sex <span class="token operator">=</span> <span class="token string">'girl'</span><span class="token punctuation">;</span>
+  <span class="token comment">// advantage.push('cute');</span>
+  advantage <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'cute'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">500</span><span class="token punctuation">)</span>
+
+exports<span class="token punctuation">.</span>name <span class="token operator">=</span> name<span class="token punctuation">;</span>
+exports<span class="token punctuation">.</span>sex <span class="token operator">=</span> sex<span class="token punctuation">;</span>
+exports<span class="token punctuation">.</span>advantage <span class="token operator">=</span> advantage<span class="token punctuation">;</span>
+</code></pre></div><p>现在的执行结果肯定就是：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">LinDaiDaideMBP</span><span class="token operator">:</span>commonJS lindaidai$ node test<span class="token punctuation">.</span>js
+read count after 1000ms <span class="token keyword">in</span> commonjs is boy
+read count after 1000ms <span class="token keyword">in</span> commonjs is <span class="token punctuation">[</span> <span class="token string">'handsome'</span> <span class="token punctuation">]</span>
+</code></pre></div><p>因为相当于对<code>m1</code>的<code>advantage</code>重新赋值了。</p> <p>当然，或者如果你的<code>m1.js</code>中返回的值是会有一个函数的话，在<code>test.js</code>也能拿到变化之后的值了，比如这里的一个例子：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> counter <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">;</span>
+<span class="token keyword">function</span> <span class="token function">incCounter</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  counter<span class="token operator">++</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token keyword">get</span> <span class="token function">counter</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> counter
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">incCounter</span><span class="token operator">:</span> incCounter<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>因为在这里实际就形成了一个闭包，而<code>counter</code>属性就是一个取值器函数。</p> <p>好滴，这基本就是<code>CommonJS</code>的特点了，总结就不写了，在开头已经说过了，不过对于最后一点：<strong>CommonJS输出是值的拷贝</strong>，这个对于引用类型的变量来说还是会有一点歧义的，比如上面的<code>advantage</code>那个例子，大家知道就行了。</p> <h3 id="amd规范"><a href="#amd规范" class="header-anchor">#</a> AMD规范</h3> <h4 id="_1-产生原因"><a href="#_1-产生原因" class="header-anchor">#</a> 1. 产生原因</h4> <p>上面介绍的<code>CommonJS</code>规范看起来挺好用的啊，为什么又还要有其它的规范呢？比如<code>AMD、CMD</code>，那它们和<code>CommonJS</code>又有什么渊源呢？</p> <p>我们知道，模块化这种概念不仅仅适用于服务器端，客户端同样也适用。</p> <p>而<code>CommonJS</code>规范就不太适合用在客户端(浏览器)环境了，比如上面的那个例子，也就是:</p> <p><strong>test.js</strong>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> m1 <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./m1.js'</span><span class="token punctuation">)</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>m1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 与m1模块无关的一些代码</span>
+<span class="token keyword">function</span> <span class="token function">other</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token function">other</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>这段代码放在浏览器环境中，它会如何运行呢？</p> <ul><li>首先加载<code>m1.js</code></li> <li>等<code>m1.js</code>加载完毕之后才执行后面的内容</li></ul> <p>这点其实在<strong>CommonJS规范的特点</strong>中已经提到过了。</p> <p>后面的内容要等待<code>m1</code>加载完才会执行，如果<code>m1</code>加载的很慢呢？那不就照成了卡顿，这对于客户端来说肯定是不友好的。像这种要等待上一个加载完才执行后面内容的情况我们可以叫做<code>"同步加载"</code>，很显然，这里我们更希望的是<code>other()</code>的执行不需要等<code>m1</code>加载完才执行，也就是我们希望<code>m1</code>它是<code>"异步加载"</code>的，这也就是<code>AMD</code>。</p> <p>在介绍<code>AMD</code>之前让我们看看<code>CommonJS</code>规范对服务器端和浏览器的不同，它有助于让你理解为什么说<code>CommonJS</code>不太适合于客户端：</p> <ul><li>服务器端所有的模块都存放在本地硬盘中，可以同步加载完成，等待时间就是硬盘的读取时间。</li> <li>浏览器，所有的模块都放在服务器端，等待时间取决于网速的快慢，可能要等很长时间，浏览器处于”假死”状态。</li></ul> <h4 id="_2-定义并暴露模块"><a href="#_2-定义并暴露模块" class="header-anchor">#</a> 2. 定义并暴露模块</h4> <p>有了上面这层背景，我们就知道了，<code>AMD</code>它的产生很大一部分原因就是为了能让我们采用<strong>异步的方式加载模块</strong>。</p> <p>所以现在来让我们看看它的介绍吧。</p> <p><code>AMD</code>是<code>Asynchronous Module Definition</code>的缩写，也就是<code>"异步模块定义"</code>。（前面的<code>A</code>就很好记了，它让我不自觉的就想到<code>async</code>这个定义异步函数的修饰符）</p> <blockquote><p>它采用异步方式加载模块，模块的加载不影响它后面语句的运行。所有依赖这个模块的语句，都定义在一个回调函数中，等到加载完成之后，这个回调函数才会运行。</p></blockquote> <p>此时就需要另一个重要的方法来定义我们的模块：<code>define()</code>。</p> <p>它其实是会有三个参数：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">define</span><span class="token punctuation">(</span>id<span class="token operator">?</span><span class="token punctuation">,</span> dependencies<span class="token operator">?</span><span class="token punctuation">,</span> factory<span class="token punctuation">)</span>
+</code></pre></div><ul><li>id: 一个字符串，表示模块的名称，但是是可选的</li> <li>dependencies: 一个数组，是我们当前定义的模块要依赖于哪些模块，数组中的每一项表示的是要依赖模块的相对路径，且这个参数也是可选的</li> <li>factory: 工厂方法，一个函数，这里面就是具体的模块内容了</li></ul> <p><strong>坑一</strong>：</p> <p>那其实就有一个问题了，看了这么多的教材，但我想要去写案例的时候，我以为这个<code>define</code>能直接像<code>require</code>一样去用，结果发现控制台一直再报错：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">ReferenceError</span><span class="token operator">:</span> define is not defined
+</code></pre></div><p>看来它还并不是<code>Node.js</code>自带的一个方法啊，搜寻了一下，原来它只是名义上规定的这样一个方法，但是你真的想要去用还是得使用对应的<code>JavaScript</code>库，也就是我们常常听到的：</p> <blockquote><p>目前，主要有两个Javascript库实现了AMD规范：require.js和curl.js。</p></blockquote> <p>我酸了...</p> <p>让我们去<a href="https://requirejs.org/docs/download.html" target="_blank" rel="noopener noreferrer">requirejs<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>的官网看看如何使用它，由于我的案例都是在<code>Node</code>执行环境中，于是我采用<code>npm install</code>的方式来下载了：</p> <p>我新建了一个叫<code>AMD</code>的文件夹，作为<code>AMD</code>的案例。</p> <p>在项目的根目录下执行：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>npm i requirejs
+</code></pre></div><p>（找了一圈<a href="https://www.npmjs.com/" target="_blank" rel="noopener noreferrer">NPM<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>也没看到能使用<code>CDN</code>远程引入的）</p> <p>执行完毕之后，项目的根目录下出现了依赖包，打开看了看，确实是下载下来了：</p> <p><img src="https://s.poetries.top/gitee/2020/09/137.png" alt=""></p> <p>现在可以开心的在项目里用<code>define()</code>了 😊。</p> <p>来看个小例子，我重新定义了一个<code>math.js</code>：</p> <p><strong>math.js</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">define</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">var</span> <span class="token function-variable function">add</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">a<span class="token punctuation">,</span> b</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> a <span class="token operator">+</span> b<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">add</span><span class="token operator">:</span> add
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>这里模块很简单，导出了一个加法函数。</p> <p>(至于这里为什么<code>add: add</code>要这样写，而不是只简写为<code>add</code>呢？别忘了这种对象同名属性简写是<code>ES6</code>才出来的哦)</p> <h4 id="_3-引用模块"><a href="#_3-引用模块" class="header-anchor">#</a> 3. 引用模块</h4> <p><strong>坑二</strong>：</p> <p>OK👌，既然模块已经能导出了，那就让我们来看看如何引用吧，依照着教材，我在<code>test.js</code>中引入了<code>math</code>模块并想要调用<code>add()</code>方法：</p> <p><strong>test.js</strong>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">require</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'math'</span><span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">math</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>math<span class="token punctuation">)</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>math<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>之后熟练的执行<code>node test.js</code>。</p> <p>我酸了...</p> <p>又报错了，擦...</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code> <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">ERR_INVALID_ARG_TYPE</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> <span class="token string">'string'</span><span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+ TypeError <span class="token punctuation">[</span><span class="token constant">ERR_INVALID_ARG_TYPE</span><span class="token punctuation">]</span><span class="token operator">:</span> The <span class="token string">"id"</span> argument must be <span class="token keyword">of</span> type string<span class="token punctuation">.</span> Received an instance <span class="token keyword">of</span> Array
+</code></pre></div><p>确认了一下，和教材们中的写法一样啊，第一个参数为要加载的模块数组，第二个参数为加载完之后的回调。</p> <p>难受😣...原来上面👆<code>require([modules], callback)</code>这样的写法它和<code>define</code>一样都只是个噱头，如果你真得用的话，还是得用<code>JavaScript</code>库中的方法。</p> <p>由于上面已经安装过<code>requirejs</code>了，这里我直接使用就可以了，现在我修改了一下<code>test.js</code>文件：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> requirejs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"requirejs"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//引入requirejs模块</span>
+
+<span class="token function">requirejs</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'math'</span><span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">math</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>math<span class="token punctuation">)</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>math<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>好了，现在执行<code>node test.js</code>就可以正常使用了...</p> <p>（很难受...感觉明明已经是很常见耳熟能详的一些知识了，真的要去用的时候发现和很多教材中说的不是那么一回事...也希望大家在看完了一些教材之后最好能亲自去实践一下，自己也是写博客的，所以也知道有些时候一些知识点可能也是从别人的文章那里看来但是没有经过实践的，所以最好也还是自己动动手）</p> <h4 id="_4-依赖其它模块的define"><a href="#_4-依赖其它模块的define" class="header-anchor">#</a> 4. 依赖其它模块的define</h4> <p>可以看到<code>define</code>它还有另外两个参数的，第一个是模块的名称，没啥好说的，让我们来看看第二个它所依赖的模块。</p> <p>还记得在<code>CommonJS</code>规范那里我们写了一个<code>m1.js</code>吗？现在就让我们把这个模块拿来用下，把它作为<code>math.js</code>中的一个依赖。</p> <p><strong>m1.js</strong>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'我是m1, 我被加载了...'</span><span class="token punctuation">)</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'lindaidai'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">sex</span><span class="token operator">:</span> <span class="token string">'boy'</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>然后修改一下<code>math.js</code>：</p> <p><strong>math.js</strong>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">define</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'m1'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">m1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'我是math, 我被加载了...'</span><span class="token punctuation">)</span>
+  <span class="token keyword">var</span> <span class="token function-variable function">add</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">a<span class="token punctuation">,</span> b</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> a <span class="token operator">+</span> b<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">var</span> <span class="token function-variable function">print</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>m1<span class="token punctuation">.</span>name<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">add</span><span class="token operator">:</span> add<span class="token punctuation">,</span>
+    <span class="token literal-property property">print</span><span class="token operator">:</span> print
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>另外，为了方便大家看，我们再来修改一下刚刚的<code>test.js</code>：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> requirejs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"requirejs"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//引入requirejs模块</span>
+
+<span class="token function">requirejs</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'math'</span><span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">math</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'我是test, 我被加载了...'</span><span class="token punctuation">)</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>math<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  math<span class="token punctuation">.</span><span class="token function">print</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">function</span> <span class="token function">other</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'我是test模块内的, 但是我不依赖math'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token function">other</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>所以我们可以看到，依赖关系依次为：</p> <div class="language- extra-class"><pre class="language-text"><code>test -&gt; math -&gt; m1
+</code></pre></div><p>如果按照<code>AMD</code>的规范，模块的加载需要依靠前一个模块加载完才会执行回调函数内的内容，那么我们可以想象当我在终端输入<code>node test.js</code>的时候，要出现的结果应该是：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">LinDaiDaideMBP</span><span class="token operator">:</span>commonJS lindaidai$ node test<span class="token punctuation">.</span>js
+我是test模块内的<span class="token punctuation">,</span> 但是我不依赖math
+我是m1<span class="token punctuation">,</span> 我被加载了<span class="token operator">...</span>
+我是math<span class="token punctuation">,</span> 我被加载了<span class="token operator">...</span>
+我是test<span class="token punctuation">,</span> 我被加载了<span class="token operator">...</span>
+<span class="token number">3</span>
+lindaidai
+</code></pre></div><p>(这个，相信大家应该都看清了彼此的依赖关系吧😢)</p> <p>但是现实总是那么的残酷，当我按下回车的时候，又报错了...</p> <p>再酸...</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code> <span class="token literal-property property">ReferenceError</span><span class="token operator">:</span> module is not defined
+</code></pre></div><p>看了一下这个报错的内容，是在<code>m1.js</code>中...呆了几秒钟反应了过来...</p> <p>既然是使用<code>AMD</code>的规范，那我们肯定是要一统到底了，<code>m1.js</code>中用的还是<code>CommonJS</code>的规范，当然不行了。</p> <p>OK，来修改一下<code>m1.js</code>：</p> <p><strong>m1.js</strong>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">define</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'我是m1, 我被加载了...'</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'lindaidai'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">sex</span><span class="token operator">:</span> <span class="token string">'boy'</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>OK👌，这次没啥问题了，按照我们预期的去执行了...😊。</p> <p>（当然据我的了解，<code>requirejs</code>还可用于在<code>script</code>中引用然后定义网页程序的主模块等使用，可以看一下：</p> <p>http://www.ruanyifeng.com/blog/2012/11/require_js.html）</p> <p><code>AMD</code>的知识点大概就介绍到了这里，相信大家也知道它的基本使用了吧，至于其中的一些区别什么的我在最后也会列一份清单，不过现在让我们先来看看<code>CMD</code>吧。</p> <h3 id="cmd规范"><a href="#cmd规范" class="header-anchor">#</a> CMD规范</h3> <blockquote><p>CMD (Common Module Definition), 是seajs推崇的规范，CMD则是依赖就近，用的时候再require。</p></blockquote> <p>来看段代码，大概感受一下它是怎样用的：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">define</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">require<span class="token punctuation">,</span> exports<span class="token punctuation">,</span> module</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">var</span> math <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./math'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  math<span class="token punctuation">.</span><span class="token function">print</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>看着和<code>AMD</code>有点像的，没错，其实<code>define()</code>的参数甚至都是一样的：</p> <div class="language- extra-class"><pre class="language-text"><code>define(id?, dependencies?, factory)
+</code></pre></div><p>但是区别在于哪里呢？让我们来看看最后一个<code>factory</code>它参数。</p> <p><code>factory</code>函数中是会接收三个参数：</p> <ul><li><p><code>require</code></p></li> <li><p><code>exports</code></p></li> <li><p><code>module</code></p> <p>这三个很好理解，对应着之前的<code>CommonJS</code>那不就是：</p></li> <li><p><code>require</code>：引入某个模块</p></li> <li><p><code>exports</code>：当前模块的<code>exports</code>，也就是<code>module.exports</code>的简写</p></li> <li><p><code>module</code>：当前这个模块</p></li></ul> <p>现在再来说说<code>AMD</code>和<code>CMD</code>的区别。</p> <p>虽然它们的<code>define()</code>方法的参数都相同，但是:</p> <ul><li><code>AMD</code>中会把当前模块的依赖模块放到<code>dependencies</code>中加载，并在<code>factory</code>回调中拿到加载成功的依赖</li> <li><code>CMD</code>一般不在<code>dependencies</code>中加载，而是写在<code>factory</code>中，使用<code>require</code>加载某个依赖模块</li></ul> <p>因此才有了我们常常看到的一句话：</p> <blockquote><p>AMD和CMD最大的区别是对依赖模块的执行时机处理不同，注意不是加载的时机或者方式不同，二者皆为异步加载模块。</p></blockquote> <p>（好吧，仔细读了2遍感觉还是没太明白，没事，后面还会详细说到）</p> <p>比较有名一点的，<code>seajs</code>，来看看它推荐的CMD 模块书写格式吧：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 所有模块都通过 define 来定义</span>
+<span class="token function">define</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">require<span class="token punctuation">,</span> exports<span class="token punctuation">,</span> module</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+  <span class="token comment">// 通过 require 引入依赖</span>
+  <span class="token keyword">var</span> $ <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'jquery'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">var</span> Spinning <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./spinning'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// 通过 exports 对外提供接口</span>
+  exports<span class="token punctuation">.</span>doSomething <span class="token operator">=</span> <span class="token operator">...</span>
+
+  <span class="token comment">// 或者通过 module.exports 提供整个接口</span>
+  module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token operator">...</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>这是官网的一个小案例，我也去<a href="https://seajs.github.io/seajs/docs/#docs" target="_blank" rel="noopener noreferrer">seajs的文档<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>中看了一下没啥太大问题，这里就不举例了。</p> <h3 id="amd和cmd的区别"><a href="#amd和cmd的区别" class="header-anchor">#</a> AMD和CMD的区别</h3> <blockquote><p>AMD和CMD最大的区别是对依赖模块的执行时机处理不同，注意不是加载的时机或者方式不同，二者皆为异步加载模块。</p></blockquote> <p>还是上面那句话，让我们来看个小例子理解一下。</p> <p>同样是<code>math</code>模块中需要加载<code>m1</code>模块。</p> <p>在<code>AMD</code>中我们会这样写：</p> <p><strong>math.js</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">define</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'m1'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">m1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'我是math, 我被加载了...'</span><span class="token punctuation">)</span>
+  <span class="token keyword">var</span> <span class="token function-variable function">add</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">a<span class="token punctuation">,</span> b</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> a <span class="token operator">+</span> b<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">var</span> <span class="token function-variable function">print</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>m1<span class="token punctuation">.</span>name<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">add</span><span class="token operator">:</span> add<span class="token punctuation">,</span>
+    <span class="token literal-property property">print</span><span class="token operator">:</span> print
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>但是对于<code>CMD</code>，我们会这样写：</p> <p><strong>math.js</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">define</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">require<span class="token punctuation">,</span> exports<span class="token punctuation">,</span> module</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'我是math, 我被加载了...'</span><span class="token punctuation">)</span>
+  <span class="token keyword">var</span> m1 <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'m1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">var</span> <span class="token function-variable function">add</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">a<span class="token punctuation">,</span> b</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> a <span class="token operator">+</span> b<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">var</span> <span class="token function-variable function">print</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>m1<span class="token punctuation">.</span>name<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">add</span><span class="token operator">:</span> add<span class="token punctuation">,</span>
+    <span class="token literal-property property">print</span><span class="token operator">:</span> print
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>假如此时<code>m1.js</code>中有一个语句是在<code>m1</code>模块被加载的时候打印出<code>"我是m1, 我被加载了..."</code>。</p> <p>执行结果区别：</p> <ul><li><code>AMD</code>，会先加载<code>m1</code>，<code>"我是m1"</code>会先执行</li> <li><code>CMD</code>，我是<code>"我是math"</code>会先执行，因为本题中<code>console.log('我是math, 我被加载了...')</code>是放在<code>require('m1')</code>前面的。</li></ul> <p>现在可以很明显的看到区别了。</p> <p><code>AMD</code>依赖前置，<code>js</code>很方便的就知道要加载的是哪个模块了，因为已经在<code>define</code>的<code>dependencies</code>参数中就定义好了，会立即加载它。</p> <p><code>CMD</code>是就近依赖，需要使用把模块变为字符串解析一遍才知道依赖了那些模块。</p> <p>OK👌，来看个总结：</p> <p>两者之间，最明显的区别就是在模块定义时对依赖的处理不同</p> <p><strong>1、AMD推崇依赖前置，在定义模块的时候就要声明其依赖的模块</strong></p> <p><strong>2、CMD推崇就近依赖，只有在用到某个模块的时候再去require</strong></p> <h3 id="es6-modules规范"><a href="#es6-modules规范" class="header-anchor">#</a> ES6 Modules规范</h3> <p><code>ES6</code>标准出来后，<code>ES6 Modules</code>规范算是成为了前端的主流吧，以<code>import</code>引入模块，<code>export</code>导出接口被越来越多的人使用。</p> <p>下面，我也会从这么几个方面来介绍<code>ES6 Modules</code>规范：</p> <ul><li><code>export</code>导出模块</li> <li><code>import</code>导入模块</li> <li><code>export...from...</code></li> <li><code>ES6 Modules规范的特点</code></li> <li><code>Babel下的ES6模块转换</code></li></ul> <p><code>export</code>命令和<code>import</code>命令可以出现在模块的任何位置，只要处于模块顶层就可以。 如果处于块级作用域内，就会报错，这是因为处于条件代码块之中，就没法做静态优化了，违背了ES6模块的设计初衷。</p> <h4 id="_1-export导出模块"><a href="#_1-export导出模块" class="header-anchor">#</a> 1. export导出模块</h4> <p>export有两种模块导出方式：</p> <ul><li>命名式导出(名称导出)</li> <li>默认导出(自定义导出)</li></ul> <p><strong>命名式导出</strong></p> <p>来看几种正确和错误的写法吧：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 以下两种为错误</span>
+<span class="token comment">// 1.</span>
+<span class="token keyword">export</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token comment">// 2.</span>
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span> a<span class="token punctuation">;</span>
+
+<span class="token comment">// 以下为正确</span>
+<span class="token comment">// 3.</span>
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span> <span class="token punctuation">{</span> a <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 4. 接口名与模块内部变量之间，建立了一一对应的关系</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span> b <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 5. 接口名与模块内部变量之间，建立了一一对应的关系</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> b <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 或者用 as 来命名</span>
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span> <span class="token punctuation">{</span> a <span class="token keyword">as</span> outA <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> b <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span> <span class="token punctuation">{</span> a <span class="token keyword">as</span> outA<span class="token punctuation">,</span> b <span class="token keyword">as</span> outB <span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>容易混淆的可能是<code>2</code>和<code>4</code>两种写法了，看着很像，但是<code>2</code>却不行。<code>2</code>直接导出一个值为<code>1</code>的变量是和情况一一样，没有什么意义，因为你在后面要用的时候并不能完成解构。</p> <p>但是<code>4</code>中，接口名与模块内部变量之间，建立了一一对应的关系，所以可以。</p> <p><strong>默认导出</strong></p> <p>默认导出会在<code>export</code>后面加上一个<code>default</code>：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 1.</span>
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> a<span class="token punctuation">;</span>
+
+<span class="token comment">// 2.</span>
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span> a <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 3.</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token comment">// 可以导出一个函数</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">class</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token comment">// 也可以出一个类</span>
+</code></pre></div><p>其实，默认导出可以理解为另一种形式上的命名导出，也就是说<code>a</code>这个属性名相当于是被我重写了成了<code>default</code>：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span> defalut a<span class="token punctuation">;</span>
+<span class="token comment">// 等价于</span>
+<span class="token keyword">export</span> <span class="token punctuation">{</span> a <span class="token keyword">as</span> <span class="token keyword">default</span> <span class="token punctuation">}</span>
+</code></pre></div><p>所以，我们才可以用<code>const a = 1; export default a;</code>这种方式导出一个值。</p> <h4 id="_2-import导入模块"><a href="#_2-import导入模块" class="header-anchor">#</a> 2. import导入模块</h4> <p>import模块导入与export模块导出功能相对应，也存在两种模块导入方式：命名式导入（名称导入）和默认导入（定义式导入）。</p> <p>来看看写法：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 某个模块的导出 moudule.js</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 模块导入</span>
+<span class="token comment">// 1. 这里的a得和被加载的模块输出的接口名对应</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> a <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./module'</span>
+
+<span class="token comment">// 2. 使用 as 换名</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> a <span class="token keyword">as</span> myA <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./module'</span>
+
+<span class="token comment">// 3. 若是只想要运行被加载的模块可以这样写，但是即使加载2次也只是运行一次</span>
+<span class="token keyword">import</span> <span class="token string">'./module'</span>
+
+<span class="token comment">// 4. 整体加载</span>
+<span class="token keyword">import</span> <span class="token operator">*</span> <span class="token keyword">as</span> module <span class="token keyword">from</span> <span class="token string">'./module'</span>
+
+<span class="token comment">// 5. default接口和具名接口</span>
+<span class="token keyword">import</span> module<span class="token punctuation">,</span> <span class="token punctuation">{</span> a <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./module'</span>
+</code></pre></div><p>第四种写法会获取到<code>module</code>中所有导出的东西，并且赋值到<code>module</code>这个变量下，这样我们就可以用<code>module.a</code>这种方式来引用<code>a</code>了。</p> <h4 id="_3-export-from"><a href="#_3-export-from" class="header-anchor">#</a> 3. export ... from...</h4> <p>其实还有一种写法，可以将<code>export</code>和<code>from</code>结合起来用。</p> <p>例如，我有三个模块<code>a、b、c</code>。</p> <p><code>c</code>模块现在想要引入<code>a</code>模块，但是它不不直接引用<code>a</code>，而是通过<code>b</code>模块来引用，那么你可能会想到<code>b</code>应该这样写：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> <span class="token punctuation">{</span> someVariable <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./a'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token punctuation">{</span> someVariable <span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>引入<code>someVariable</code>然后再导出。</p> <p>这还只是一个变量，我们得导入再导出，若是有很多个变量需要这样，那无疑会增加很多代码量。</p> <p>所以这时候可以用下面这种方式来实现：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token punctuation">{</span> someVariable <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./a'</span><span class="token punctuation">;</span>
+</code></pre></div><p>不过这种方式有一点需要注意：</p> <ul><li>这样的方式不会将数据添加到该聚合模块的作用域, 也就是说, 你无法在该模块(也就是<code>b</code>)中使用<code>someVariable</code>。</li></ul> <h4 id="_4-es6-modules规范的特点"><a href="#_4-es6-modules规范的特点" class="header-anchor">#</a> 4. ES6 Modules规范的特点</h4> <p>总结一下它的特点哈：</p> <ul><li>输出使用<code>export</code></li> <li>输入使用<code>import</code></li> <li>可以使用<code>export...from...</code>这种写法来达到一个<code>"中转"</code>的效果</li> <li>输入的模块变量是不可重新赋值的，它只是个可读引用，不过却可以改写属性</li> <li><code>export</code>命令和<code>import</code>命令可以出现在模块的任何位置，只要处于模块顶层就可以。 如果处于块级作用域内，就会报错，这是因为处于条件代码块之中，就没法做静态优化了，违背了ES6模块的设计初衷。</li> <li><code>import</code>命令具有提升效果，会提升到整个模块的头部，首先执行。</li></ul> <h4 id="_5-bable下的es6模块转换"><a href="#_5-bable下的es6模块转换" class="header-anchor">#</a> 5. Bable下的ES6模块转换</h4> <p>还有一点就是，如果你有使用过一些ES6的Babel的话，你会发现当使用<code>export/import</code>的时候，Babel也会把它转换为<code>exports/require</code>的形式。</p> <p>例如我的输出：</p> <p><em>m1.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token keyword">const</span> count <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+</code></pre></div><p>我的输入：</p> <p><em>index.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> <span class="token punctuation">{</span>count<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./m1.js'</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>count<span class="token punctuation">)</span>
+</code></pre></div><p>当使用Babel编译之后，各自会被转换为：</p> <p><em>m1.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token string">"use strict"</span><span class="token punctuation">;</span>
+
+Object<span class="token punctuation">.</span><span class="token function">defineProperty</span><span class="token punctuation">(</span>exports<span class="token punctuation">,</span> <span class="token string">"__esModule"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token boolean">true</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+exports<span class="token punctuation">.</span>count <span class="token operator">=</span> <span class="token keyword">void</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> count <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+exports<span class="token punctuation">.</span>count <span class="token operator">=</span> count<span class="token punctuation">;</span>
+</code></pre></div><p><em>index.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token string">"use strict"</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> _m <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"./m1.js"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>_m<span class="token punctuation">.</span>count<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>正是因为这种转换关系，才能让我们把<code>exports</code>和<code>import</code>结合起来用：</p> <p>也就是说你可以这样用：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 输出模块 m1.js</span>
+exports<span class="token punctuation">.</span>count <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+
+<span class="token comment">// index.js中引入</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span>count<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./m1.js'</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>count<span class="token punctuation">)</span>
+</code></pre></div><h3 id="commonjs与es6-modules规范的区别"><a href="#commonjs与es6-modules规范的区别" class="header-anchor">#</a> CommonJS与ES6 Modules规范的区别</h3> <p>😂，我相信很多人就比较关心它两区别的问题，因为基本上面试问的就是这个。好吧，这里来做一个算是比较详细的总结吧。</p> <ul><li><p>CommonJS模块是运行时加载，ES6 Modules是编译时输出接口</p></li> <li><p>CommonJS输出是值的拷贝；ES6 Modules输出的是值的引用，被输出模块的内部的改变会影响引用的改变</p></li> <li><p>CommonJs导入的模块路径可以是一个表达式，因为它使用的是<code>require()</code>方法；而ES6 Modules只能是字符串</p></li> <li><p>CommonJS <code>this</code>指向当前模块，ES6 Modules <code>this</code>指向<code>undefined</code></p></li> <li><p>且ES6 Modules中没有这些顶层变量：<code>arguments</code>、<code>require</code>、<code>module</code>、<code>exports</code>、<code>__filename</code>、<code>__dirname</code></p></li></ul> <p>关于第一个差异，是因为CommonJS 加载的是一个对象（即<code>module.exports</code>属性），该对象只有在脚本运行完才会生成。而 ES6 模块不是对象，它的对外接口只是一种静态定义，在代码静态解析阶段就会生成。</p> <p>（应该还一些区别我没想到的，欢迎补充👏😊）</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery的deferred对象详解 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>jQuery的deferred对象详解</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>jQuery的deferred对象详解</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、什么是deferred对象"><a href="#一、什么是deferred对象" class="header-anchor">#</a> 一、什么是deferred对象？</h2> <ul><li><p>开发网站的过程中，我们经常遇到某些耗时很长的javascript操作。其中，既有异步的操作（比如ajax读取服务器数据），也有同步的操作（比如遍历一个大型数组），它们都不是立即能得到结果的。</p></li> <li><p>通常的做法是，为它们指定回调函数（callback）。即事先规定，一旦它们运行结束，应该调用哪些函数。</p></li> <li><p>但是，在回调函数方面，<code>jQuery</code>的功能非常弱。为了改变这一点，jQuery开发团队就设计了<code>deferred</code>对象。</p></li> <li><p>简单说，<code>deferred</code>对象就是<code>jQuery</code>的回调函数解决方案。在英语中，<code>defer</code>的意思是"延迟"，所以<code>deferred</code>对象的含义就是"延迟"到未来某个点再执行。</p></li> <li><p>它解决了如何处理耗时操作的问题，对那些操作提供了更好的控制，以及统一的编程接口。它的主要功能，可以归结为四点</p></li></ul> <h2 id="二、ajax操作的链式写法"><a href="#二、ajax操作的链式写法" class="header-anchor">#</a> 二、ajax操作的链式写法</h2> <blockquote><p>首先，回顾一下jQuery的ajax操作的传统写法：</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code>$<span class="token punctuation">.</span><span class="token function">ajax</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+
+　　　　url<span class="token operator">:</span> <span class="token string">"test.html"</span><span class="token punctuation">,</span>
+
+　　　　<span class="token function-variable function">success</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+　　　　　　<span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"哈哈，成功了！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+　　　　<span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+　　　　<span class="token function-variable function">error</span><span class="token operator">:</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+　　　　　　<span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"出错啦！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+　　　　<span class="token punctuation">}</span>
+
+　<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><ul><li><p>在上面的代码中，<code>$.ajax()</code>接受一个对象参数，这个对象包含两个方法：<code>success</code>方法指定操作成功后的回调函数，<code>error</code>方法指定操作失败后的回调函数。</p></li> <li><p><code>$.ajax()</code>操作完成后，如果使用的是低于<code>1.5.0</code>版本的<code>jQuery</code>，返回的是<code>XHR</code>对象，你没法进行链式操作；如果高于<code>1.5.0</code>版本，返回的是<code>deferre</code>d对象，可以进行链式操作。</p></li> <li><p>现在，新的写法是这样的：</p></li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>$<span class="token punctuation">.</span><span class="token function">ajax</span><span class="token punctuation">(</span><span class="token string">"test.html"</span><span class="token punctuation">)</span>
+
+　　<span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"哈哈，成功了！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+　　<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"出错啦！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><blockquote><p>可以看到，done()相当于success方法，fail()相当于error方法。采用链式写法以后，代码的可读性大大提高</p></blockquote> <h2 id="三、指定同一操作的多个回调函数"><a href="#三、指定同一操作的多个回调函数" class="header-anchor">#</a> 三、指定同一操作的多个回调函数</h2> <ul><li><p><code>deferred</code>对象的一大好处，就是它允许你自由添加多个回调函数。</p></li> <li><p>还是以上面的代码为例，如果ajax操作成功后，除了原来的回调函数，我还想再运行一个回调函数，怎么办？</p></li> <li><p>很简单，直接把它加在后面就行了。</p></li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>　　$<span class="token punctuation">.</span><span class="token function">ajax</span><span class="token punctuation">(</span><span class="token string">"test.html"</span><span class="token punctuation">)</span>
+
+　　<span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"哈哈，成功了！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token punctuation">}</span> <span class="token punctuation">)</span>
+
+　　<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"出错啦！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span> <span class="token punctuation">)</span>
+
+　　<span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"第二个回调函数！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token punctuation">}</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><ul><li>回调函数可以添加任意多个，它们按照添加顺序执行</li></ul> <h2 id="四、为多个操作指定回调函数"><a href="#四、为多个操作指定回调函数" class="header-anchor">#</a> 四、为多个操作指定回调函数</h2> <ul><li><p><code>deferred</code>对象的另一大好处，就是它允许你为多个事件指定一个回调函数，这是传统写法做不到的。</p></li> <li><p>请看下面的代码，它用到了一个新的方法<code>$.when()</code>：</p></li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>$<span class="token punctuation">.</span><span class="token function">when</span><span class="token punctuation">(</span>$<span class="token punctuation">.</span><span class="token function">ajax</span><span class="token punctuation">(</span><span class="token string">"test1.html"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> $<span class="token punctuation">.</span><span class="token function">ajax</span><span class="token punctuation">(</span><span class="token string">"test2.html"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+　　<span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"哈哈，成功了！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+　　<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"出错啦！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><blockquote><p>这段代码的意思是，先执行两个操作$.ajax("test1.html")和$.ajax("test2.html")，如果都成功了，就运行done()指定的回调函数；如果有一个失败或都失败了，就执行fail()指定的回调函数</p></blockquote> <h2 id="五、普通操作的回调函数接口-上"><a href="#五、普通操作的回调函数接口-上" class="header-anchor">#</a> 五、普通操作的回调函数接口（上）</h2> <ul><li><p><code>deferred</code>对象的最大优点，就是它把这一套回调函数接口，从ajax操作扩展到了所有操作。也就是说，任何一个操作----不管是ajax操作还是本地操作，也不管是异步操作还是同步操作----都可以使用<code>deferred</code>对象的各种方法，指定回调函数。</p></li> <li><p>我们来看一个具体的例子。假定有一个很耗时的操作<code>wait</code>：</p></li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> <span class="token function-variable function">wait</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+
+　　　　<span class="token keyword">var</span> <span class="token function-variable function">tasks</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+
+　　　　　　<span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"执行完毕！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+　　　　<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+　　　　<span class="token function">setTimeout</span><span class="token punctuation">(</span>tasks<span class="token punctuation">,</span><span class="token number">5000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+　　<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><ul><li><p>我们为它指定回调函数，应该怎么做呢？</p></li> <li><p>很自然的，你会想到，可以使用$.when()：</p></li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>$<span class="token punctuation">.</span><span class="token function">when</span><span class="token punctuation">(</span><span class="token function">wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+　　<span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"哈哈，成功了！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+　　<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"出错啦！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><ul><li>但是，这样写的话，done()方法会立即执行，起不到回调函数的作用。原因在于$.when()的参数只能是deferred对象，所以必须对wait()进行改写：</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>　<span class="token keyword">var</span> dtd <span class="token operator">=</span> $<span class="token punctuation">.</span><span class="token function">Deferred</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 新建一个deferred对象</span>
+
+　　<span class="token keyword">var</span> <span class="token function-variable function">wait</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">dtd</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+
+　　　　<span class="token keyword">var</span> <span class="token function-variable function">tasks</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+
+　　　　　　<span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"执行完毕！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+　　　　　　dtd<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 改变deferred对象的执行状态</span>
+
+　　　　<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+　　　　<span class="token function">setTimeout</span><span class="token punctuation">(</span>tasks<span class="token punctuation">,</span><span class="token number">5000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+　　　　<span class="token keyword">return</span> dtd<span class="token punctuation">;</span>
+
+　　<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><ul><li>现在，<code>wait()</code>函数返回的是<code>deferred</code>对象，这就可以加上链式操作了。</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>$<span class="token punctuation">.</span><span class="token function">when</span><span class="token punctuation">(</span><span class="token function">wait</span><span class="token punctuation">(</span>dtd<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+　　<span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"哈哈，成功了！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+　　<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"出错啦！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><ul><li><code>wait()</code>函数运行完，就会自动运行<code>done()</code>方法指定的回调函数。</li></ul> <h2 id="六、deferred-resolve-方法和deferred-reject-方法"><a href="#六、deferred-resolve-方法和deferred-reject-方法" class="header-anchor">#</a> 六、deferred.resolve()方法和deferred.reject()方法</h2> <blockquote><p>jQuery规定，deferred对象有三种执行状态----未完成，已完成和已失败。如果执行状态是"已完成"（resolved）,deferred对象立刻调用done()方法指定的回调函数；如果执行状态是"已失败"，调用fail()方法指定的回调函数；如果执行状态是"未完成"，则继续等待，或者调用progress()方法指定的回调函数（jQuery1.7版本添加）</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> dtd <span class="token operator">=</span> $<span class="token punctuation">.</span><span class="token function">Deferred</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 新建一个Deferred对象</span>
+
+　　<span class="token keyword">var</span> <span class="token function-variable function">wait</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">dtd</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+
+　　　　<span class="token keyword">var</span> <span class="token function-variable function">tasks</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+
+　　　　　　<span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"执行完毕！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+　　　　　　dtd<span class="token punctuation">.</span><span class="token function">reject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 改变Deferred对象的执行状态</span>
+
+　　　　<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+　　　　<span class="token function">setTimeout</span><span class="token punctuation">(</span>tasks<span class="token punctuation">,</span><span class="token number">5000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+　　　　<span class="token keyword">return</span> dtd<span class="token punctuation">;</span>
+
+　　<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+　　$<span class="token punctuation">.</span><span class="token function">when</span><span class="token punctuation">(</span><span class="token function">wait</span><span class="token punctuation">(</span>dtd<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+　　<span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"哈哈，成功了！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+　　<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"出错啦！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="七、小结-deferred对象的方法"><a href="#七、小结-deferred对象的方法" class="header-anchor">#</a> 七、小结：deferred对象的方法</h2> <ul><li><p>（1） <code>$.Deferred()</code> 生成一个<code>deferred</code>对象。</p></li> <li><p>（2） <code>deferred.done()</code> 指定操作成功时的回调函数</p></li> <li><p>（3） <code>deferred.fail()</code> 指定操作失败时的回调函数</p></li> <li><p>（4） <code>deferred.promise()</code></p></li></ul> <blockquote><p>没有参数时，返回一个新的<code>deferred</code>对象，该对象的运行状态无法被改变；接受参数时，作用为在参数对象上部署<code>deferred</code>接口。</p></blockquote> <ul><li>（5） <code>deferred.resolve()</code></li></ul> <blockquote><p>手动改变<code>deferred</code>对象的运行状态为"已完成"，从而立即触发done()方法。</p></blockquote> <ul><li>（6）<code>deferred.reject()</code></li></ul> <blockquote><p>这个方法与<code>deferred.resolve()</code>正好相反，调用后将<code>deferred</code>对象的运行状态变为"已失败"，从而立即触发<code>fail()</code>方法。</p></blockquote> <ul><li>（7） <code>$.when()</code> 为多个操作指定回调函数。</li></ul> <blockquote><p>除了这些方法以外，<code>deferred</code>对象还有二个重要方法，上面的教程中没有涉及到。</p></blockquote> <ul><li>（8）<code>deferred.then()</code></li></ul> <p><strong>有时为了省事，可以把done()和fail()合在一起写，这就是then()方法</strong></p> <div class="language- extra-class"><pre class="language-text"><code>　$.when($.ajax( "/main.php" ))
+
+　　.then(successFunc, failureFunc );
+</code></pre></div><blockquote><p>如果<code>then()</code>有两个参数，那么第一个参数是<code>done()</code>方法的回调函数，第二个参数是<code>fail()</code>方法的回调方法。如果<code>then()</code>只有一个参数，那么等同于<code>done()</code></p></blockquote></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

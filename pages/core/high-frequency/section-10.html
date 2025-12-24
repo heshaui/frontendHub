@@ -1,0 +1,201 @@
+<!-- Section: # 10 Node -->
+<div class="section-content" data-section-id="_10-node">
+<h2 id="_10-node"><a href="#_10-node" class="header-anchor">#</a> 10 Node</h2>
+<h3 id="浏览器和nodejs事件循环-event-loop-有什么区别"><a href="#浏览器和nodejs事件循环-event-loop-有什么区别" class="header-anchor">#</a> 浏览器和nodejs事件循环（Event Loop）有什么区别</h3>
+<p><strong>单线程和异步</strong></p>
+<ul><li>JS是单线程的，无论在浏览器还是在nodejs</li> <li>浏览器中JS执行和DOM渲染共用一个线程，是互斥的</li> <li>异步是单线程的解决方案</li></ul>
+<p><strong>1. 浏览器中的事件循环</strong></p>
+<p><strong>异步里面分宏任务和微任务</strong></p>
+<ul><li>宏任务：<code>setTimeout</code>，<code>setInterval</code>，<code>setImmediate</code>，<code>I/O</code>，<code>UI</code>渲染，网络请求</li> <li>微任务：<code>Promise</code>，<code>process.nextTick</code>，<code>MutationObserver</code>、<code>async/await</code></li> <li>宏任务和微任务的区别：微任务的优先级高于宏任务，微任务会在当前宏任务执行完毕后立即执行，而宏任务会在下一个事件循环中执行
+<ul><li>宏任务在<code>页面渲染之后</code>执行</li> <li>微任务在<code>页面渲染之前</code>执行</li> <li>也就是微任务在下一轮<code>DOM</code>渲染之前执行，宏任务在<code>DOM</code>渲染之后执行</li></ul></li></ul>
+<p><img alt="" src="https://s.poetries.top/uploads/2023/01/fe5986f609f48612.png"></p>
+<div class="language-js extra-class"><pre class="language-js"><code>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'start'</span><span class="token punctuation">)</span>
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span> 
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'timeout'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'promise then'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'end'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 输出</span>
+<span class="token comment">// start </span>
+<span class="token comment">// end </span>
+<span class="token comment">// promise then</span>
+<span class="token comment">// timeout</span>
+</code></pre></div>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 分析</span>
+
+<span class="token comment">// 等同步代码执行完后，先从微任务队列中获取（微任务队列优先级高），队列先进先出</span>
+
+<span class="token comment">// 宏任务 MarcoTask 队列</span>
+<span class="token comment">// 如setTimeout 1000ms到1000ms后才会放到队列中</span>
+<span class="token keyword">const</span> MarcoTaskQueue <span class="token operator">=</span> <span class="token punctuation">[</span>
+  <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'timeout'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  fn <span class="token comment">// ajax回调放到宏任务队列中等待</span>
+<span class="token punctuation">]</span>  
+
+<span class="token function">ajax</span><span class="token punctuation">(</span>url<span class="token punctuation">,</span> fn<span class="token punctuation">)</span> <span class="token comment">// ajax 宏任务 如执行需要300ms</span>
+
+
+<span class="token comment">// ********** 宏任务和微任务中间隔着 【DOM 渲染】 ****************</span>
+
+<span class="token comment">// 微任务 MicroTask 队列</span>
+<span class="token keyword">const</span> MicroTaskQueue <span class="token operator">=</span> <span class="token punctuation">[</span>
+  <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'promise then'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+
+<span class="token comment">// 等宏任务和微任务执行完后 Event Loop 继续监听（一旦有任务到了宏任务微任务队列就会立马拿过来执行）...</span>
+</code></pre></div>
+<div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>Event Loop<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+  <span class="token keyword">const</span> p <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">'p'</span><span class="token punctuation">)</span>
+  p<span class="token punctuation">.</span>innerHTML <span class="token operator">=</span> <span class="token string">'new paragraph'</span>
+  document<span class="token punctuation">.</span>body<span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span>
+  <span class="token keyword">const</span> list <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementsByTagName</span><span class="token punctuation">(</span><span class="token string">'p'</span><span class="token punctuation">)</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'length----'</span><span class="token punctuation">,</span> list<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token comment">// 2</span>
+
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'start'</span><span class="token punctuation">)</span>
+  <span class="token comment">// 宏任务在页面渲染之后执行</span>
+  <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> list <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementsByTagName</span><span class="token punctuation">(</span><span class="token string">'p'</span><span class="token punctuation">)</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'length on timeout----'</span><span class="token punctuation">,</span> list<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token comment">// 2</span>
+    <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'阻塞 timeout'</span><span class="token punctuation">)</span> <span class="token comment">// 阻塞JS执行和渲染</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token comment">// 微任务在页面渲染之前执行</span>
+  Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> list <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementsByTagName</span><span class="token punctuation">(</span><span class="token string">'p'</span><span class="token punctuation">)</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'length on promise.then----'</span><span class="token punctuation">,</span> list<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token comment">// 2</span>
+    <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'阻塞 promise'</span><span class="token punctuation">)</span> <span class="token comment">// 阻塞JS执行和渲染</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'end'</span><span class="token punctuation">)</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div>
+<p><img alt="" src="https://s.poetries.top/uploads/2023/01/4ad9b7d93fa9ad2b.png"></p>
+<p><strong>2. nodejs中的事件循环</strong></p>
+<ul><li>nodejs也是单线程，也需要异步</li> <li>异步任务也分为：宏任务 + 微任务</li> <li>但是，它的宏任务和微任务分为不同的类型，有不同的优先级</li> <li>和浏览器的主要区别就是<code>类型</code>和<code>优先级</code>，理解了这里就理解了nodejs的事件循环</li></ul>
+<p><strong>宏任务类型和优先级</strong></p>
+<blockquote><p>类型分为6个，优先级从高到底执行</p></blockquote>
+<ul><li><strong>Timer</strong>：<code>setTimeout</code>、<code>setInterval</code></li> <li><strong>I/O callbacks</strong>：处理网络、流、TCP的错误回调</li> <li><strong>Idle,prepare</strong>：闲置状态（nodejs内部使用）</li> <li><strong>Poll轮询</strong>：执行<code>poll</code>中的<code>I/O</code>队列</li> <li><strong>Check检查</strong>：存储<code>setImmediate</code>回调</li> <li><strong>Close callbacks</strong>：关闭回调，如<code>socket.on('close')</code></li></ul>
+<blockquote><p><strong>注意</strong>：<code>process.nextTick</code>优先级最高，<code>setTimeout</code>比<code>setImmediate</code>优先级高</p></blockquote>
+<p><strong>执行过程</strong></p>
+<ul><li>执行同步代码</li> <li>执行微任务（<code>process.nextTick</code>优先级最高）</li> <li>按顺序执行6个类型的宏任务（每个开始之前都执行当前的微任务）</li></ul>
+<p><img alt="" src="https://s.poetries.top/uploads/2023/01/0e07c6f647f1a3c5.png"></p>
+<p><strong>总结</strong></p>
+<ul><li>浏览器和nodejs的事件循环流程基本相同</li> <li><strong>nodejs宏任务和微任务分类型，有优先级。浏览器里面的宏任务和微任务是没有类型和优先级的</strong></li> <li>node17之后推荐使用<code>setImmediate</code>代替<code>process.nextTick</code>（如果使用<code>process.nextTick</code>执行复杂任务导致后面的卡顿就得不偿失了，尽量使用低优先级的api去执行异步）</li></ul>
+<div class="language-js extra-class"><pre class="language-js"><code>console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'start'</span><span class="token punctuation">)</span>
+<span class="token function">setImmediate</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'setImmediate'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'timeout'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'promise then'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+process<span class="token punctuation">.</span><span class="token function">nextTick</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'nextTick'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'end'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 输出</span>
+<span class="token comment">// start</span>
+<span class="token comment">// end</span>
+<span class="token comment">// nextTick</span>
+<span class="token comment">// promise then</span>
+<span class="token comment">// timeout</span>
+<span class="token comment">// setImmediate</span>
+</code></pre></div>
+<h3 id="nodejs如何开启多进程-进程如何通讯"><a href="#nodejs如何开启多进程-进程如何通讯" class="header-anchor">#</a> nodejs如何开启多进程，进程如何通讯</h3>
+<p><strong>进程process和线程thread的区别</strong></p>
+<ul><li>进程，<code>OS</code>进行资源分配和调度的最小单位，有独立的内存空间</li> <li>线程，<code>OS</code>进程运算调度的最小单位，共享进程内存空间</li> <li>JS是单线程的，但可以开启多进程执行，如<code>WebWorker</code></li></ul>
+<p><img alt="" src="https://s.poetries.top/uploads/2023/01/030cb840c0edabe7.png"></p>
+<p><strong>为何需要多进程</strong></p>
+<ul><li>多核CPU，更适合处理多进程</li> <li>内存较大，多个进程才能更好利用（单进程有内存上限）</li> <li>总之，压榨机器资源，更快、更节省</li></ul>
+<p><strong>如何开启多进程</strong></p>
+<ul><li>开启子进程 <code>child_process.fork</code>和<code>cluster.fork</code> <ul><li><code>child_process.fork</code>用于单个计算量较大的计算</li> <li><code>cluster</code>用于开启多个进程，多个服务</li></ul></li> <li>使用<code>send</code>和<code>on</code>传递消息</li></ul>
+<p><strong>使用child_process.fork方式</strong></p>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> http <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'http'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> fork <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'child_process'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>fork
+
+<span class="token keyword">const</span> server <span class="token operator">=</span> http<span class="token punctuation">.</span><span class="token function">createServer</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>req<span class="token punctuation">.</span>url <span class="token operator">===</span> <span class="token string">'/get-sum'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'主进程 id'</span><span class="token punctuation">,</span> process<span class="token punctuation">.</span>pid<span class="token punctuation">)</span>
+
+    <span class="token comment">// 开启子进程 计算结果返回</span>
+    <span class="token keyword">const</span> computeProcess <span class="token operator">=</span> <span class="token function">fork</span><span class="token punctuation">(</span><span class="token string">'./compute.js'</span><span class="token punctuation">)</span>
+    computeProcess<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">'开始计算'</span><span class="token punctuation">)</span> <span class="token comment">// 发送消息给子进程开始计算，在子进程中接收消息调用计算逻辑，计算完成后发送消息给主进程</span>
+
+    computeProcess<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'message'</span><span class="token punctuation">,</span> <span class="token parameter">data</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'主进程接收到的信息：'</span><span class="token punctuation">,</span> data<span class="token punctuation">)</span>
+      res<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token string">'sum is '</span> <span class="token operator">+</span> data<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+    computeProcess<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'close'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'子进程因报错而退出'</span><span class="token punctuation">)</span>
+      computeProcess<span class="token punctuation">.</span><span class="token function">kill</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 关闭子进程</span>
+      res<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token string">'error'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+server<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'localhost: 3000'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// compute.js</span>
+
+<span class="token comment">/**
+ * @description 子进程，计算
+ */</span>
+
+<span class="token keyword">function</span> <span class="token function">getSum</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> sum <span class="token operator">=</span> <span class="token number">0</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10000</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    sum <span class="token operator">+=</span> i
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> sum
+<span class="token punctuation">}</span>
+
+process<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'message'</span><span class="token punctuation">,</span> <span class="token parameter">data</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'子进程 id'</span><span class="token punctuation">,</span> process<span class="token punctuation">.</span>pid<span class="token punctuation">)</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'子进程接收到的信息: '</span><span class="token punctuation">,</span> data<span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> sum <span class="token operator">=</span> <span class="token function">getSum</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+  <span class="token comment">// 发送消息给主进程</span>
+  process<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>sum<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div>
+<p><strong>使用cluster方式</strong></p>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> http <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'http'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> cpuCoreLength <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'os'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">cpus</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>length
+<span class="token keyword">const</span> cluster <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'cluster'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 主进程</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>cluster<span class="token punctuation">.</span>isMaster<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> cpuCoreLength<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      cluster<span class="token punctuation">.</span><span class="token function">fork</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 根据核数 开启子进程</span>
+    <span class="token punctuation">}</span>
+
+    cluster<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'exit'</span><span class="token punctuation">,</span> <span class="token parameter">worker</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'子进程退出'</span><span class="token punctuation">)</span>
+      cluster<span class="token punctuation">.</span><span class="token function">fork</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 进程守护</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 多个子进程会共享一个 TCP 连接，提供一份网络服务</span>
+  <span class="token keyword">const</span> server <span class="token operator">=</span> http<span class="token punctuation">.</span><span class="token function">createServer</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    res<span class="token punctuation">.</span><span class="token function">writeHead</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">)</span>
+    res<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token string">'done'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  server<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+
+<span class="token comment">// 工作中 使用PM2开启进程守护更方便</span>
+</code></pre></div>
+</div>

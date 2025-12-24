@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>webpack4升级篇 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>webpack4升级篇</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>webpack4升级篇</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、环境及依赖库更新"><a href="#一、环境及依赖库更新" class="header-anchor">#</a> 一、环境及依赖库更新</h2> <blockquote><p>由于<code>Webpack</code>的更新，很多<code>Loader</code>也必须更新才能适应<code>Webpack</code>的最新版本</p></blockquote> <table><thead><tr><th>必须更新的loader</th> <th>最低要求版本</th> <th>功能说明</th></tr></thead> <tbody><tr><td><code>babel-loader</code></td> <td><code>7.1.3</code></td> <td>对最新的ES语法进行转换</td></tr> <tr><td><code>eslint-loader</code></td> <td><code>2.0.0</code></td> <td>代码检查</td></tr> <tr><td><code>file-loader</code></td> <td><code>1.1.10</code></td> <td>批量修改文件路径，或者指定编译后文件存储路径</td></tr> <tr><td><code>vue-loader</code></td> <td><code>15.0.0</code></td> <td>解析、编译<code>vue</code>单文件组件</td></tr> <tr><td><code>vue-style-loader</code></td> <td><code>4.1.0</code></td> <td>解析、编译<code>vue</code>单文件组件中的样式</td></tr></tbody></table> <h2 id="二、webpack-4-x-的破坏性变更"><a href="#二、webpack-4-x-的破坏性变更" class="header-anchor">#</a> 二、Webpack 4.x 的破坏性变更</h2> <blockquote><p>由于<code>Webpack 4.x</code>的重大变更，导致其不再支持部分插件和<code>Loader</code>，其中最闹心的是<code>Chunk</code>分离及文件分离</p></blockquote> <table><thead><tr><th>失效的插件或loader</th> <th>类型</th> <th>功能说明</th></tr></thead> <tbody><tr><td><code>webpack.optimize.CommonsChunkPlugin</code></td> <td>内置插件</td> <td>分离<code>Chunk</code>。将多次出现的代码统一打包到一个文件中。<code>Vue</code>工程中用来打包<code>vendor</code>及<code>mainfest</code></td></tr> <tr><td><code>webpack.optimize.UglifyJsPlugin</code></td> <td>内置插件</td> <td>压缩JS</td></tr> <tr><td><code>extract-text-webpack-plugin</code></td> <td><code>Loader</code></td> <td>分离文件。将部分代码或文件提取到单独文件中。Vue工程里用来分离CSS到指定文件</td></tr></tbody></table> <h3 id="_2-1-使用config-optimization代替"><a href="#_2-1-使用config-optimization代替" class="header-anchor">#</a> 2.1 使用config.optimization代替</h3> <blockquote><p>在<code>Webpack 4.x</code>中，新增了<code>optimization</code>的选项来代替之前版本中的<code>webpack.optimize</code>等。在<code>optimization</code>选项中，我们可以进行详细的设置，以达到分离<code>CSS</code>，分离<code>Chunk</code>，压缩文件等等操作</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token comment">//...</span>
+    <span class="token literal-property property">optimization</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="_2-2-压缩js及css文件"><a href="#_2-2-压缩js及css文件" class="header-anchor">#</a> 2.2 压缩JS及CSS文件</h3> <blockquote><p>由于<code>Webpack 4.x</code>中取消了其内置插件，所以之前的方法都不管用了。这里我推荐大家使用<code>UglifyJsPlugin</code>及<code>OptimizeCSSPlugin</code>插件来代替之前的内置插件，当然如果你只是想简单的压缩，而不做任何配置的话，可以按照官方文档中给出的方法使用<code>optimization.minimizer: true</code>即可</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> UglifyJsPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"uglifyjs-webpack-plugin"</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> OptimizeCSSPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'optimize-css-assets-webpack-plugin'</span><span class="token punctuation">)</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token comment">//...</span>
+    <span class="token literal-property property">optimization</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">minimizer</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+            <span class="token comment">// js mini</span>
+            <span class="token keyword">new</span> <span class="token class-name">UglifyJsPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+              <span class="token literal-property property">cache</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+              <span class="token literal-property property">parallel</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+              <span class="token literal-property property">sourceMap</span><span class="token operator">:</span> <span class="token boolean">false</span> <span class="token comment">// set to true if you want JS source maps</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token comment">// css mini</span>
+            <span class="token keyword">new</span> <span class="token class-name">OptimizeCSSPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="_2-3-分离js文件"><a href="#_2-3-分离js文件" class="header-anchor">#</a> 2.3 分离JS文件</h3> <blockquote><p>在之前版本中，我们使用<code>CommonsChunkPlugin</code>进行文件分离，而在<code>Webpack 4.x</code>中，我们则借助于<code>config.optimization</code>来实现</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// webpack 3.xx</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token comment">//...</span>
+    <span class="token literal-property property">plugins</span><span class="token operator">:</span><span class="token punctuation">[</span>
+         <span class="token keyword">new</span> <span class="token class-name">webpack<span class="token punctuation">.</span>optimize<span class="token punctuation">.</span>CommonsChunkPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+            <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'vendor'</span><span class="token punctuation">,</span>
+            <span class="token function-variable function">minChunks</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">module</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token comment">// any required modules inside node_modules are extracted to vendor</span>
+                <span class="token keyword">return</span> <span class="token punctuation">(</span>
+                    module<span class="token punctuation">.</span>resource <span class="token operator">&amp;&amp;</span>
+                    <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.js$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>module<span class="token punctuation">.</span>resource<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span>
+                    module<span class="token punctuation">.</span>resource<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>
+                        path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'../node_modules'</span><span class="token punctuation">)</span>
+                    <span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token number">0</span>
+                <span class="token punctuation">)</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// webpack4</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token comment">//...</span>
+    <span class="token literal-property property">optimization</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">splitChunks</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token literal-property property">chunks</span><span class="token operator">:</span> <span class="token string">'async'</span><span class="token punctuation">,</span>
+            <span class="token comment">// 大于30KB才单独分离成chunk</span>
+            <span class="token literal-property property">minSize</span><span class="token operator">:</span> <span class="token number">30000</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">maxAsyncRequests</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">maxInitialRequests</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">cacheGroups</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                <span class="token keyword">default</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                    <span class="token literal-property property">priority</span><span class="token operator">:</span> <span class="token operator">-</span><span class="token number">20</span><span class="token punctuation">,</span>
+                    <span class="token literal-property property">reuseExistingChunk</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+                <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">vendors</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                    <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'vendors'</span><span class="token punctuation">,</span>
+                    <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[\\/]node_modules[\\/]</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+                    <span class="token literal-property property">priority</span><span class="token operator">:</span> <span class="token operator">-</span><span class="token number">10</span><span class="token punctuation">,</span>
+                    <span class="token literal-property property">chunks</span><span class="token operator">:</span> <span class="token string">"all"</span>
+                <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">echarts</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                    <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'echarts'</span><span class="token punctuation">,</span>
+                    <span class="token literal-property property">chunks</span><span class="token operator">:</span> <span class="token string">'all'</span><span class="token punctuation">,</span>
+                    <span class="token comment">// 对echarts进行单独优化，优先级较高</span>
+                    <span class="token literal-property property">priority</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
+                    <span class="token function-variable function">test</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">module</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+                        <span class="token keyword">var</span> context <span class="token operator">=</span> module<span class="token punctuation">.</span>context<span class="token punctuation">;</span>
+                        <span class="token keyword">return</span> context <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'echarts'</span><span class="token punctuation">)</span> <span class="token operator">&gt;=</span> <span class="token number">0</span> <span class="token operator">||</span> context<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'zrender'</span><span class="token punctuation">)</span> <span class="token operator">&gt;=</span> <span class="token number">0</span><span class="token punctuation">)</span>
+                    <span class="token punctuation">}</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>    
+</code></pre></div><h4 id="_2-3-1-公共代码抽取"><a href="#_2-3-1-公共代码抽取" class="header-anchor">#</a> 2.3.1 公共代码抽取</h4> <blockquote><p><code>CommonsChunkPlugin</code> 已弃用，使用<code>optimization.splitChunks</code>代替</p></blockquote> <p><strong>配置项</strong></p> <ul><li><code>cacheGroups</code> 自定义配置主要使用它来决定生成的文件</li> <li><code>test</code> 限制范围，可以是正则，匹配文件夹或文件</li> <li><code>name</code> 生成文件名</li> <li><code>priority</code> 优先级，多个分组冲突时决定把代码放在哪块</li> <li><code>minSize</code> 最小尺寸必须大于此值，默认<code>30000B</code></li> <li><code>minChunks</code> 其他<code>entry</code>引用次数大于此值，默认1(<code>minChunks</code>指的是被不同<code>entry</code>引入的次数)
+<ul><li>为<code>1</code>时，适合分离 <code>node_moudles</code> 里的第三方库（很多人认为这个值设成2其实不合理）</li></ul></li> <li>maxInitialRequests entry文件请求的chunks不应该超过此值（请求过多，耗时）</li> <li>maxAsyncRequests 异步请求的chunks不应该超过此值</li> <li>automaticNameDelimiter 自动命名连接符</li> <li><code>chunks</code> 值为<code>"initial"</code>, <code>"async"</code>（默认） 或 <code>"all"</code> <ul><li><code>initial</code> 入口<code>chunk</code>，对于异步导入的文件不处理</li> <li><code>async</code> 异步<code>chunk</code>，只对异步导入的文件处理（个人理解）</li> <li><code>all</code> 全部<code>chunk</code>（我反正选<code>all</code>，不甚理解）</li></ul></li></ul> <p><strong>使用方式</strong></p> <ol><li>使用默认配置</li></ol> <blockquote><p>不配置时再<code>production</code>模式下开启<code>async</code></p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token literal-property property">optimization</span><span class="token operator">:</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">splitChunks</span><span class="token operator">:</span><span class="token punctuation">{</span>
+        <span class="token literal-property property">chunks</span><span class="token operator">:</span><span class="token string">"all"</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>生成的文件 <code>vendors~xx.js</code> ，xx与入口名对应</p></blockquote> <p>默认配置</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token literal-property property">optimization</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">splitChunks</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">chunks</span><span class="token operator">:</span> <span class="token string">"async"</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">minSize</span><span class="token operator">:</span> <span class="token number">30000</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">minChunks</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">maxAsyncRequests</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">maxInitialRequests</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">automaticNameDelimiter</span><span class="token operator">:</span> <span class="token string">'~'</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">cacheGroups</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token literal-property property">vendors</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[\\/]node_modules[\\/]</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+                <span class="token literal-property property">priority</span><span class="token operator">:</span> <span class="token operator">-</span><span class="token number">10</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token keyword">default</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token comment">//cacheGroups重写继承配置，设为false不继承</span>
+                <span class="token literal-property property">minChunks</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">priority</span><span class="token operator">:</span> <span class="token operator">-</span><span class="token number">20</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">reuseExistingChunk</span><span class="token operator">:</span> <span class="token boolean">true</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ol start="2"><li>自定义配置</li></ol> <blockquote><p>生成的文件 <code>xx.js</code> ，<code>xx</code>指<code>name</code>的值</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token literal-property property">optimization</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token comment">//打包 第三方库</span>
+    <span class="token comment">//打包 公共文件</span>
+    <span class="token literal-property property">splitChunks</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">cacheGroups</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token literal-property property">vendor</span><span class="token operator">:</span><span class="token punctuation">{</span><span class="token comment">//node_modules内的依赖库</span>
+                <span class="token literal-property property">chunks</span><span class="token operator">:</span><span class="token string">"all"</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[\\/]node_modules[\\/]</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+                <span class="token literal-property property">name</span><span class="token operator">:</span><span class="token string">"vendor"</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">minChunks</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token comment">//被不同entry引用次数(import),1次的话没必要提取</span>
+                <span class="token literal-property property">maxInitialRequests</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">minSize</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">priority</span><span class="token operator">:</span><span class="token number">100</span><span class="token punctuation">,</span>
+                <span class="token comment">// enforce: true?</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">common</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token comment">// ‘src/js’ 下的js文件</span>
+                <span class="token literal-property property">chunks</span><span class="token operator">:</span><span class="token string">"all"</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">test</span><span class="token operator">:</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[\\/]src[\\/]js[\\/]</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span><span class="token comment">//也可以值文件/[\\/]src[\\/]js[\\/].*\.js/,  </span>
+                <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"common"</span><span class="token punctuation">,</span> <span class="token comment">//生成文件名，依据output规则</span>
+                <span class="token literal-property property">minChunks</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">maxInitialRequests</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">minSize</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">priority</span><span class="token operator">:</span><span class="token number">1</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><strong>配合 runtimeChunk</strong></p> <blockquote><p><code>runtimeChunk</code>，将入口提取出来，这样入口文件可以很快加载，并且当哪里有改动的时候，只有改动的地方和这个文件有变化。
+<code>optimization.runtimeChunk</code> 用来提取 <code>entry</code> <code>chunk</code>中的 <code>runtime</code>部分函数，形成一个单独的文件，这部分文件不经常变换，方便做缓存</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token literal-property property">runtimeChunk</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'manifest'</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="_2-4-提取css到单独文件"><a href="#_2-4-提取css到单独文件" class="header-anchor">#</a> 2.4 提取CSS到单独文件</h3> <blockquote><p>在之前版本中我们使用<code>extract-text-webpack-plugin</code>来提取<code>CSS</code>文件，不过在<code>webpack 4.x</code>中则应该使用<code>mini-css-extract-plugin</code>来提取<code>CSS</code>到单独文件中</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// webpack 3.xx</span>
+<span class="token keyword">const</span> utils <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./utils'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> ExtractTextPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'extract-text-webpack-plugin'</span><span class="token punctuation">)</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token comment">//...</span>
+    <span class="token keyword">new</span> <span class="token class-name">ExtractTextPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        <span class="token literal-property property">filename</span><span class="token operator">:</span> utils<span class="token punctuation">.</span><span class="token function">assetsPath</span><span class="token punctuation">(</span><span class="token string">'css/[name].[contenthash:7].css'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// webpack 4.xx</span>
+<span class="token keyword">const</span> utils <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./utils'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> MiniCssExtractPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'mini-css-extract-plugin'</span><span class="token punctuation">)</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token comment">//...</span>
+    <span class="token keyword">new</span> <span class="token class-name">MiniCssExtractPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        <span class="token literal-property property">filename</span><span class="token operator">:</span> utils<span class="token punctuation">.</span><span class="token function">assetsPath</span><span class="token punctuation">(</span><span class="token string">'css/[name].[contenthash:7].css'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// webpack4 生产环境下的配置优化</span>
+
+<span class="token keyword">const</span> UglifyJsPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"uglifyjs-webpack-plugin"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> MiniCssExtractPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"mini-css-extract-plugin"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> OptimizeCSSAssetsPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"optimize-css-assets-webpack-plugin"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">optimization</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">minimizer</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token keyword">new</span> <span class="token class-name">UglifyJsPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        <span class="token literal-property property">cache</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">parallel</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">sourceMap</span><span class="token operator">:</span> <span class="token boolean">true</span> 
+      <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token keyword">new</span> <span class="token class-name">OptimizeCSSAssetsPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>  <span class="token comment">// use OptimizeCSSAssetsPlugin</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token keyword">new</span> <span class="token class-name">MiniCssExtractPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">'css/app.[name].css'</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">chunkFilename</span><span class="token operator">:</span> <span class="token string">'css/app.[contenthash:12].css'</span>  <span class="token comment">// use contenthash *</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">]</span>
+  <span class="token operator">...</span><span class="token punctuation">.</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><strong>将多个css chunk合并成一个css文件</strong></p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> MiniCssExtractPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"mini-css-extract-plugin"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">optimization</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">splitChunks</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">cacheGroups</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">styles</span><span class="token operator">:</span> <span class="token punctuation">{</span>            
+          <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'styles'</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.scss|css$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+          <span class="token literal-property property">chunks</span><span class="token operator">:</span> <span class="token string">'all'</span><span class="token punctuation">,</span>    <span class="token comment">// merge all the css chunk to one file</span>
+          <span class="token literal-property property">enforce</span><span class="token operator">:</span> <span class="token boolean">true</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="_2-5-用更加快捷的mode模式来优化配置文件"><a href="#_2-5-用更加快捷的mode模式来优化配置文件" class="header-anchor">#</a> 2.5 用更加快捷的mode模式来优化配置文件</h3> <blockquote><p><code>webpack4</code>中提供的<code>mode</code>有两个值：<code>development</code>和<code>production</code>，默认值是 <code>production</code>。<code>mode</code>是我们为减小生产环境构建体积以及节约开发环境的构建时间提供的一种优化方案，提供对应的构建参数项的默认开启或关闭，降低配置成本</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 开启方式 1：直接在启动命令后加入参数</span>
+
+<span class="token string-property property">"scripts"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+  <span class="token string-property property">"dev"</span><span class="token operator">:</span> <span class="token string">"webpack --mode development"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"build"</span><span class="token operator">:</span> <span class="token string">"webpack --mode production"</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 开启方式 2：可以在配置文件中加入一个mode属性：</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">mode</span><span class="token operator">:</span> <span class="token string">'production'</span> <span class="token comment">// development</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="_2-6-其他调整项备忘"><a href="#_2-6-其他调整项备忘" class="header-anchor">#</a> 2.6 其他调整项备忘</h3> <ul><li><code>NoEmitOnErrorsPlugin</code>- &gt; <code>optimization.noEmitOnErrors</code>（默认情况下处于生产模式）</li> <li><code>ModuleConcatenationPlugin- &gt;</code>optimization.concatenateModules`（默认情况下处于生产模式）</li> <li><code>NamedModulesPlugin</code>- &gt; <code>optimization.namedModules</code>（在开发模式下默认开启）</li> <li><code>webpack</code>命令优化 -&gt; 发布了独立的 <code>webpack-cli</code> 命令行工具包</li> <li><code>webpack-dev-server</code>-&gt; 建议升级到最新版本</li> <li><code>html-webpack-plugin</code> -&gt; 建议升级到的最新版本</li> <li><code>file-loader</code> -&gt; 建议升级到最新版本</li> <li><code>url-loader</code> -&gt; 建议升级到最新版本</li></ul> <h2 id="三、更多参考"><a href="#三、更多参考" class="header-anchor">#</a> 三、更多参考</h2> <ul><li><a href="https://github.com/GoogleChromeLabs/webpack-libs-optimizations" target="_blank" rel="noopener noreferrer">一些优化wepback的库<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="http://blog.poetries.top/2018/11/18/webpack4-config/" target="_blank" rel="noopener noreferrer">webpack4配置详解<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://segmentfault.com/a/1190000015592264" target="_blank" rel="noopener noreferrer">webpack4.x配置指南<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://segmentfault.com/a/1190000015970277" target="_blank" rel="noopener noreferrer">webpack4 化繁为简（二)<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://www.cnblogs.com/carrotWu/p/8665720.html" target="_blank" rel="noopener noreferrer">记一次webpack3升级webpack4的踩坑<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://segmentfault.com/a/1190000015263836" target="_blank" rel="noopener noreferrer">webpack4.0让编译速度飙升<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li></ul></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

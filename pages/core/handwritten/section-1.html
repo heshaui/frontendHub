@@ -1,0 +1,27 @@
+<!-- Section: # 1 实现防抖函数（debounce） -->
+<div class="section-content" data-section-id="_1-实现防抖函数-debounce">
+<h2 id="_1-实现防抖函数-debounce"><a href="#_1-实现防抖函数-debounce" class="header-anchor">#</a> 1 实现防抖函数（debounce）</h2>
+<blockquote><p>防抖函数原理：<strong>把触发非常频繁的事件合并成一次去执行</strong> 在指定时间内只执行一次回调函数，如果在指定的时间内又触发了该事件，则回调函数的执行时间会基于此刻重新开始计算</p></blockquote>
+<p><img alt="" src="https://s.poetries.top/uploads/2022/07/e47703fd75859ad8.png"> <img alt="" src="https://s.poetries.top/uploads/2023/01/b6ce0bd8b072ae9c.png"></p>
+<p>防抖动和节流本质是不一样的。<strong>防抖动是将多次执行变为<code>最后一次执行</code>，节流是将多次执行变成<code>每隔一段时间执行</code></strong></p>
+<blockquote><p>eg. 像百度搜索，就应该用防抖，当我连续不断输入时，不会发送请求；当我一段时间内不输入了，才会发送一次请求；如果小于这段时间继续输入的话，时间会重新计算，也不会发送请求。</p></blockquote>
+<p><strong>手写简化版:</strong></p>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// func是用户传入需要防抖的函数</span>
+<span class="token comment">// wait是等待时间</span>
+<span class="token keyword">const</span> <span class="token function-variable function">debounce</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">func<span class="token punctuation">,</span> wait <span class="token operator">=</span> <span class="token number">50</span></span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 缓存一个定时器id</span>
+  <span class="token keyword">let</span> timer <span class="token operator">=</span> <span class="token number">0</span>
+  <span class="token comment">// 这里返回的函数是每次用户实际调用的防抖函数</span>
+  <span class="token comment">// 如果已经设定过定时器了就清空上一次的定时器</span>
+  <span class="token comment">// 开始一个新的定时器，延迟执行用户传入的方法</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>timer<span class="token punctuation">)</span> <span class="token function">clearTimeout</span><span class="token punctuation">(</span>timer<span class="token punctuation">)</span>
+    timer <span class="token operator">=</span> <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token function">func</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span> wait<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div>
+<p><strong>适用场景：</strong></p>
+<ul><li>文本输入的验证，连续输入文字后发送 AJAX 请求进行验证，验证一次就好</li> <li>按钮提交场景：防止多次提交按钮，只执行最后提交的一次</li> <li>服务端验证场景：表单验证需要服务端配合，只执行一段连续的输入事件的最后一次，还有搜索联想词功能类似</li></ul>
+</div>

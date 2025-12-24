@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>执行上下文 执行栈 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>执行上下文 执行栈</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>执行上下文 执行栈</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="前言"><a href="#前言" class="header-anchor">#</a> 前言</h2> <p>突然觉得对于一名JavaScript开发者而言，需要知道JavaScript程序内部是如何运行的,那么对于此章节执行上下文和执行栈的理解很重要,对理解其他JavaScript概念(变量声明提示,作用域和闭包)都有帮助。</p> <p>看了很多相关文章，写得很好，总结了ES3以及ES6对于执行上下文概念的描述，以及新的概念介绍。</p> <h2 id="什么是执行上下文"><a href="#什么是执行上下文" class="header-anchor">#</a> 什么是执行上下文</h2> <p>简而言之，执行上下文是评估和执行 JavaScript 代码的环境的抽象概念。每当 Javascript 代码在运行的时候，它都是在执行上下文中运行。</p> <h4 id="执行上下文的类型"><a href="#执行上下文的类型" class="header-anchor">#</a> 执行上下文的类型</h4> <p>JavaScript 中有三种执行上下文类型</p> <ul><li><strong>全局执行上下文</strong> — 这是默认或者说基础的上下文，任何不在函数内部的代码都在全局上下文中。它会执行两件事：创建一个全局的 window 对象（浏览器的情况下），并且设置 <code>this</code> 的值等于这个全局对象。一个程序中只会有一个全局执行上下文。</li> <li><strong>函数执行上下文</strong> — 每当一个函数被调用时, 都会为该函数创建一个新的上下文。每个函数都有它自己的执行上下文，不过是在函数被调用时创建的。函数上下文可以有任意多个。每当一个新的执行上下文被创建，它会按定义的顺序（将在后文讨论）执行一系列步骤。</li> <li><strong>Eval 函数执行上下文</strong> — 执行在 <code>eval</code> 函数内部的代码也会有它属于自己的执行上下文，但由于 JavaScript 开发者并不经常使用 <code>eval</code>，所以在这里我不会讨论它。</li></ul> <h2 id="es3-执行上下文的内容"><a href="#es3-执行上下文的内容" class="header-anchor">#</a> ES3 执行上下文的内容</h2> <p>执行上下文是一个抽象的概念，我们可以将它理解为一个 <code>object</code> ，一个执行上下文里包括以下内容：</p> <ol><li>变量对象 VO</li> <li>活动对象 AO</li> <li>作用域链</li> <li>调用者信息 this</li></ol> <h3 id="变量对象-variable-object-简称-vo"><a href="#变量对象-variable-object-简称-vo" class="header-anchor">#</a> 变量对象（<code>variable object</code> 简称 <code>VO</code>）</h3> <p>每个执行环境文都有一个表示变量的对象——<strong>变量对象</strong>，全局执行环境的变量对象始终存在，而函数这样局部环境的变量，只会在函数执行的过程中存在，在函数被调用时且在具体的函数代码运行之前，JS 引擎会用当前函数的<strong>参数列表</strong>（<code>arguments</code>）初始化一个 “变量对象” 并将当前执行上下文与之关联 ，函数代码块中声明的 <strong>变量</strong> 和 <strong>函数</strong> 将作为属性添加到这个变量对象上。</p> <div class="language- extra-class"><pre class="language-text"><code>有一点需要注意，只有函数声明（function declaration）会被加入到变量对象中，而函数表达式（function expression）会被忽略。
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 这种叫做函数声明，会被加入变量对象</span>
+<span class="token keyword">function</span> <span class="token function">demo</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token comment">// tmp 是变量声明，也会被加入变量对象，但是作为一个函数表达式 demo2 不会被加入变量对象</span>
+<span class="token keyword">var</span> <span class="token function-variable function">tmp</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token function">demo2</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+</code></pre></div><p>全局执行上下文和函数执行上下文中的变量对象还略有不同，它们之间的差别简单来说：</p> <ol><li><strong>全局上下文中的变量对象就是全局对象</strong>，以浏览器环境来说，就是 <code>window</code> 对象。</li> <li><strong>函数执行上下文中的变量对象内部定义的属性</strong>，是不能被直接访问的，只有当函数被调用时，变量对象（<code>VO</code>）被激活为活动对象（<code>AO</code>）时，我们才能访问到其中的属性和方法。</li></ol> <h3 id="活动对象-activation-object-简称-ao"><a href="#活动对象-activation-object-简称-ao" class="header-anchor">#</a> 活动对象（<code>activation object</code> 简称 <code>AO</code>）</h3> <p>函数进入执行阶段时，原本不能访问的变量对象被激活成为一个活动对象，自此，我们可以访问到其中的各种属性。</p> <p><strong>其实变量对象和活动对象是一个东西，只不过处于不同的状态和阶段而已。</strong></p> <h3 id="作用域链-scope-chain"><a href="#作用域链-scope-chain" class="header-anchor">#</a> 作用域链（<code>scope chain</code>）</h3> <p><strong>作用域</strong> 规定了如何查找变量，也就是确定当前执行代码对变量的访问权限。当查找变量的时候，会先从当前上下文的变量对象中查找，如果没有找到，就会从父级（词法层面上的父级）执行上下文的变量对象中查找，一直找到全局上下文的变量对象，也就是全局对象。这样由多个执行上下文的变量对象构成的链表就叫做 <strong>作用域链</strong>。</p> <h3 id="当前可执行代码块的调用者-this"><a href="#当前可执行代码块的调用者-this" class="header-anchor">#</a> 当前可执行代码块的调用者（this）</h3> <p>如果当前函数被作为对象方法调用或使用 <code>bind</code> <code>call</code> <code>apply</code> 等 <code>API</code> 进行委托调用，则将当前代码块的调用者信息（<code>this value</code>）存入当前执行上下文，否则默认为全局对象调用。</p> <p>关于 <code>this</code> 的创建细节，有点烦，有兴趣的话可以进入 这个章节 学习。</p> <h3 id="执行上下文数据结构模拟"><a href="#执行上下文数据结构模拟" class="header-anchor">#</a> 执行上下文数据结构模拟</h3> <p>如果将上述一个完整的执行上下文使用代码形式表现出来的话，应该类似于下面这种：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>executionContext：<span class="token punctuation">{</span>
+    <span class="token punctuation">[</span>variable object <span class="token operator">|</span> activation object<span class="token punctuation">]</span>：<span class="token punctuation">{</span>
+        arguments<span class="token punctuation">,</span>
+        <span class="token literal-property property">variables</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token operator">...</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">funcions</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token operator">...</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    scope chain<span class="token operator">:</span> variable object <span class="token operator">+</span> all parents scopes
+    <span class="token literal-property property">thisValue</span><span class="token operator">:</span> context object
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="es3中的执行上下文生命周期"><a href="#es3中的执行上下文生命周期" class="header-anchor">#</a> ES3中的执行上下文生命周期</h2> <p>执行上下文的生命周期有三个阶段，分别是：</p> <ul><li>创建阶段</li> <li>执行阶段</li> <li>销毁阶段</li></ul> <h4 id="创建阶段"><a href="#创建阶段" class="header-anchor">#</a> 创建阶段</h4> <p>函数执行上下文的创建阶段，发生在函数调用时且在执行函数体内的具体代码之前，在创建阶段，JS 引擎会做如下操作：</p> <h5 id="全局执行上下文"><a href="#全局执行上下文" class="header-anchor">#</a> 全局执行上下文</h5> <ul><li><p>执行全局代码前,创建一个全局执行上下文</p></li> <li><p>对全局数据进行预处理</p> <ul><li>这一阶段会进行<strong>变量和函数的初始化声明</strong></li> <li>var 定义的全局变量--&gt; undefined 添加为window属性</li> <li>function 声明的全局函数 –-&gt; 赋值(fun) 添加为window属性</li> <li>this --&gt; 赋值(window)</li></ul></li></ul> <h5 id="函数执行上下文"><a href="#函数执行上下文" class="header-anchor">#</a> 函数执行上下文</h5> <ul><li>在调用函数时，准备执行函数体之前，创建对应的函数执行上下文对象</li> <li>对局部数据进行预处理
+<ul><li>形参变量==》赋值（实参）--》添加为执行上下文的属性</li> <li>arguments--&gt;赋值--&gt;（实参列表），添加为执行上下文属性</li> <li>var 定义的局部变量 –-&gt; undefined 添加为执行上下文属性</li> <li>function 神明的函数 --&gt; 赋值(fun) 添加为执行上下文属性</li> <li>构建作用域链（前面已经说过构建细节）</li> <li>this --&gt; 赋值(调用函数对象)</li></ul></li></ul> <div class="language- extra-class"><pre class="language-text"><code>有没有发现这个创建执行上下文的阶段有变量和函数的初始化生命。这个操作就是 **变量声明提升**（变量和函数声明都会提升，但是函数提升更靠前）。
+</code></pre></div><h4 id="执行阶段"><a href="#执行阶段" class="header-anchor">#</a> 执行阶段</h4> <p>执行阶段中，JS 代码开始逐条执行，在这个阶段，JS 引擎开始对定义的变量赋值、开始顺着作用域链访问变量、如果内部有函数调用就创建一个新的执行上下文压入执行栈并把控制权交出……</p> <h4 id="销毁阶段"><a href="#销毁阶段" class="header-anchor">#</a> 销毁阶段</h4> <p>一般来讲当函数执行完成后，当前执行上下文（局部环境）会被弹出执行上下文栈并且销毁，控制权被重新交给执行栈上一层的执行上下文。</p> <blockquote><p>注意这只是一般情况，闭包的情况又有所不同。</p></blockquote> <p>闭包的定义：<strong>有权访问另一个函数内部变量的函数</strong>。简单说来，如果一个函数被作为另一个函数的返回值，并在外部被引用，那么这个函数就被称为闭包。</p> <h2 id="es3执行上下文总结"><a href="#es3执行上下文总结" class="header-anchor">#</a> ES3执行上下文总结</h2> <p>对于 <code>ES3</code> 中的执行上下文，我们可以用下面这个列表来概括程序执行的整个过程：</p> <ol><li>函数被调用</li> <li>在执行具体的函数代码之前，创建了执行上下文</li> <li>进入执行上下文的创建阶段：
+<ol><li>初始化作用域链</li> <li>创建 <code>arguments object</code> 检查上下文中的参数，初始化名称和值并创建引用副本</li> <li>扫描上下文找到所有函数声明：
+<ol><li>对于每个找到的函数，用它们的原生函数名，在变量对象中创建一个属性，该属性里存放的是一个指向实际内存地址的指针</li> <li>如果函数名称已经存在了，属性的引用指针将会被覆盖</li></ol></li> <li>扫描上下文找到所有var的变量声明：
+<ol><li>对于每个找到的变量声明，用它们的原生变量名，在变量对象中创建一个属性，并且使用 <code>undefined</code> 来初始化</li> <li>如果变量名作为属性在变量对象中已存在，则不做任何处理并接着扫描</li></ol></li> <li>确定 <code>this</code> 值</li></ol></li> <li>进入执行上下文的执行阶段：
+<ol><li>在上下文中运行/解释函数代码，并在代码逐行执行时分配变量值。</li></ol></li></ol> <h2 id="es5中的执行上下文"><a href="#es5中的执行上下文" class="header-anchor">#</a> ES5中的执行上下文</h2> <p><code>ES5</code> 规范又对 <code>ES3</code> 中执行上下文的部分概念做了调整，最主要的调整，就是去除了 <code>ES3</code> 中变量对象和活动对象，以 <strong>词法环境组件（</strong> <strong>LexicalEnvironment component）</strong> 和 <strong>变量环境组件（</strong> <strong>VariableEnvironment component）</strong> 替代。所以 <code>ES5</code> 的执行上下文概念上表示大概如下：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>ExecutionContext <span class="token operator">=</span> <span class="token punctuation">{</span>
+  ThisBinding <span class="token operator">=</span> <span class="token operator">&lt;</span><span class="token keyword">this</span> value<span class="token operator">&gt;</span><span class="token punctuation">,</span>
+  LexicalEnvironment <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token operator">...</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  VariableEnvironment <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token operator">...</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="this-binding"><a href="#this-binding" class="header-anchor">#</a> This Binding</h3> <ul><li><strong>全局</strong>执行上下文中，<code>this</code> 的值指向全局对象，在浏览器中<code>this</code> 的值指向 <code>window</code>对象，而在<code>nodejs</code>中指向这个文件的<code>module</code>对象。</li> <li><strong>函数</strong>执行上下文中，<code>this</code> 的值取决于函数的调用方式。具体有：默认绑定、隐式绑定、显式绑定（硬绑定）、<code>new</code>绑定、箭头函数，具体内容会在【this全面解析】部分详解。</li></ul> <h3 id="词法环境-lexical-environment"><a href="#词法环境-lexical-environment" class="header-anchor">#</a> 词法环境（Lexical Environment）</h3> <p>词法环境有两个<strong>组成部分</strong></p> <ul><li>1、<strong>环境记录</strong>：存储变量和函数声明的实际位置</li> <li>2、<strong>对外部环境的引用</strong>：可以访问其外部词法环境</li></ul> <p>词法环境有两种<strong>类型</strong></p> <ul><li>1、<strong>全局环境</strong>：是一个没有外部环境的词法环境，其外部环境引用为 <strong>null</strong>。拥有一个全局对象（window 对象）及其关联的方法和属性（例如数组方法）以及任何用户自定义的全局变量，<code>this</code> 的值指向这个全局对象。</li> <li>2、<strong>函数环境</strong>：用户在函数中定义的变量被存储在<strong>环境记录</strong>中，包含了<code>arguments</code> 对象。对外部环境的引用可以是全局环境，也可以是包含内部函数的外部函数环境。</li></ul> <p>直接看伪代码可能更加直观</p> <div class="language-js extra-class"><pre class="language-js"><code>GlobalExectionContext <span class="token operator">=</span> <span class="token punctuation">{</span>  <span class="token comment">// 全局执行上下文</span>
+  <span class="token literal-property property">LexicalEnvironment</span><span class="token operator">:</span> <span class="token punctuation">{</span>    	  <span class="token comment">// 词法环境</span>
+    <span class="token literal-property property">EnvironmentRecord</span><span class="token operator">:</span> <span class="token punctuation">{</span>   		<span class="token comment">// 环境记录</span>
+      <span class="token literal-property property">Type</span><span class="token operator">:</span> <span class="token string">"Object"</span><span class="token punctuation">,</span>      		   <span class="token comment">// 全局环境</span>
+      <span class="token comment">// 标识符绑定在这里 </span>
+      <span class="token literal-property property">outer</span><span class="token operator">:</span> <span class="token operator">&lt;</span><span class="token keyword">null</span><span class="token operator">&gt;</span>  	   		   <span class="token comment">// 对外部环境的引用</span>
+  <span class="token punctuation">}</span>  
+<span class="token punctuation">}</span>
+
+FunctionExectionContext <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token comment">// 函数执行上下文</span>
+  <span class="token literal-property property">LexicalEnvironment</span><span class="token operator">:</span> <span class="token punctuation">{</span>  	  <span class="token comment">// 词法环境</span>
+    <span class="token literal-property property">EnvironmentRecord</span><span class="token operator">:</span> <span class="token punctuation">{</span>  		<span class="token comment">// 环境记录</span>
+      <span class="token literal-property property">Type</span><span class="token operator">:</span> <span class="token string">"Declarative"</span><span class="token punctuation">,</span>  	   <span class="token comment">// 函数环境</span>
+      <span class="token comment">// 标识符绑定在这里 			  // 对外部环境的引用</span>
+      <span class="token literal-property property">outer</span><span class="token operator">:</span> <span class="token operator">&lt;</span>Global or outer <span class="token keyword">function</span> environment reference<span class="token operator">&gt;</span>  
+  <span class="token punctuation">}</span>  
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="变量环境"><a href="#变量环境" class="header-anchor">#</a> 变量环境</h3> <p>变量环境也是一个词法环境，因此它具有上面定义的词法环境的所有属性。</p> <p>在 ES6 中，<strong>词法</strong> 环境和 <strong>变量</strong> 环境的区别在于前者用于存储**函数声明和变量（ <code>let</code> 和 <code>const</code> ）<strong>绑定，而后者仅用于存储</strong>变量（ <code>var</code> ）**绑定。</p> <p>使用例子进行介绍</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">let</span> a <span class="token operator">=</span> <span class="token number">20</span><span class="token punctuation">;</span>  
+<span class="token keyword">const</span> b <span class="token operator">=</span> <span class="token number">30</span><span class="token punctuation">;</span>  
+<span class="token keyword">var</span> c<span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">multiply</span><span class="token punctuation">(</span><span class="token parameter">e<span class="token punctuation">,</span> f</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>  
+ <span class="token keyword">var</span> g <span class="token operator">=</span> <span class="token number">20</span><span class="token punctuation">;</span>  
+ <span class="token keyword">return</span> e <span class="token operator">*</span> f <span class="token operator">*</span> g<span class="token punctuation">;</span>  
+<span class="token punctuation">}</span>
+
+c <span class="token operator">=</span> <span class="token function">multiply</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">,</span> <span class="token number">30</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>执行上下文如下所示</p> <div class="language-js extra-class"><pre class="language-js"><code>GlobalExectionContext <span class="token operator">=</span> <span class="token punctuation">{</span>
+
+  <span class="token literal-property property">ThisBinding</span><span class="token operator">:</span> <span class="token operator">&lt;</span>Global Object<span class="token operator">&gt;</span><span class="token punctuation">,</span>
+
+  <span class="token literal-property property">LexicalEnvironment</span><span class="token operator">:</span> <span class="token punctuation">{</span>  
+    <span class="token literal-property property">EnvironmentRecord</span><span class="token operator">:</span> <span class="token punctuation">{</span>  
+      <span class="token literal-property property">Type</span><span class="token operator">:</span> <span class="token string">"Object"</span><span class="token punctuation">,</span>  
+      <span class="token comment">// 标识符绑定在这里  </span>
+      <span class="token literal-property property">a</span><span class="token operator">:</span> <span class="token operator">&lt;</span> uninitialized <span class="token operator">&gt;</span><span class="token punctuation">,</span>  
+      <span class="token literal-property property">b</span><span class="token operator">:</span> <span class="token operator">&lt;</span> uninitialized <span class="token operator">&gt;</span><span class="token punctuation">,</span>  
+      <span class="token literal-property property">multiply</span><span class="token operator">:</span> <span class="token operator">&lt;</span> func <span class="token operator">&gt;</span>  
+    <span class="token punctuation">}</span>  
+    <span class="token literal-property property">outer</span><span class="token operator">:</span> <span class="token operator">&lt;</span><span class="token keyword">null</span><span class="token operator">&gt;</span>  
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token literal-property property">VariableEnvironment</span><span class="token operator">:</span> <span class="token punctuation">{</span>  
+    <span class="token literal-property property">EnvironmentRecord</span><span class="token operator">:</span> <span class="token punctuation">{</span>  
+      <span class="token literal-property property">Type</span><span class="token operator">:</span> <span class="token string">"Object"</span><span class="token punctuation">,</span>  
+      <span class="token comment">// 标识符绑定在这里  </span>
+      <span class="token literal-property property">c</span><span class="token operator">:</span> <span class="token keyword">undefined</span><span class="token punctuation">,</span>  
+    <span class="token punctuation">}</span>  
+    <span class="token literal-property property">outer</span><span class="token operator">:</span> <span class="token operator">&lt;</span><span class="token keyword">null</span><span class="token operator">&gt;</span>  
+  <span class="token punctuation">}</span>  
+<span class="token punctuation">}</span>
+
+FunctionExectionContext <span class="token operator">=</span> <span class="token punctuation">{</span>  
+   
+  <span class="token literal-property property">ThisBinding</span><span class="token operator">:</span> <span class="token operator">&lt;</span>Global Object<span class="token operator">&gt;</span><span class="token punctuation">,</span>
+
+  <span class="token literal-property property">LexicalEnvironment</span><span class="token operator">:</span> <span class="token punctuation">{</span>  
+    <span class="token literal-property property">EnvironmentRecord</span><span class="token operator">:</span> <span class="token punctuation">{</span>  
+      <span class="token literal-property property">Type</span><span class="token operator">:</span> <span class="token string">"Declarative"</span><span class="token punctuation">,</span>  
+      <span class="token comment">// 标识符绑定在这里  </span>
+      <span class="token literal-property property">Arguments</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token number">0</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">,</span> <span class="token literal-property property">length</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">}</span><span class="token punctuation">,</span>  
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>  
+    <span class="token literal-property property">outer</span><span class="token operator">:</span> <span class="token operator">&lt;</span>GlobalLexicalEnvironment<span class="token operator">&gt;</span>  
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token literal-property property">VariableEnvironment</span><span class="token operator">:</span> <span class="token punctuation">{</span>  
+    <span class="token literal-property property">EnvironmentRecord</span><span class="token operator">:</span> <span class="token punctuation">{</span>  
+      <span class="token literal-property property">Type</span><span class="token operator">:</span> <span class="token string">"Declarative"</span><span class="token punctuation">,</span>  
+      <span class="token comment">// 标识符绑定在这里  </span>
+      <span class="token literal-property property">g</span><span class="token operator">:</span> <span class="token keyword">undefined</span>  
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>  
+    <span class="token literal-property property">outer</span><span class="token operator">:</span> <span class="token operator">&lt;</span>GlobalLexicalEnvironment<span class="token operator">&gt;</span>  
+  <span class="token punctuation">}</span>  
+<span class="token punctuation">}</span>
+</code></pre></div><p><strong>变量提升</strong>的原因：在创建阶段，函数声明存储在环境中，而变量会被设置为 <code>undefined</code>（在 <code>var</code> 的情况下）或保持未初始化（在 <code>let</code> 和 <code>const</code> 的情况下）。所以这就是为什么可以在声明之前访问 <code>var</code> 定义的变量（尽管是 <code>undefined</code> ），但如果在声明之前访问 <code>let</code> 和 <code>const</code> 定义的变量就会提示引用错误的原因。这就是所谓的变量提升。</p> <h2 id="es5-执行上下文总结"><a href="#es5-执行上下文总结" class="header-anchor">#</a> ES5 执行上下文总结</h2> <p>对于 <code>ES5</code> 中的执行上下文，我们可以用下面这个列表来概括程序执行的整个过程：</p> <ol><li>程序启动，全局上下文被创建
+<ol><li>创建全局上下文的<strong>词法环境</strong> <ol><li>创建 <strong>对象环境记录器</strong> ，它用来定义出现在 <strong>全局上下文</strong> 中的变量和函数的关系（负责处理 <code>let</code> 和 <code>const</code> 定义的变量）</li> <li>创建 <strong>外部环境引用</strong>，值为 <strong>null</strong></li></ol></li> <li>创建全局上下文的<strong>变量环境</strong> <ol><li>创建 <strong>对象环境记录器</strong>，它持有 <strong>变量声明语句</strong> 在执行上下文中创建的绑定关系（负责处理 <code>var</code> 定义的变量，初始值为 <code>undefined</code> 造成声明提升）</li> <li>创建 <strong>外部环境引用</strong>，值为 <strong>null</strong></li></ol></li> <li>确定 <code>this</code> 值为全局对象（以浏览器为例，就是 <code>window</code> ）</li></ol></li> <li>函数被调用，函数上下文被创建
+<ol><li>创建函数上下文的<strong>词法环境</strong> <ol><li>创建 <strong>声明式环境记录器</strong> ，存储变量、函数和参数，它包含了一个传递给函数的 <strong>arguments</strong> 对象（此对象存储索引和参数的映射）和传递给函数的参数的 <strong>length</strong>。（负责处理 <code>let</code> 和 <code>const</code> 定义的变量）</li> <li>创建 <strong>外部环境引用</strong>，值为全局对象，或者为父级词法环境（作用域）</li></ol></li> <li>创建函数上下文的<strong>变量环境</strong> <ol><li>创建 <strong>声明式环境记录器</strong> ，存储变量、函数和参数，它包含了一个传递给函数的 <strong>arguments</strong> 对象（此对象存储索引和参数的映射）和传递给函数的参数的 <strong>length</strong>。（负责处理 <code>var</code> 定义的变量，初始值为 <code>undefined</code> 造成声明提升）</li> <li>创建 <strong>外部环境引用</strong>，值为全局对象，或者为父级词法环境（作用域）</li></ol></li> <li>确定 <code>this</code> 值</li></ol></li> <li>进入函数执行上下文的执行阶段：
+<ol><li>在上下文中运行/解释函数代码，并在代码逐行执行时分配变量值。</li></ol></li></ol> <h2 id="执行栈"><a href="#执行栈" class="header-anchor">#</a> 执行栈</h2> <p>执行栈，也就是在其它编程语言中所说的“调用栈”，是一种拥有 LIFO（后进先出）数据结构的栈，被用来存储代码运行时创建的所有执行上下文。</p> <p>当 JavaScript 引擎第一次遇到你的脚本时，它会创建一个全局的执行上下文并且压入当前执行栈。每当引擎遇到一个函数调用，它会为该函数创建一个新的执行上下文并压入栈的顶部。</p> <p>引擎会执行那些执行上下文位于栈顶的函数。当该函数执行结束时，执行上下文从栈中弹出，控制流程到达当前栈中的下一个上下文。</p> <p>让我们通过下面的代码示例来理解：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">let</span> a <span class="token operator">=</span> <span class="token string">'Hello World!'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Inside first function'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">second</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Again inside first function'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">second</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Inside second function'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token function">first</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Inside Global Execution Context'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+</code></pre></div><p><img src="https://s.poetries.top/gitee/2020/09/23.png" alt=""></p> <p>上述代码的执行上下文栈。</p> <p>当上述代码在浏览器加载时，JavaScript 引擎创建了一个全局执行上下文并把它压入当前执行栈。当遇到 <code>first()</code> 函数调用时，JavaScript 引擎为该函数创建一个新的执行上下文并把它压入当前执行栈的顶部。</p> <p>当从 <code>first()</code> 函数内部调用 <code>second()</code> 函数时，JavaScript 引擎为 <code>second()</code> 函数创建了一个新的执行上下文并把它压入当前执行栈的顶部。当 <code>second()</code> 函数执行完毕，它的执行上下文会从当前栈弹出，并且控制流程到达下一个执行上下文，即 <code>first()</code> 函数的执行上下文。</p> <p>当 <code>first()</code> 执行完毕，它的执行上下文从栈弹出，控制流程到达全局执行上下文。一旦所有代码执行完毕，JavaScript 引擎从当前栈中移除全局执行上下文。</p> <h2 id="结论"><a href="#结论" class="header-anchor">#</a> 结论</h2> <ol><li>执行上下文创建阶段分为绑定this，创建词法环境，变量环境三步，两者区别在于词法环境存放函数声明与const let声明的变量，而变量环境只存储var声明的变量。</li> <li>词法环境主要由环境记录与外部环境引入记录两个部分组成，全局上下文与函数上下文的外部环境引入记录不一样，全局为null，函数为全局环境或者其它函数环境。环境记录也不一样，全局叫对象环境记录，函数叫声明性环境记录。</li> <li>你应该明白为什么会存在变量提升，函数提升，而let const没有。</li> <li>ES3之前的变量对象与活动对象的概念在ES5之后由词法环境，变量环境来解释，两者概念不冲突，后者理解更为通俗易懂。不得不说相关文章也是看的我心累，也希望对有缘的你有所帮助，那么到这里，本文结束。</li></ol></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

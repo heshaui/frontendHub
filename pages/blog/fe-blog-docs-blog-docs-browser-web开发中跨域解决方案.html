@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>web开发中跨域解决方案 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>web开发中跨域解决方案</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>web开发中跨域解决方案</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><p><strong>什么是跨域？</strong></p> <ul><li>概念如下：只要协议、域名、端口有任何一个不同，都被当作是不同的域</li></ul> <p><strong>下面是具体的跨域情况详解</strong></p> <table><thead><tr><th>URL</th> <th>说明</th> <th>是否允许通信</th></tr></thead> <tbody><tr><td>http://www.a.com/a.js、http://www.a.com/b.js</td> <td>同一域名下</td> <td>允许</td></tr> <tr><td>http://www.a.com/lab/a.js、http://www.a.com/script/b.js</td> <td>同一域名下不同文件夹</td> <td>允许</td></tr> <tr><td>http://www.a.com:8000/a.js、http://www.a.com/b.js</td> <td>同一域名，不同端口</td> <td>不允许</td></tr> <tr><td>http://www.a.com/a.js、https://www.a.com/b.js</td> <td>同一域名，不同协议</td> <td>不允许</td></tr> <tr><td>http://www.a.com/a.js、http://70.32.92.74/b.js</td> <td>域名和域名对应ip</td> <td>不允许</td></tr> <tr><td>http://www.a.com/a.js、http://script.a.com/b.js</td> <td>主域相同，子域不同</td> <td>不允许（cookie这种情况下也不允许访问）</td></tr> <tr><td>http://www.a.com/a.js、http://a.com/b.js</td> <td>同一域名，不同二级域名（同上）</td> <td>不允许（cookie这种情况下也不允许访问）</td></tr> <tr><td>http://www.cnblogs.com/a.js、http://www.a.com/b.js</td> <td>不同域名</td> <td>不允许</td></tr></tbody></table> <h2 id="一、document-domain跨域"><a href="#一、document-domain跨域" class="header-anchor">#</a> 一、document.domain跨域</h2> <hr> <ul><li>原理：相同主域名不同子域名下的页面，可以设置<code>document.domain</code>让它们同域</li> <li>限制：同域<code>document</code>提供的是页面间的互操作，需要载入<code>iframe</code>页面</li></ul> <blockquote><p>下面几个域名下的页面都是可以通过<code>document.domain</code>跨域互操作的： <code>http://a.com/foo</code>, <code>http://b.a.com/bar</code>, <code>http://c.a.com/bar</code>。 但只能以页面嵌套的方式来进行页面互操作，比如常见的<code>iframe</code>方式就可以完成页面嵌套</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// URL http://a.com/foo</span>
+<span class="token keyword">var</span> ifr <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">'iframe'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ifr<span class="token punctuation">.</span>src <span class="token operator">=</span> <span class="token string">'http://b.a.com/bar'</span><span class="token punctuation">;</span> 
+ifr<span class="token punctuation">.</span><span class="token function-variable function">onload</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">var</span> ifrdoc <span class="token operator">=</span> ifr<span class="token punctuation">.</span>contentDocument <span class="token operator">||</span> ifr<span class="token punctuation">.</span>contentWindow<span class="token punctuation">.</span>document<span class="token punctuation">;</span>
+    ifrdoc<span class="token punctuation">.</span><span class="token function">getElementsById</span><span class="token punctuation">(</span><span class="token string">"foo"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>innerHTML<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+ifr<span class="token punctuation">.</span>style<span class="token punctuation">.</span>display <span class="token operator">=</span> <span class="token string">'none'</span><span class="token punctuation">;</span>
+document<span class="token punctuation">.</span>body<span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span>ifr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><ul><li>上述代码所在的<code>URL</code>是<code>http://a.com/foo</code>，它对<code>http://b.a.com/bar</code>的<code>DOM</code>访问要求后者将 <code>document.domain</code>往上设置一级</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// URL http://b.a.com/bar</span>
+document<span class="token punctuation">.</span>domain <span class="token operator">=</span> <span class="token string">'a.com'</span>
+</code></pre></div><ul><li><code>document.domain</code>只能从子域设置到主域，往下设置以及往其他域名设置都是不允许的， 在<code>Chrome</code>中给出的错误是这样的</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>Uncaught DOMException<span class="token operator">:</span> Failed to <span class="token keyword">set</span> the <span class="token string">'domain'</span> property on <span class="token string">'Document'</span><span class="token operator">:</span> <span class="token string">'baidu.com'</span> is not a suffix <span class="token keyword">of</span> <span class="token string">'b.a.com'</span>
+</code></pre></div><h2 id="二、有src的标签"><a href="#二、有src的标签" class="header-anchor">#</a> 二、有src的标签</h2> <hr> <ul><li>原理：所有具有<code>src</code>属性的<code>HTML</code>标签都是可以跨域的，包括<code>&lt;img&gt;</code>, <code>&lt;script&gt;</code></li> <li>限制：需要创建一个<code>DOM</code>对象，只能用于<code>GET</code>方法</li></ul> <blockquote><ul><li>在<code>document.body</code>中<code>append</code>一个具有<code>src</code>属性的<code>HTML</code>标签， <code>src</code>属性值指向的<code>URL</code>会以<code>GET</code>方法被访问，该访问是可以跨域的</li> <li>其实样式表的<code>&lt;link&gt;</code>标签也是可以跨域的，只要是有<code>src</code>或<code>href</code>的<code>HTML</code>标签都有跨域的能力</li></ul></blockquote> <ul><li>不同的<code>HTML</code>标签发送<code>HTTP</code>请求的时机不同，例如<code>&lt;img&gt;</code>在更改<code>src</code>属性时就会发送请求，而<code>script</code>, <code>iframe</code>, <code>link[rel=stylesheet]</code>只有在添加到<code>DOM</code>树之后才会发送<code>HTTP</code>请求：</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> img <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Image</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+img<span class="token punctuation">.</span>src <span class="token operator">=</span> <span class="token string">'http://some/picture'</span><span class="token punctuation">;</span>        <span class="token comment">// 发送HTTP请求</span>
+
+<span class="token keyword">var</span> ifr <span class="token operator">=</span> <span class="token function">$</span><span class="token punctuation">(</span><span class="token string">'&lt;iframe&gt;'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">src</span><span class="token operator">:</span> <span class="token string">'http://b.a.com/bar'</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">$</span><span class="token punctuation">(</span><span class="token string">'body'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>ifr<span class="token punctuation">)</span><span class="token punctuation">;</span>                  <span class="token comment">// 发送HTTP请求</span>
+</code></pre></div><h2 id="三、jsonp"><a href="#三、jsonp" class="header-anchor">#</a> 三、JSONP</h2> <hr> <ul><li>原理：<code>&lt;script&gt;</code>是可以跨域的，而且在跨域脚本中可以直接回调当前脚本的函数</li> <li>限制：需要创建一个<code>DOM</code>对象并且添加到<code>DOM</code>树，只能用于<code>GET</code>方法</li></ul> <blockquote><p><code>JSONP</code>利用的是<code>&lt;script&gt;</code>可以跨域的特性，跨域<code>URL</code>返回的脚本不仅包含数据，还包含一个回调</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// URL: http://b.a.com/foo</span>
+<span class="token keyword">var</span> data <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">foo</span><span class="token operator">:</span> <span class="token string">'bar'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">bar</span><span class="token operator">:</span> <span class="token string">'foo'</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token function">callback</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><ul><li>然后在我们在主站<code>http://a.com</code>中，可以这样来跨域获取<code>http://b.a.com</code>的数据：</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// URL: http://a.com/foo</span>
+<span class="token keyword">var</span> <span class="token function-variable function">callback</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">data</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment">// 处理跨域请求得到的数据</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> script <span class="token operator">=</span> <span class="token function">$</span><span class="token punctuation">(</span><span class="token string">'&lt;script&gt;'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">src</span><span class="token operator">:</span> <span class="token string">'http://b.a.com/bar'</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">$</span><span class="token punctuation">(</span><span class="token string">'body'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>script<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><ul><li>其实<code>jQuery</code>已经封装了<code>JSONP</code>的使用，我们可以这样来</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>$<span class="token punctuation">.</span><span class="token function">getJSON</span><span class="token punctuation">(</span> <span class="token string">"http://b.a.com/bar?callback=callback"</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span> <span class="token parameter">data</span> <span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment">// 处理跨域请求得到的数据</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><blockquote><p><code>$.getJSON</code>与<code>$.get</code>的区别是前者会把<code>responseText</code>转换为<code>JSON</code>，而且当<code>URL</code>具有<code>callback</code>参数时， <code>jQuery</code>将会把它解释为一个<code>JSONP</code>请求，创建一个<code>&lt;script&gt;</code>标签来完成该请求</p></blockquote> <h2 id="四、navigation-对象"><a href="#四、navigation-对象" class="header-anchor">#</a> 四、navigation 对象</h2> <hr> <ul><li>原理：<code>iframe</code>之间是共享<code>navigator</code>对象的，用它来传递信息</li> <li>要求：<code>IE6/7</code></li></ul> <blockquote><p>有些人注意到了<code>IE6/7</code>的一个漏洞：<code>iframe</code>之间的<code>window.navigator</code>对象是共享的。 我们可以把它作为一个<code>Messenger</code>，通过它来传递信息。比如一个简单的委托：</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// a.com</span>
+navigation<span class="token punctuation">.</span><span class="token function">onData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment">// 数据到达的处理函数</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">typeof</span> navigation<span class="token punctuation">.</span>getData <span class="token operator">===</span> <span class="token string">'function'</span> 
+    <span class="token operator">||</span> navigation<span class="token punctuation">.</span><span class="token function">getData</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// b.com</span>
+navigation<span class="token punctuation">.</span><span class="token function-variable function">getData</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    $<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'/path/under/b.com'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">data</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">typeof</span> navigation<span class="token punctuation">.</span>onData <span class="token operator">===</span> <span class="token string">'function'</span>
+                <span class="token operator">||</span> navigation<span class="token punctuation">.</span><span class="token function">onData</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>与<code>document.navigator</code>类似，<code>window.name</code>也是当前窗口所有页面所共享的。也可以用它来传递信息。 同样蛋疼的办法还有传递<code>Hash</code>（有些人叫锚点），这是因为每次浏览器打开一个<code>URL</code>时，<code>URL</code>后面的<code>#xxx</code>部分会保留下来，那么新的页面可以从这里获得上一个页面的数据</p></blockquote> <h2 id="五、跨域资源共享-cors"><a href="#五、跨域资源共享-cors" class="header-anchor">#</a> 五、跨域资源共享（CORS）</h2> <hr> <ul><li>原理：服务器设置<code>Access-Control-Allow-OriginHTTP</code>响应头之后，浏览器将会允许跨域请求</li> <li>限制：浏览器需要支持<code>HTML5</code>，可以支持<code>POST</code>，<code>PUT</code>等方法</li></ul> <blockquote><p>前面提到的跨域手段都是某种意义上的<code>Hack</code>， <code>HTML5</code>标准中提出的跨域资源共享（<code>Cross Origin Resource Share</code>，<code>CORS</code>）才是正道。 它支持其他的<code>HTTP</code>方法如<code>PUT</code>, <code>POST</code>等，可以从本质上解决跨域问题。</p></blockquote> <ul><li>例如，从<code>http://a.com</code>要访问<code>http://b.com</code>的数据，通常情况下<code>Chrome</code>会因跨域请求而报错</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>XMLHttpRequest cannot load http<span class="token operator">:</span><span class="token operator">/</span><span class="token operator">/</span>b<span class="token punctuation">.</span>com<span class="token punctuation">.</span> No <span class="token string">'Access-Control-Allow-Origin'</span> header is present on the requested resource<span class="token punctuation">.</span> Origin <span class="token string">'http://a.com'</span> is therefore not allowed access
+</code></pre></div><ul><li>错误原因是被请求资源没有设置<code>Access-Control-Allow-Origin</code>，所以我们在<code>b.com</code>的服务器中设置这个响应头字段即可</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>Access<span class="token operator">-</span>Control<span class="token operator">-</span>Allow<span class="token operator">-</span>Origin<span class="token operator">:</span> <span class="token operator">*</span>              # 允许所有域名访问，或者
+Access<span class="token operator">-</span>Control<span class="token operator">-</span>Allow<span class="token operator">-</span>Origin<span class="token operator">:</span> http<span class="token operator">:</span><span class="token operator">/</span><span class="token operator">/</span>a<span class="token punctuation">.</span>com   # 只允许所有域名访问
+</code></pre></div><h2 id="六、window-postmessage"><a href="#六、window-postmessage" class="header-anchor">#</a> 六、window.postMessage</h2> <hr> <ul><li>原理：<code>HTML5</code>允许窗口之间发送消息</li> <li>限制：浏览器需要支持<code>HTML5</code>，获取窗口句柄后才能相互通信</li></ul> <blockquote><p>这是一个安全的跨域通信方法，<code>postMessage(message,targetOrigin)</code>也是<code>HTML5</code>引入的特性。 可以给任何一个<code>window</code>发送消息，不论是否同源。第二个参数可以是*但如果你设置了一个<code>URL</code>但不相符，那么该事件不会被分发。看一个普通的使用方式吧</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// URL: http://a.com/foo</span>
+<span class="token keyword">var</span> win <span class="token operator">=</span> window<span class="token punctuation">.</span><span class="token function">open</span><span class="token punctuation">(</span><span class="token string">'http://b.com/bar'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+win<span class="token punctuation">.</span><span class="token function">postMessage</span><span class="token punctuation">(</span><span class="token string">'Hello, bar!'</span><span class="token punctuation">,</span> <span class="token string">'http://b.com'</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// URL: http://b.com/bar</span>
+window<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">'message'</span><span class="token punctuation">,</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="七、访问控制安全的讨论"><a href="#七、访问控制安全的讨论" class="header-anchor">#</a> 七、访问控制安全的讨论</h2> <hr> <ul><li>在<code>HTML5</code>之前，<code>JSONP</code>已经成为跨域的事实标准了，<code>jQuery</code>都给出了支持。 值得注意的是它只是<code>Hack</code>，并没有产生额外的安全问题。 因为<code>JSONP</code>要成功获取数据，需要跨域资源所在服务器的配合，比如资源所在服务器需要自愿地回调一个合适的函数，所以服务器仍然有能力控制资源的跨域访问</li> <li>跨域的正道还是要使用<code>HTML5</code>提供的CORS头字段以及<code>window.postMessage</code>， 可以支持<code>POST</code>, <code>PUT</code>等<code>HTTP</code>方法，从机制上解决跨域问题。 值得注意的是<code>Access-Control-Allow-Origin</code>头字段是资源所在服务器设置的， 访问控制的责任仍然是在提供资源的服务器一方，这和<code>JSONP</code>是一样的</li></ul></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

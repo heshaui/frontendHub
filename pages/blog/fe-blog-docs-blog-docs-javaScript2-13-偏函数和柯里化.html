@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>偏函数和柯里化 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>偏函数和柯里化</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>偏函数和柯里化</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="前言"><a href="#前言" class="header-anchor">#</a> 前言</h2> <p>在第一章我们主要介绍了函数的一些基本功能和结构，以及介绍了一些实用的小技巧。这些都是为了后面一步一步入门打下好的基础。因为函数式编程并不是一个看看文档就能很好掌握的东西，它需要你集合实际例子然后理解每一步为什么要这样，如果你只是想粗略的看看，不去思考🤔，相信我，后面的案例你会感觉特别跳，特别绕(开始学习时我就是这样😼)。</p> <p>在这一章中，我会针对函数式编程的另一个重点：<strong>函数的输入</strong>来做讲解和案例分析，个人建议：打开你的<code>vscode</code>，关上文档，把案例敲上一遍，需要的时候把每一步做个对比，确保自己是真的理解它们。</p> <h2 id="偏函数"><a href="#偏函数" class="header-anchor">#</a> 偏函数</h2> <p>先来看一个大家都很熟悉的函数：</p> <ol><li>一个<code>ajax</code>函数，第一个参数为请求的<code>API</code>地址，第二个为请求的参数，第三个是请求成功之后的回调函数。</li></ol> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">ajax</span> <span class="token punctuation">(</span><span class="token parameter">url<span class="token punctuation">,</span> data<span class="token punctuation">,</span> callback</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token comment">// ...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ol start="2"><li>现在如果你已经很确定一个<code>API</code>地址，此外只是需要等待另外两个参数的时候，比如获取用户信息和获取订单详情的请求：</li></ol> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">getUser</span> <span class="token punctuation">(</span><span class="token parameter">data<span class="token punctuation">,</span> cb</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token function">ajax</span><span class="token punctuation">(</span><span class="token string">'/api/user'</span><span class="token punctuation">,</span> data<span class="token punctuation">,</span> cb<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">function</span> <span class="token function">getOrder</span> <span class="token punctuation">(</span><span class="token parameter">data<span class="token punctuation">,</span> cb</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token function">ajax</span><span class="token punctuation">(</span><span class="token string">'api/order'</span><span class="token punctuation">,</span> data<span class="token punctuation">,</span> cb<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ol start="3"><li>现在如果你已经很确定一个<code>API</code>地址，同时已经很确定请求的参数(比如用户的<code>id</code>)，此外只需要等待另一个参数的时候：</li></ol> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">getCurrentUser</span> <span class="token punctuation">(</span><span class="token parameter">cb</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token function">getUser</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">userId</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> cb<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">function</span> <span class="token function">getCurrentOrder</span> <span class="token punctuation">(</span><span class="token parameter">cb</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token function">getUser</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">orderId</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> cb<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>不知道大家发现了没，从第一步到第三步，每过一步，函数的参数就少一个，直到最后只需要传递一个<code>cb</code>。</p> <p>用一句话来说明发生的事情：<code>getUser(data, cb)</code>是<code>ajax(url, data, cb)</code>的<strong>偏函数(partially-applied functions)</strong>。</p> <p>(注意⚠️：前方高能！)</p> <p>关于该模式更正式的说法是：偏函数严格来讲是一个减少函数参数个数（arity）的过程；这里的参数个数指的是希望传入的形参的数量。我们通过 <code>getUser(..)</code> 把原函数 <code>ajax(..)</code> 的参数个数从 3 个减少到了 2 个。</p> <h3 id="partial函数"><a href="#partial函数" class="header-anchor">#</a> partial函数</h3> <p>在上面的例子中，<code>getCurrentUser(cb)</code>和<code>getCurrentOrder(cb)</code>的模式其实很想，我们可以来定一个<code>partial()</code>实用函数：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">partial</span> <span class="token punctuation">(</span><span class="token parameter">fn<span class="token punctuation">,</span> <span class="token operator">...</span>prestArgs</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">partiallyApplied</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>laterArgs</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">return</span> <span class="token function">fn</span><span class="token punctuation">(</span><span class="token operator">...</span>prestArgs<span class="token punctuation">,</span> <span class="token operator">...</span>laterArgs<span class="token punctuation">)</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><code>partial</code>函数接受一个<code>fn</code>函数，和若干个参数<code>…prestArgs</code>。</p> <p>它返回的是另一个函数<code>partiallyApplied()</code>函数，这个函数也接受若干个参数<code>…laterArgs</code>，并返回<code>partial</code>函数传递进来<code>fn</code>函数。</p> <p>返回的<code>fn</code>函数会将<code>partial</code>和<code>partiallyApplied</code>中的参数都接收过去。</p> <p>(这个实用函数我至少敲了3遍...)</p> <p>好吧，我们还是来看看我参考资料的原版本是怎么描述这个实用函数的吧，感觉它说的也比较清晰：</p> <blockquote><p><code>partial(..)</code> 函数接收 <code>fn</code> 参数，来表示被我们偏应用实参（partially apply）的函数。接着，<code>fn</code> 形参之后，<code>presetArgs</code> 数组收集了后面传入的实参，保存起来稍后使用。</p> <p>我们创建并 <code>return</code> 了一个新的内部函数（为了清晰明了，我们把它命名为<code>partiallyApplied(..)</code>），该函数中，<code>laterArgs</code> 数组收集了全部实参。</p> <p>你注意到在内部函数中的 <code>fn</code> 和 <code>presetArgs</code> 引用了吗？他们是怎么如何工作的？在函数 <code>partial(..)</code> 结束运行后，内部函数为何还能访问 <code>fn</code> 和 <code>presetArgs</code> 引用？你答对了，就是因为<strong>闭包</strong>！内部函数 <code>partiallyApplied(..)</code> 封闭（closes over）了 <code>fn</code> 和 <code>presetArgs</code> 变量，所以无论该函数在哪里运行，在 <code>partial(..)</code> 函数运行后我们仍然可以访问这些变量。所以理解闭包是多么的重要！</p> <p>当 <code>partiallyApplied(..)</code> 函数稍后在某处执行时，该函数使用被闭包作用（closed over）的 <code>fn</code> 引用来执行原函数，首先传入（被闭包作用的）<code>presetArgs</code> 数组中所有的偏应用（partial application）实参，然后再进一步传入 <code>laterArgs</code> 数组中的实参。</p></blockquote> <p>当然你也可以用更便捷的箭头函数语法来重写上面的函数：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> <span class="token function-variable function">partial</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">fn<span class="token punctuation">,</span> <span class="token operator">...</span>presetArgs</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> 
+														<span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>laterArgs</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> 
+																<span class="token function">fn</span><span class="token punctuation">(</span><span class="token operator">...</span>prestArgs<span class="token punctuation">,</span> <span class="token operator">...</span>laterArgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p><strong>优点</strong>：更加简洁，甚至代码稀少。</p> <p><strong>缺点</strong>：函数会变成匿名函数，可读性上失去益处，此外，由于作用域边界变得模糊，我们会更加难以辩认闭包。</p> <p>不过是否采用箭头函数都是你的个人喜好。</p> <h3 id="ajax案例"><a href="#ajax案例" class="header-anchor">#</a> ajax案例</h3> <ol><li>介绍完上面的函数，我们现在可以用<code>partial</code>实用函数来制造这些之前提及的偏函数：</li></ol> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// example1</span>
+<span class="token keyword">function</span> <span class="token function">partial</span> <span class="token punctuation">(</span><span class="token parameter">fn<span class="token punctuation">,</span> <span class="token operator">...</span>prestArgs</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">partiallyApplied</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>laterArgs</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">return</span> <span class="token function">fn</span><span class="token punctuation">(</span><span class="token operator">...</span>prestArgs<span class="token punctuation">,</span> <span class="token operator">...</span>laterArgs<span class="token punctuation">)</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> getUser <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span>ajax<span class="token punctuation">,</span> <span class="token string">'/api/user'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> getOrder <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span>ajax<span class="token punctuation">,</span> <span class="token string">'/api/order'</span><span class="token punctuation">)</span>
+</code></pre></div><p>不知道大家脑中是否有<code>getUser</code> 函数的外形和内在，它其实就相当于这样：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> getUser <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span>ajax<span class="token punctuation">,</span> <span class="token string">'/api/user'</span><span class="token punctuation">)</span>
+<span class="token comment">// 相当于=&gt;</span>
+<span class="token keyword">var</span> <span class="token function-variable function">getUser</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token function">partailApplication</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>laterArgs</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token function">ajax</span><span class="token punctuation">(</span><span class="token string">'/api/user'</span><span class="token punctuation">,</span> <span class="token operator">...</span>laterArgs<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ol start="2"><li>我相信大家已经知道怎样用<code>partial</code>来写<code>getUser</code>函数了</li></ol> <p>那么再进一层，<code>getCurrentuser</code>函数可以怎么写呢？</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// example2</span>
+<span class="token keyword">var</span> getCurrentUser <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span>ajax<span class="token punctuation">,</span> <span class="token string">'/api/user'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">userId</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>哈哈😄，看到这里你是否想到了还能用案例1中的<code>getUser</code>和<code>partial</code>配合：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// example3</span>
+<span class="token keyword">var</span> getCurrentUser <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span>getUser<span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">userId</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>过程是这样的：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">ajax</span> <span class="token punctuation">(</span><span class="token parameter">url<span class="token punctuation">,</span> data<span class="token punctuation">,</span> callback</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token comment">// ...</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">partial</span> <span class="token punctuation">(</span><span class="token parameter">fn<span class="token punctuation">,</span> <span class="token operator">...</span>prestArgs</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">partiallyApplied</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>laterArgs</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token keyword">return</span> <span class="token function">fn</span><span class="token punctuation">(</span><span class="token operator">...</span>prestArgs<span class="token punctuation">,</span> <span class="token operator">...</span>laterArgs<span class="token punctuation">)</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> getUser <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span>ajax<span class="token punctuation">,</span> <span class="token string">'/api/user'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> getCurrentUser <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span>getUser<span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">userId</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>我们可以像案例2一样通过指定<code>url</code>和<code>data</code>两个实参来定义<code>getCurrentUser(...)</code>函数。</p> <p>也可以像案例3将<code>getCurrentUser(…)</code>函数定义成<code>getUser(…)</code>的偏应用，该偏应用仅指定一个附加的 <code>data</code> 实参。</p> <blockquote><p>案例3的函数包含了一个额外的函数包装层。这看起来有些奇怪而且多余，但对于你真正要适应的函数式编程来说，这仅仅是它的冰山一角。随着本文的继续深入，我们将会把许多函数互相包装起来。记住，这就是<strong>函数</strong>式编程！</p></blockquote> <h3 id="add案例"><a href="#add案例" class="header-anchor">#</a> add案例</h3> <p>理解了上面的一个案例之后，我们再来看下面的案例应该就会变得非常简单了：</p> <p>这是一个计算返回两数之和的函数：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">add</span> <span class="token punctuation">(</span><span class="token parameter">x<span class="token punctuation">,</span> y</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> x <span class="token operator">+</span> y
+<span class="token punctuation">}</span>
+</code></pre></div><p>现在我们有一个数组，要给数组中的每一项都固定加上一个数<code>3</code>，也许你想到了可以用<code>JS</code>中的<code>map</code>来写：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">]</span>
+<span class="token keyword">var</span> arr2 <span class="token operator">=</span> arr<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token function">adder</span> <span class="token punctuation">(</span><span class="token parameter">val</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token function">add</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">,</span> val<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p><code>map</code>中执行的事情其实也是返回一个函数<code>add</code>的计算结果，那么我们就可以用<code>partial</code>函数来写它：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// example4</span>
+<span class="token keyword">var</span> arr2 <span class="token operator">=</span> arr<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token function">partial</span><span class="token punctuation">(</span>add<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre></div><p><strong>注意：</strong> 如果你没见过 <code>map(..)</code> ，别担心，我会在后面的部分详细介绍它。目前你只需要知道它用来循环遍历（loop over）一个数组，在遍历过程中调用函数产出新值并存到新的数组中。</p> <h2 id="柯里化"><a href="#柯里化" class="header-anchor">#</a> 柯里化</h2> <p>我们来看一个跟偏应用类似的技术，该技术将一个期望接收多个实参的函数拆解成连续的链式函数（chained functions），每个链式函数接收单一实参（实参个数：1）并返回另一个接收下一个实参的函数。</p> <p>这就是柯里化（currying）技术。</p> <p>还记得前面的<code>ajax</code>函数吗？</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">ajax</span> <span class="token punctuation">(</span><span class="token parameter">url<span class="token punctuation">,</span> data<span class="token punctuation">,</span> callback</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token comment">// ...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>现在想象一下我们已经创建了一个<code>ajax(…)</code>的柯里化版本：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">curriedAjax</span><span class="token punctuation">(</span><span class="token string">'/api/user'</span><span class="token punctuation">)</span>
+						<span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">userId</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+							<span class="token punctuation">(</span> <span class="token keyword">function</span> <span class="token function">foundUser</span><span class="token punctuation">(</span><span class="token parameter">user</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token operator">...</span> <span class="token punctuation">}</span> <span class="token punctuation">)</span>	
+</code></pre></div><p>我们将三次调用分别拆解开来，这也许有助于我们理解整个过程：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> userFetcher <span class="token operator">=</span> <span class="token function">curriedAjax</span><span class="token punctuation">(</span><span class="token string">'/api/user'</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> getCurrentUser <span class="token operator">=</span> <span class="token function">userFetcher</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">userId</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token function">getCurrentUser</span><span class="token punctuation">(</span> <span class="token keyword">function</span> <span class="token function">foundUser</span><span class="token punctuation">(</span><span class="token parameter">user</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token comment">/* .. */</span> <span class="token punctuation">}</span> <span class="token punctuation">)</span>
+</code></pre></div><p>可以看到<code>curriedAjax</code>函数在每次调用的时候只接收一个实参，而不是一次性接收所有实参（像 <code>ajax(..)</code> 那样），也不是先传部分实参再传剩余部分实参（借助 <code>partial(..)</code> 函数）。</p> <p><strong>柯里化和偏应用进行对比</strong>：</p> <p>相同点：</p> <ul><li>每个类似偏应用的连续柯里化调用都把另一个实参应用到原函数，一直到所有实参传递完毕。</li></ul> <p>不同点：</p> <ul><li>柯里化会明确地返回一个期望<strong>只接收下一个实参</strong> <code>data</code> 的函数，而偏应用是能接收所有的剩余参数。</li></ul> <h3 id="curry函数"><a href="#curry函数" class="header-anchor">#</a> curry函数</h3> <p>下面我们来看看如何定义一个用来柯里化的实用函数：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">curry</span><span class="token punctuation">(</span><span class="token parameter">fn<span class="token punctuation">,</span> arity <span class="token operator">=</span> fn<span class="token punctuation">.</span>length</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token function">nextCurried</span><span class="token punctuation">(</span><span class="token parameter">prevArgs</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">curried</span><span class="token punctuation">(</span><span class="token parameter">nextArg</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">var</span> args <span class="token operator">=</span> prevArgs<span class="token punctuation">.</span><span class="token function">concat</span><span class="token punctuation">(</span><span class="token punctuation">[</span>nextArg<span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>args<span class="token punctuation">.</span>length <span class="token operator">&gt;=</span> arity<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token function">fn</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span>
+      <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token function">nextCurried</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><code>ES6</code>箭头函数版本：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> <span class="token function-variable function">curry</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">fn<span class="token punctuation">,</span> arity <span class="token operator">=</span> fn<span class="token punctuation">.</span>length<span class="token punctuation">,</span> nextCurried</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> 
+  <span class="token punctuation">(</span><span class="token function-variable function">nextCurried</span> <span class="token operator">=</span> <span class="token parameter">prevArgs</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token parameter">nextArg</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token keyword">var</span> args <span class="token operator">=</span> prevArgs<span class="token punctuation">.</span><span class="token function">concat</span><span class="token punctuation">(</span> <span class="token punctuation">[</span>nextArg<span class="token punctuation">]</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>args<span class="token punctuation">.</span>length <span class="token operator">&gt;=</span> arity<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token function">fn</span><span class="token punctuation">(</span> <span class="token operator">...</span>args <span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+      <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token function">nextCurried</span><span class="token punctuation">(</span> args <span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><blockquote><p>此处的实现方式是把空数组 <code>[]</code> 当作 <code>prevArgs</code> 的初始实参集合，并且将每次接收到的 <code>nextArg</code> 同 <code>prevArgs</code> 连接成 <code>args</code> 数组。当 <code>args.length</code> 小于 <code>arity</code>（原函数 <code>fn(..)</code> 被定义和期望的形参数量）时，返回另一个 <code>curried(..)</code>函数（译者注：这里指代 <code>nextCurried(..)</code> 返回的函数）用来接收下一个 <code>nextArg</code> 实参，与此同时将 <code>args</code> 实参集合作为唯一的 <code>prevArgs</code> 参数传入 <code>nextCurried(..)</code> 函数。一旦我们收集了足够长度的 <code>args</code> 数组，就用这些实参触发原函数 <code>fn(..)</code>。</p> <p>默认地，我们的实现方案基于下面的条件：在拿到原函数期望的全部实参之前，我们能够通过检查将要被柯里化的函数的 <code>length</code> 属性来得知柯里化需要迭代多少次。</p> <p>假如你将该版本的 <code>curry(..)</code> 函数用在一个 <code>length</code> 属性不明确的函数上 —— 函数的形参声明包含默认形参值、形参解构，或者它是可变参数函数，用 <code>...args</code> 当形参；参考第 2 章 —— 你将要传入 <code>arity</code> 参数（作为 <code>curry(..)</code> 的第二个形参）来确保 <code>curry(..)</code> 函数的正常运行。</p></blockquote> <h3 id="ajax案例-2"><a href="#ajax案例-2" class="header-anchor">#</a> ajax案例</h3> <p>我们用 <code>curry(..)</code> 函数来实现此前的 <code>ajax(..)</code> 例子：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> curriedAjax <span class="token operator">=</span> <span class="token function">curry</span><span class="token punctuation">(</span> ajax <span class="token punctuation">)</span>
+<span class="token keyword">var</span> userFetcher <span class="token operator">=</span> <span class="token function">curriedAjax</span><span class="token punctuation">(</span><span class="token string">'/api/user'</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> getCurrentUser <span class="token operator">=</span> <span class="token function">userFetcher</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">userId</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token function">getCurrentUser</span><span class="token punctuation">(</span> <span class="token keyword">function</span> <span class="token function">foundUser</span><span class="token punctuation">(</span><span class="token parameter">user</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token comment">/* .. */</span> <span class="token punctuation">}</span> <span class="token punctuation">)</span>
+</code></pre></div><p>可以看到在每次函数调用的时候都会新增一个实参，最终给原函数<code>ajax</code>使用，直到收齐了三个实参并执行<code>ajax</code>函数为止。</p> <h3 id="add案例-2"><a href="#add案例-2" class="header-anchor">#</a> add案例</h3> <p>现在我们还可以来回顾一下在<code>partial</code>中用到的例子：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">]</span>
+<span class="token keyword">var</span> arr2 <span class="token operator">=</span> arr<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span> <span class="token function">partial</span><span class="token punctuation">(</span>add<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>
+</code></pre></div><p>由于柯里化是和偏应用相似的，所以我们可以用几乎相同的方式以柯里化来完成那个例子。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> arr2 <span class="token operator">=</span> arr<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span> <span class="token function">curry</span><span class="token punctuation">(</span> add <span class="token punctuation">)</span><span class="token punctuation">(</span> <span class="token number">3</span> <span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// [4,5,6,7,8]</span>
+</code></pre></div><p><code>partial(add,3)</code> 和 <code>curry(add)(3)</code> 两者有什么不同呢？为什么你会选 <code>curry(..)</code> 而不是偏函数呢？当你先得知 <code>add(..)</code> 是将要被调整的函数，但如果这个时候并不能确定 <code>3</code> 这个值，柯里化可能会起作用：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> adder <span class="token operator">=</span> <span class="token function">curry</span><span class="token punctuation">(</span> add <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// later</span>
+<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">,</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span> <span class="token function">adder</span><span class="token punctuation">(</span> <span class="token number">3</span> <span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// [4,5,6,7,8]</span>
+</code></pre></div><h3 id="sum案例"><a href="#sum案例" class="header-anchor">#</a> sum案例</h3> <p>下面这个案例，是将一个列表的数字相加：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">sum</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">var</span> sum <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+	<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> args<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		sum <span class="token operator">+=</span> args<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+	<span class="token keyword">return</span> sum<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>普通调用：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">sum</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span>
+<span class="token comment">// 15</span>
+</code></pre></div><p>柯里化调用</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// (5 用来指定需要链式调用的次数)</span>
+<span class="token keyword">var</span> curriedSum <span class="token operator">=</span> <span class="token function">curry</span><span class="token punctuation">(</span> sum<span class="token punctuation">,</span> <span class="token number">5</span> <span class="token punctuation">)</span>
+<span class="token function">curriedSum</span><span class="token punctuation">(</span> <span class="token number">1</span> <span class="token punctuation">)</span><span class="token punctuation">(</span> <span class="token number">2</span> <span class="token punctuation">)</span><span class="token punctuation">(</span> <span class="token number">3</span> <span class="token punctuation">)</span><span class="token punctuation">(</span> <span class="token number">4</span> <span class="token punctuation">)</span><span class="token punctuation">(</span> <span class="token number">5</span> <span class="token punctuation">)</span> <span class="token comment">// 15</span>
+</code></pre></div><p>柯里化调用的好处：</p> <ul><li>每次函数调用传入一个实参，并生成另一个特定性更强的函数，之后我们可以在程序中获取并使用<strong>那个</strong>新函数。</li> <li>偏应用则是预先指定所有将被偏应用的实参，产出一个等待接收剩下所有实参的函数。</li></ul> <h2 id="柯里化和偏应用有什么用"><a href="#柯里化和偏应用有什么用" class="header-anchor">#</a> 柯里化和偏应用有什么用？</h2> <p>柯里化和偏应用这两种风格的签名都比普通的函数要奇怪很多，那么为什么要用这么奇怪的方式去构造那些函数呢？主要是有这么几个方面：</p> <ul><li>使用柯里化和偏应用可以将指定分离实参的时机和地方独立开来，传统函数是需要预先确定所有实参的。</li> <li>当函数只有一个形参时，我们能够比较容易地组合它们</li></ul> <h2 id="柯里化多个参数"><a href="#柯里化多个参数" class="header-anchor">#</a> 柯里化多个参数</h2> <p>在上面介绍的函数柯里化中，我们知道，它在每次调用的时候只支持传入一个实参。这样的柯里化我们可以称之为“严格柯里化”。</p> <p>其实在大多数流行的<code>JavaScript</code>函数式编程都使用了一种不严格的柯里化(loose currying)。</p> <p>也就是说，往往 JS 柯里化实用函数会允许你在每次柯里化调用中指定多个实参，如在上面提到的<code>sum</code>函数，我们使用严格柯里化需要调用5次，但在松散柯里化我们可以这样：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> curriedSum <span class="token operator">=</span> <span class="token function">looseCurry</span><span class="token punctuation">(</span>sum<span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span>
+<span class="token function">curriedSum</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span>
+</code></pre></div><p>相比于严格的柯里化，语法上我们节省了<code>()</code>的使用，并且把五次函数调用减少成三次，间接提高了性能。</p> <p><strong>注意：</strong> 松散柯里化<strong>允许</strong>你传入超过形参数量（arity，原函数确认或指定的形参数量）的实参。如果你将函数的参数设计成可配的或变化的，那么松散柯里化将会有利于你。</p> <p>现在我们可以将之前的柯里化函数调整一下，使其适应这种常见的更松散的定义：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">looseCurry</span><span class="token punctuation">(</span><span class="token parameter">fn<span class="token punctuation">,</span> arity <span class="token operator">=</span> fn<span class="token punctuation">.</span>length</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token function">nextCurried</span><span class="token punctuation">(</span><span class="token parameter">prevArgs</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">curried</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>nextArgs</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">var</span> args <span class="token operator">=</span> prevArgs<span class="token punctuation">.</span><span class="token function">concat</span><span class="token punctuation">(</span>nextArgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>args<span class="token punctuation">.</span>length <span class="token operator">&gt;=</span> arity<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token function">fn</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token function">nextCurried</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><code>ES6</code>版本：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> <span class="token function-variable function">looseCurry</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">fn<span class="token punctuation">,</span> arity <span class="token operator">=</span> fn<span class="token punctuation">.</span>length<span class="token punctuation">,</span> nextCurried</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
+  <span class="token punctuation">(</span><span class="token function-variable function">nextCurried</span> <span class="token operator">=</span> <span class="token parameter">prevArgs</span> <span class="token operator">=&gt;</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>nextArg</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> args <span class="token operator">=</span> prevArgs<span class="token punctuation">.</span><span class="token function">concat</span><span class="token punctuation">(</span>nextArg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>args<span class="token punctuation">.</span>length <span class="token operator">&gt;=</span> arity<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token function">fn</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token function">nextCurried</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="反柯里化"><a href="#反柯里化" class="header-anchor">#</a> 反柯里化</h2> <p>你也会遇到这种情况：拿到一个柯里化后的函数，却想要它柯里化之前的版本 —— 这本质上就是想将类似 <code>f(1)(2)(3)</code> 的函数变回类似 <code>g(1,2,3)</code> 的函数。</p> <p>处理这个需求的标准实用函数通常被叫作 <code>uncurry(..)</code>：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">uncurry</span><span class="token punctuation">(</span><span class="token parameter">fn</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">uncurried</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+		<span class="token keyword">var</span> ret <span class="token operator">=</span> fn<span class="token punctuation">;</span>
+
+		<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> args<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+			ret <span class="token operator">=</span> <span class="token function">ret</span><span class="token punctuation">(</span> args<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+
+		<span class="token keyword">return</span> ret<span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><code>ES6</code>版本</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> <span class="token function-variable function">uncurry</span> <span class="token operator">=</span> <span class="token parameter">fn</span> <span class="token operator">=&gt;</span> 
+	<span class="token function-variable function">uncurried</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+		<span class="token keyword">var</span> ret <span class="token operator">=</span> fn
+		<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> args<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+			ret <span class="token operator">=</span> <span class="token function">ret</span><span class="token punctuation">(</span> args<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token punctuation">)</span>
+		<span class="token punctuation">}</span>
+		<span class="token keyword">return</span> ret
+	<span class="token punctuation">}</span>
+</code></pre></div><p>使用反柯里化后，可以让我们函数的传参形式变为柯里化之前的形式：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// example5</span>
+<span class="token keyword">function</span> <span class="token function">sum</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">var</span> sum <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+	<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> args<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		sum <span class="token operator">+=</span> args<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+	<span class="token keyword">return</span> sum<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> curriedSum <span class="token operator">=</span> <span class="token function">curry</span><span class="token punctuation">(</span> sum<span class="token punctuation">,</span> <span class="token number">5</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> uncurriedSum <span class="token operator">=</span> <span class="token function">uncurry</span><span class="token punctuation">(</span> curriedSum <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">curriedSum</span><span class="token punctuation">(</span> <span class="token number">1</span> <span class="token punctuation">)</span><span class="token punctuation">(</span> <span class="token number">2</span> <span class="token punctuation">)</span><span class="token punctuation">(</span> <span class="token number">3</span> <span class="token punctuation">)</span><span class="token punctuation">(</span> <span class="token number">4</span> <span class="token punctuation">)</span><span class="token punctuation">(</span> <span class="token number">5</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>		<span class="token comment">// 15</span>
+<span class="token function">uncurriedSum</span><span class="token punctuation">(</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>				<span class="token comment">// 15</span>
+</code></pre></div><p><strong>注意⚠️</strong></p> <p>但不要以为使用了反柯里化之后的函数会和原函数的行为完全一样(也就是uncurry(curry(fn))和 fn )，虽然在某些库中，反柯里化使函数变成和原函数（译者注：这里的原函数指柯里化之前的函数）类似的函数。</p> <p>但是凡事皆有例外，例如我们上面的案例5，采用反柯里化之后，如果你少传了实参，就会得到一个仍然在等待传入更多实参的部分柯里化函数。我们在下面的代码中说明这个怪异行为。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">uncurriedSum</span><span class="token punctuation">(</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span> <span class="token punctuation">)</span> <span class="token comment">// 15</span>
+<span class="token function">uncurriedSum</span><span class="token punctuation">(</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span> <span class="token punctuation">)</span><span class="token punctuation">(</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span> <span class="token punctuation">)</span> <span class="token comment">// 15</span>
+</code></pre></div><p>这两种传参方式都会得到相同的结果。</p> <p><code>uncurry()</code> 函数最为常见的作用对象很可能并不是人为生成的柯里化函数（例如上文所示），而是某些操作所产生的已经被柯里化了的结果函数。我会在后面关于 “无形参风格” 的讨论中阐述这种应用场景。</p> <h2 id="后语"><a href="#后语" class="header-anchor">#</a> 后语</h2> <p>在这一章节中，我主要介绍了函数式编程中两个比较重要的知识点<strong>偏应用</strong>和<strong>柯里化</strong>，彻底的理解它们，才能继续接下去的学习之路。</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

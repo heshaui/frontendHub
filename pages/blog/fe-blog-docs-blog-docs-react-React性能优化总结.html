@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React性能优化总结 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>React性能优化总结</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>React性能优化总结</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、重新认识render"><a href="#一、重新认识render" class="header-anchor">#</a> 一、重新认识render</h2> <blockquote><p><code>react</code>的组件渲染分为初始化渲染和更新渲染</p></blockquote> <ul><li>在初始化渲染的时候会调用根组件下的所有组件的<code>render</code>方法进行渲染，如下图（绿色表示已渲染，这一层是没有问题的）</li></ul> <p><img src="https://s.poetries.top/gitee/2019/10/420.png" alt=""></p> <p>但是当我们要更新某个子组件的时候，如下图的绿色组件（从根组件传递下来应用在绿色组件上的数据发生改变）</p> <p><img src="https://s.poetries.top/gitee/2019/10/421.png" alt=""></p> <p>我们的理想状态是只调用关键路径上组件的render</p> <p><img src="https://s.poetries.top/gitee/2019/10/422.png" alt=""></p> <p>但是<code>react</code>的默认做法是调用所有组件的<code>render</code>，再对生成的虚拟<code>DOM</code>进行对比，如不变则不进行更新。这样的<code>render</code>和虚拟<code>DOM</code>的 对比 明显是在浪费，如下图（黄色表示浪费的<code>render</code>和虚拟<code>DOM</code>对比）</p> <p><img src="https://s.poetries.top/gitee/2019/10/423.png" alt=""></p> <p><strong>Tips</strong></p> <ul><li>拆分组件是有利于复用和组件优化的</li> <li>生成虚拟<code>DOM</code>并进行比对发生在<code>render()</code>后，而不是<code>render()</code>前</li></ul> <h2 id="二、更新阶段的生命周期"><a href="#二、更新阶段的生命周期" class="header-anchor">#</a> 二、更新阶段的生命周期</h2> <ul><li><code>componentWillReceiveProps(object nextProps)</code> ：当挂载的组件接收到新的<code>props</code>时被调用。此方法应该被用于比较<code>this.props</code> 和 <code>nextProps</code>以用于使用<code>this.setState()</code>执行状态转换。（组件内部数据有变化，使用<code>state</code>，但是在更新阶段又要在<code>props</code>改变的时候改变<code>state</code>，则在这个生命周期里面）</li> <li><code>shouldComponentUpdate(object nextProps, object nextState)</code> ： -<code>boolean</code> 当组件决定任何改变是否要更新到<code>DOM</code>时被调用。作为一个 优化 实现比较<code>this.props</code> 和 <code>nextProps</code> 、<code>this.state</code> 和 <code>nextState</code> ，如果<code>React</code>应该跳过更新，返回<code>false</code></li> <li><code>componentWillUpdate(object nextProps, object nextState</code>) ：在更新发生前被立即调用。你不能在此调用 <code>this.setState()</code></li> <li><code>componentDidUpdate(object prevProps, object prevState</code>) ： 在更新发生后被立即调用。（可以在<code>DOM</code>更新完之后，做一些收尾的工作）</li></ul> <p><strong>Tips</strong></p> <ul><li><code>React</code>的优化是基于 <code>shouldComponentUpdate</code> 的，该生命周期默认返回<code>true</code>，所以一旦<code>prop</code>或<code>state</code>有任何变化，都会引起重新<code>render</code></li></ul> <h2 id="三、shouldcomponentupdate"><a href="#三、shouldcomponentupdate" class="header-anchor">#</a> 三、shouldComponentUpdate</h2> <blockquote><p><code>react</code>在每个组件生命周期更新的时候都会调用一个<code>shouldComponentUpdate(nextProps, nextState)</code>函数。它的职责就是返回<code>true</code>或<code>false</code>，true表示需要更新，<code>false</code>表示不需要，默认返回为<code>true</code>，即便你没有显示地定义 <code>shouldComponentUpdate</code> 函数。这就不难解释上面发生的资源浪费了</p></blockquote> <p><strong>带坑的写法</strong></p> <ul><li><code>{...this.props}</code> (不要滥用，请只传递<code>component</code>需要的<code>props</code>，传得太多，或者层次传得太深，都会加重<code>shouldComponentUpdate</code>里面的数据比较负担，因此，也请慎用<code>spread attributes（&lt;Component {...props} /&gt;）)</code></li> <li><code>::this.handleChange()。(请将方法的bind一律置于constructor)</code></li> <li>复杂的页面不要在一个组件里面写完</li> <li>请尽量使用<code>const element</code></li> <li><code>map</code>里面添加<code>key</code>，并且<code>key</code>不要使用<code>index</code>（可变的)</li> <li>尽量少用<code>setTimeOut</code>或不可控的<code>refs</code>、<code>DOM</code>操作</li> <li>数据尽可能简单明了，扁平化</li></ul> <h2 id="四、性能检测工具"><a href="#四、性能检测工具" class="header-anchor">#</a> 四、性能检测工具</h2> <p><strong>React.addons.Perf</strong></p> <blockquote><p><code>react</code>官方提供一个插件 <code>React.addons.Perf</code> 可以帮助我们分析组件的性能，以确定是否需要优化</p></blockquote> <p><code>react16</code>以前需要在项目中配置，<code>react16</code>以后请看这篇文章，直接打开控制台的<code>perf</code>选项测试 https://reactjs.org/docs/optimizing-performance.html#profiling-components-with-the-chrome-performance-tab</p> <p><strong>react16之前配置</strong></p> <ul><li>安装 <code>react</code> 性能检测工具 <code>npm i react-addons-perf --save</code>，然后在<code>./app/index.js</code>中</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 性能测试</span>
+<span class="token keyword">import</span> Perf <span class="token keyword">from</span> <span class="token string">'react-addons-perf'</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>__DEV__<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    window<span class="token punctuation">.</span>Perf <span class="token operator">=</span> Perf
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>打开<code>console</code>面板，先输入 <code>Perf.start()</code> 执行一些组件操作，引起数据变动，组件更新，然后输入 <code>Perf.stop()</code> 。（建议一次只执行一个操作，好进行分析）</li> <li>再输入 <code>Perf.printInclusive</code> 查看所有涉及到的组件<code>render</code>，如下图（官方图片）</li></ul> <p><img src="https://s.poetries.top/gitee/2019/10/424.png" alt=""></p> <blockquote><p>或者输入<code>Perf.printWasted()</code>查看下不需要的的浪费组件<code>render</code></p></blockquote> <p><img src="https://s.poetries.top/gitee/2019/10/425.png" alt=""></p> <p>优化前</p> <p><img src="https://s.poetries.top/gitee/2019/10/426.png" alt=""></p> <p>优化后</p> <p><img src="https://s.poetries.top/gitee/2019/10/427.png" alt=""></p> <h2 id="五、参考文章"><a href="#五、参考文章" class="header-anchor">#</a> 五、参考文章</h2> <ul><li><a href="https://reactjs.org/docs/optimizing-performance.html#profiling-components-with-the-chrome-performance-tab" target="_blank" rel="noopener noreferrer">react官方的性能优化optimizing-performance<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li></ul></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

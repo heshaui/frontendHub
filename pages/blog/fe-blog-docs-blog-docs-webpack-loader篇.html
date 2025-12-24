@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>webpack loader篇 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>webpack loader篇</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>webpack loader篇</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h1 id="loader篇"><a href="#loader篇" class="header-anchor">#</a> loader篇</h1> <p>webpack 可以使用 <a href="https://www.webpackjs.com/concepts/loaders" target="_blank" rel="noopener noreferrer">loader<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 来预处理文件。这允许你打包除 JavaScript 之外的任何静态资源。你可以使用 Node.js 来很简单地编写自己的 loader。</p> <p>loader的配置有三种方式:</p> <ol><li>通过在webpack配置中的module.rules配置(最推荐的方式)</li></ol> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// webpack.config.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+	<span class="token literal-property property">module</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+		<span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+			<span class="token punctuation">{</span>
+				<span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">.txt$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+				<span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token string">'raw-loader'</span> <span class="token comment">// 获取到内容</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">]</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ol start="2"><li>内联的方式(使用<code>!</code>将资源中的loader分开)</li></ol> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 单个loader</span>
+<span class="token keyword">import</span> Styles <span class="token keyword">from</span> <span class="token string">'style-loader!./styles.css'</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 多个loader且带参数</span>
+<span class="token keyword">import</span> Styles <span class="token keyword">from</span> <span class="token string">'style-loader!css-loader?modules!./styles.css'</span><span class="token punctuation">;</span>
+</code></pre></div><ol start="3"><li>命令行CLI</li></ol> <div class="language- extra-class"><pre class="language-text"><code>webpack --module-bind jade-loader --module-bind 'css=style-loader!css-loader'
+</code></pre></div><p>会对 <code>.jade</code> 文件使用 <code>jade-loader</code>，对 <code>.css</code> 文件使用 <a href="https://www.webpackjs.com/loaders/style-loader" target="_blank" rel="noopener noreferrer"><code>style-loader</code><span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 和 <a href="https://www.webpackjs.com/loaders/css-loader" target="_blank" rel="noopener noreferrer"><code>css-loader</code><span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>。</p> <p><strong>以下所有教材案例GitHub地址: <a href="">LinDaiDai/webpack-loader</a></strong></p> <h2 id="文件"><a href="#文件" class="header-anchor">#</a> 文件</h2> <h3 id="raw-loader"><a href="#raw-loader" class="header-anchor">#</a> raw-loader</h3> <p>加载文件原始内容.</p> <p>例如加载text文件:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> txt <span class="token keyword">from</span> <span class="token string">'./assets/file.txt'</span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// webpack.config.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+	<span class="token literal-property property">module</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+		<span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+			<span class="token punctuation">{</span>
+				<span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">.txt$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+				<span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token string">'raw-loader'</span> <span class="token comment">// 获取到内容</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">]</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="file-loader"><a href="#file-loader" class="header-anchor">#</a> file-loader</h3> <p>将文件发送到输出文件夹，并返回（相对）URL</p> <p>也就是使用了file-loader的资源文件在打包后会输出到dist文件夹中, 同时如果用import或者require引入的话获取到的是相对路径.</p> <h4 id="_1-js代码加载图片"><a href="#_1-js代码加载图片" class="header-anchor">#</a> 1. js代码加载图片</h4> <p>例如加载img文件:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> img <span class="token keyword">from</span> <span class="token string">'./assets/file.png'</span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// webpack.config.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+	<span class="token literal-property property">module</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+		<span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+			<span class="token punctuation">{</span>
+      <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.(png|svg|jpg|gif)$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+      <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        	 <span class="token string">'file-loader'</span> <span class="token comment">// 得到的是bundle中的相对路径 4sj89003nknkdsdf.png</span>
+        	<span class="token punctuation">}</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span>
+		<span class="token punctuation">]</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><strong>这里又一点需要注意的⚠️</strong>:</p> <p>如果你是使用<code>import</code>引用的话得到的是图片的相对路径</p> <p>如果是使用<code>require</code>引用的话得到的是一个模块对象, 这时候需要需要配置<code>loader</code>的一个参数<code>options.esModule</code>为<code>false</code> 才会得到相对路径.</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// require引入</span>
+<span class="token keyword">const</span> img <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./assets/file.png'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 得到模块对象</span>
+Module<span class="token punctuation">{</span> <span class="token literal-property property">defalut</span><span class="token operator">:</span> <span class="token string">'4sj89003nknkdsdf.png'</span> <span class="token punctuation">}</span>
+
+<span class="token comment">// webpack.config.js 中配置参数</span>
+<span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+	<span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">'file-loader'</span><span class="token punctuation">,</span>
+	<span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+		<span class="token literal-property property">esModule</span><span class="token operator">:</span> <span class="token boolean">false</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">]</span>
+</code></pre></div><p>配置了<code>esModule</code>之后, 就能和<code>import</code>引入得到的一样了.</p> <h4 id="_2-html加载图片"><a href="#_2-html加载图片" class="header-anchor">#</a> 2. html加载图片</h4> <p>在<code>html</code>中加载一张图片:</p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>./assets/file.png<span class="token punctuation">"</span></span> <span class="token punctuation">/&gt;</span></span>
+</code></pre></div><p>这里默认应该是以<code>CommonJS</code>的加载方式加载的, 所以需要配置<code>options.esModule</code>为<code>false</code>, 如上面👆.</p> <h3 id="url-loader"><a href="#url-loader" class="header-anchor">#</a> url-loader</h3> <p>像 file loader 一样工作，但如果文件小于限制，可以返回 <a href="https://tools.ietf.org/html/rfc2397" target="_blank" rel="noopener noreferrer">data URL<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h4 id="_1-基本用法"><a href="#_1-基本用法" class="header-anchor">#</a> 1. 基本用法</h4> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+	<span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.(png|svg|jpg|gif)$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+	<span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+		<span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">'url-loader'</span>
+	<span class="token punctuation">}</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">]</span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> img <span class="token keyword">from</span> <span class="token string">'./assets/file.png'</span> <span class="token comment">// base64格式</span>
+<span class="token keyword">const</span> img <span class="token keyword">from</span> <span class="token string">'./assets/file.png'</span> <span class="token comment">// Module: { default: data:image/png;base64... }</span>
+
+<span class="token operator">&lt;</span>img src<span class="token operator">=</span><span class="token string">"./assets/file.png"</span> <span class="token operator">&gt;</span> <span class="token comment">// &lt;img src="[object Module]" /&gt;</span>
+</code></pre></div><h4 id="_2-参数limit"><a href="#_2-参数limit" class="header-anchor">#</a> 2. 参数limit</h4> <p>默认情况下它有一个参数<code>limit</code>是为<code>undefined</code>的, 此时获取文件返回的是base64格式(也就是dataURL).</p> <p>但如果设置了<code>limit</code>(单位为K)同时文件的大小超过了这个<code>limit</code>的话, 就和<code>file-loader</code>一样返回bundle中的相对路径.</p> <ul><li>不设置<code>limit</code>, 返回<code>base64格式</code></li> <li>设置了<code>limit</code>, 小于该值, 返回<code>base64格式</code></li> <li>设置了<code>limit</code>, 大于该值, 交给<code>file-loader</code>处理, 如果没有安装配置<code>file-loader</code>的话就会报错</li></ul> <p>例如加载下面👇两个img文件:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> img <span class="token keyword">from</span> <span class="token string">'./assets/file.png'</span> <span class="token comment">// &lt; 40KB data:image/png;base64</span>
+<span class="token keyword">import</span> wpl <span class="token keyword">from</span> <span class="token string">'./assets/wpl.png'</span> <span class="token comment">// &gt; 40KB 0565680d883d2c278e70d23f5ee97975.png</span>
+
+<span class="token keyword">var</span> imgEle <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Image</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> wplEle <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Image</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+imgEle<span class="token punctuation">.</span>src <span class="token operator">=</span> img
+wplEle<span class="token punctuation">.</span>src <span class="token operator">=</span> wpl
+document<span class="token punctuation">.</span>body<span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span>imgEle<span class="token punctuation">)</span>
+document<span class="token punctuation">.</span>body<span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span>wplEle<span class="token punctuation">)</span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// webpack.config.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+	<span class="token literal-property property">module</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+		<span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+			<span class="token punctuation">{</span>
+      <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.(png|svg|jpg|gif)$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+      <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        	<span class="token comment">// 'file-loader' // 得到的是bundle中的相对路径 4sj89003nknkdsdf.png</span>
+          <span class="token punctuation">{</span>
+            <span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">'url-loader'</span><span class="token punctuation">,</span> <span class="token comment">// 得到的是base64格式: data:image/png;base64</span>
+            <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+              <span class="token literal-property property">limit</span><span class="token operator">:</span> <span class="token number">40000</span> <span class="token comment">// 超过40KB则返回 4sj89003nknkdsdf.png</span>
+            <span class="token punctuation">}</span>
+        	<span class="token punctuation">}</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span>
+		<span class="token punctuation">]</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>旦如果你是想直接在标签中使用一张图片的话, 例如这样:</p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>./assets/LinDaiDai.png<span class="token punctuation">"</span></span> <span class="token punctuation">/&gt;</span></span>
+</code></pre></div><p>它并不能像预期那样, 它得到的是一个对象:</p> <p>这个对象长成这样:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>Module<span class="token punctuation">{</span>
+	<span class="token keyword">default</span><span class="token operator">:</span> <span class="token string">"data:image/png;base64,..."</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>所以对应页面上是不能正常显示的:</p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>[object Module]<span class="token punctuation">"</span></span> <span class="token punctuation">/&gt;</span></span>
+</code></pre></div><p>此时可以配置<code>options</code>中的<code>esModule</code>选项为<code>false</code>, 默认这个选项是为<code>true</code>的.</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+	<span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">'url-loader'</span><span class="token punctuation">,</span>
+	<span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+		<span class="token literal-property property">esModule</span><span class="token operator">:</span> <span class="token boolean">false</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>在其他的<code>loader</code>, 例如<code>raw-loader</code>也有这样选项.</p> <h3 id="svg-inline-loader"><a href="#svg-inline-loader" class="header-anchor">#</a> svg-inline-loader</h3> <p>使用<code>url-loader</code>来处理<code>svg</code>文件, 是能将该文件转化为base64格式.</p> <p>而<code>svg-inline-loader</code>的作用是将SVG内联为模块.</p> <p>它会将引入的SVG转化为字符串.</p> <p>安装:</p> <div class="language- extra-class"><pre class="language-text"><code>$ cnpm i --save-dev svg-inline-loader
+</code></pre></div><p>配置:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.svg$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+  <span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">'svg-inline-loader?classPrefix'</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>使用:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// src/print.js</span>
+<span class="token keyword">const</span> svg <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./assets/add-icon.svg'</span><span class="token punctuation">)</span>
+<span class="token comment">// import svg from './assets/add-icon.svg'</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>svg<span class="token punctuation">)</span>
+</code></pre></div><p>得到的是:</p> <div class="language-xml extra-class"><pre class="language-xml"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>svg</span> <span class="token attr-name">version</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>1.1<span class="token punctuation">"</span></span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>图层_1<span class="token punctuation">"</span></span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://www.w3.org/2000/svg<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">xmlns:</span>xlink</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://www.w3.org/1999/xlink<span class="token punctuation">"</span></span> <span class="token attr-name">x</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>0px<span class="token punctuation">"</span></span> <span class="token attr-name">y</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>0px<span class="token punctuation">"</span></span> <span class="token attr-name">viewBox</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>0 0 16 16<span class="token punctuation">"</span></span> <span class="token attr-name">style</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>enable-background:new 0 0 16 16;<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">xml:</span>space</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>preserve<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>style</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>text/css<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span> .fnCkiuXst0{fill-rule:evenodd;clip-rule:evenodd;fill:#888888;} <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>style</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>g</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>g</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>polygon</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>fnCkiuXst0 <span class="token punctuation">"</span></span> <span class="token attr-name">points</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>13,7 9,7 9,3 7,3 7,7 3,7 3,9 7,9 7,13 9,13 9,9 13,9 <span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>polygon</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>g</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>g</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>svg</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><h2 id="转换编译"><a href="#转换编译" class="header-anchor">#</a> 转换编译</h2> <h3 id="ts-loader"><a href="#ts-loader" class="header-anchor">#</a> ts-loader</h3> <p>像 JavaScript 一样加载 <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener noreferrer">TypeScript<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 2.0+</p> <p>也就是能让你的代码中能写<code>ts</code>类型的文件.</p> <p><code>ts-loader</code>必须配合<code>typescript</code>一起使用.</p> <p>所以在安装时:</p> <div class="language- extra-class"><pre class="language-text"><code>$ cnpm i --save-dev ts-loader typescript
+</code></pre></div><p>同时要在根目录下创建一个<code>tsconfig.json</code>文件:</p> <div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+  <span class="token property">"compilerOptions"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"sourceMap"</span><span class="token operator">:</span> <span class="token boolean">true</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>完成上述步骤就可以在项目中使用ts了.</p> <p>让我们写个案例看看:</p> <p><strong>test.ts</strong>:</p> <div class="language-tsx extra-class"><pre class="language-tsx"><code><span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">numToWord</span><span class="token punctuation">(</span>num<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">)</span><span class="token operator">:</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> config<span class="token punctuation">[</span>num<span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> config <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token number">1</span><span class="token operator">:</span> <span class="token string">'one'</span><span class="token punctuation">,</span>
+  <span class="token number">2</span><span class="token operator">:</span> <span class="token string">'two'</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>然后使用它:</p> <p><strong>print.js</strong>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> <span class="token punctuation">{</span> numToWord <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./assets/test.ts'</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">numToWord</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// two</span>
+</code></pre></div><h3 id="babel-loader"><a href="#babel-loader" class="header-anchor">#</a> babel-loader</h3> <p>下面介绍一个比较重要的loader: <code>babel-loader</code>.</p> <p>我们都知道Babel就是一个JS编译器, 主要用于在旧的浏览器或环境中将ECMAScript 2015+代码转换为向后兼容版本的JavaScript代码。</p> <p>（原理简单说就是先将<code>ES6+</code>的解析生成为<code>ES6+</code>的<code>AST</code>，然后把<code>ES6+</code>的<code>AST</code>转换为<code>ES5+</code>的<code>AST</code>，最后再将这个<code>AST</code>转换为具体的<code>ES5</code>的代码）</p> <p>例如我们在刚刚的案例<code>src/index.js</code>中加上一个ES6才有的箭头函数, 以及一个 ES7才有的幂运算符:</p> <div class="language-diff extra-class"><pre class="language-diff"><code>import { print } from './print'
+import './styles/style.css';
+import './styles/style.less';
+var fileHtml = require("html-loader?attrs=img:src!./assets/file.html")
+
+function component() {
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   var element = document.createElement('div');
+</span><span class="token prefix unchanged"> </span><span class="token line">   element.innerHTML = 'webpack loader';
+</span></span>
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   element.classList.add('box');
+</span></span>
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   var btn = document.createElement('button');
+</span><span class="token prefix unchanged"> </span><span class="token line">   btn.innerHTML = '点击获取环境变量';
+</span><span class="token prefix unchanged"> </span><span class="token line">   btn.onclick = print;
+</span><span class="token prefix unchanged"> </span><span class="token line">   element.appendChild(btn);
+</span></span>
+<span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">    const fn = () =&gt; 1; // ES6箭头函数
+</span><span class="token prefix inserted">+</span><span class="token line">    console.log(fn())
+</span><span class="token prefix inserted">+</span><span class="token line">		 let num = 3 ** 2; // ES7求幂运算符
+</span><span class="token prefix inserted">+</span><span class="token line">    console.log(num)
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   return element;
+</span></span>}
+
+document.body.appendChild(component());
+console.log(fileHtml)
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   // document.body.appendChild(fileHtml)
+</span></span></code></pre></div><p>我们知道在没做任何处理的的时候, bundle之后, 这个函数还是箭头函数, 幂运算符还是幂运算符.</p> <p>为了方便查看我将<code>webpack.config.js</code>中的<code>mode</code>属性配置为<code>development</code>, 这样我们就能查看bundle之后的代码了:</p> <p><img src="https://s.poetries.top/uploads/2025/10/81defabb71d4b7b6.png" alt=""></p> <h4 id="babel-preset-env"><a href="#babel-preset-env" class="header-anchor">#</a> @babel/preset-env</h4> <p>现在让我们来安装一下<code>babel-loader</code>, 为了能看到效果, 同时还要安装一下<code>@babel/core</code>和<code>@babel/preset-env</code></p> <p>(<code>@babel/core</code>是Babel的核心, <code>@babel/preset-env</code>它是能将ES6+的语法转成ES5的一组插件集合)</p> <div class="language- extra-class"><pre class="language-text"><code>$ cnpm i --save-dev babel-loader @babel/core @babel/preset-env
+</code></pre></div><p>然后我在<code>webpack.config.js</code>中配置使用一下<code>babel-loader</code>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// webpack.config.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+	<span class="token literal-property property">module</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+		<span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+			<span class="token punctuation">{</span>
+				<span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">.js$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+				<span class="token literal-property property">exclude</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(node_moudules|bower_components)</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+				<span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+					<span class="token punctuation">{</span>
+						<span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">'babel-loader'</span><span class="token punctuation">,</span>
+						<span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+							<span class="token literal-property property">presets</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"@babel/preset-env"</span><span class="token punctuation">]</span>
+						<span class="token punctuation">}</span>
+					<span class="token punctuation">}</span>
+				<span class="token punctuation">]</span>
+      <span class="token punctuation">}</span>
+		<span class="token punctuation">]</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>这里的意思是对除了<code>node_modules</code>和<code>bower_components</code>文件夹以外的所有<code>js</code>文件使用<code>babel-loader</code>. 同时Babel配置使用的是<code>@babel/preset-env</code>这个preset.</p> <p>保存成功之后重新执行<code>npm run serve</code>来看看效果:</p> <p><img src="https://s.poetries.top/uploads/2025/10/2edaef32b6a7275b.png" alt=""></p> <p>可以发现, 现在我们的箭头函数以及幂运算符都被转换成了ES5的语法.</p> <p>在如果你的<code>vue</code>项目不是使用<code>vue-cli</code>, 而是自己通过<code>webpack</code>配置的话, 那么其中的<code>exclude</code>可以这样配置:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+	<span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.js$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+	<span class="token function-variable function">exclude</span><span class="token operator">:</span> <span class="token parameter">file</span> <span class="token operator">=&gt;</span> <span class="token punctuation">(</span> <span class="token comment">// 排除依赖 &amp;&amp; 但是保证依赖文件夹中的vue单文件</span>
+		<span class="token operator">/</span>node_modules<span class="token operator">/</span><span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>file<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span>
+		<span class="token operator">!</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.vue\.js</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>file<span class="token punctuation">)</span>
+	<span class="token punctuation">)</span><span class="token punctuation">,</span>
+	<span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">'babel-loader'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    	<span class="token literal-property property">presets</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"@babel/preset-env"</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">]</span>
+</code></pre></div><h4 id="plugins"><a href="#plugins" class="header-anchor">#</a> plugins</h4> <p>在上面我们使用的<code>@babel/preset-env</code>, 它是一组插件(plugin)的集合.</p> <p>所以使用了它能将ES6+的语法都转换为ES5的语法.</p> <p>除了这种做法, 我们还能指定只转换哪些语法.</p> <p>例如我现在只想要将箭头函数转换为普通函数, 而幂运算符不转换.</p> <p>那么我们就可以使用<code>options</code>里的另一个参数<code>plugins</code>, 只传入转换箭头函数的插件: <code>@babel/plugin-transform-arrow-functions</code></p> <div class="language-diff extra-class"><pre class="language-diff"><code>// webpack.config.js
+module.exports = {
+	module: {
+		rules: [
+			{
+				test: /.js$/,
+				exclude: /(node_moudules|bower_components)/,
+				use: [
+					{
+						loader: 'babel-loader',
+						options: {
+<span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line">							presets: ["@babel/preset-env"],
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">							plugins: [require('@babel/plugin-transform-arrow-functions')]
+</span></span>						}
+					}
+				]
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">     }
+</span></span>		]
+	}
+}
+</code></pre></div><p>(注⚠️: 由于我们前面下载安装了<code>@babel/preset-env</code>, 它里面包含了所有ES6+的转换插件, 当然也包括箭头函数转换的插件, 所以我们可以直接引用<code>babel/plugin-transform-arrow-functions</code>, 如果你没有装<code>@babel/preset-env</code>的话, 则需要单独下载箭头函数转换的插件)</p> <p>现在重新编译之后就会发现, 编译的结果中<strong>只将箭头函数转换了, 而幂运算符没有</strong>.</p> <p>另外, <code>plugins: ['@babel/plugin-transform-arrow-functions']</code>这样的写法也是可以的.</p> <h4 id="使用优化"><a href="#使用优化" class="header-anchor">#</a> 使用优化</h4> <p>在使用<code>babel-loader</code>是会有以下几个问题, 我们可以针对问题点做不同的优化:</p> <ol><li><code>babel-loader</code>使得编译很慢</li></ol> <p>解决办法: 一种是确保转译尽可能少的文件, 所以可以用<code>exclude</code>选项来去除<code>node_modules</code> 和<code>bower_components</code>中文件. 另一种你可以设置<code>cacheDirectory</code>选项为<code>true</code>, 开启缓存, 转译的结果将会缓存到文件系统中, 这样使<code>babel-loader</code>至少提速两倍(代码量越多效果应该越明显).</p> <ol start="2"><li><code>babel-loader</code>使得打包文件体积过大</li></ol> <p>Babel 对一些公共方法使用了非常小的辅助代码, 比如 <code>_extend</code>.默认情况下会被添加到每一个需要它的文件中,</p> <p>所以会导致打包文件体积过大.</p> <p>解决办法: 引入<code>babel runtime</code>作为一个单独的模块, 来避免重复.</p> <p>使用方式: 执行<code>npm install @babel/plugin-transform-runtime --save-dev</code> 来把它包含到你的项目中</p> <p>并且使用 <code>npm install babel-runtime --save</code> 把 <code>babel-runtime</code> 安装为一个依赖:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+  <span class="token comment">// 'transform-runtime' 插件告诉 babel 要引用 runtime 来代替注入。</span>
+  <span class="token punctuation">{</span>
+    <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.js$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+    <span class="token literal-property property">exclude</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(node_modules|bower_components)</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+    <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">'babel-loader'</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">presets</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'@babel/preset-env'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'@babel/plugin-transform-runtime'</span><span class="token punctuation">]</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre></div><p>官网给出的是安装<code>babel-plugin-transform-runtime</code>, 但如果你使用的Babel是7以上的话, 你就得和我一样安装使用<code>@babel/plugin-transform-runtime</code>.</p> <h2 id="模版"><a href="#模版" class="header-anchor">#</a> 模版</h2> <h3 id="html-loader"><a href="#html-loader" class="header-anchor">#</a> html-loader</h3> <p>先让我们想一个场景, 写一个<code>file.html</code>页面, 然后直接用<code>require</code>引入会怎么样 🤔️?</p> <p><strong>src/assets/file.html</strong>:</p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>file.png<span class="token punctuation">"</span></span> <span class="token attr-name">data-src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>fileJpg.jpg<span class="token punctuation">"</span></span> <span class="token punctuation">/&gt;</span></span>
+</code></pre></div><p><strong>src/index.js</strong>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> fileHtml <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"./assets/file.html"</span><span class="token punctuation">)</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>fileHtml<span class="token punctuation">)</span>
+</code></pre></div><p>答案是编译的时候就会报错了:</p> <div class="language- extra-class"><pre class="language-text"><code>ERROR in ./src/assets/file.html 1:0
+Module parse failed: Unexpected token (1:0)
+You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+&gt; &lt;img src="file.png" src="fileJpg.jpg" /&gt;
+ @ ./src/index.js 2:15-44
+</code></pre></div><p><strong>而<code>html-loader</code>的作用就是将html里面的内容转换为字符串</strong></p> <ol><li>安装它:</li></ol> <div class="language- extra-class"><pre class="language-text"><code>$ cnpm i html-loader --save-dev
+</code></pre></div><ol start="2"><li>使用它:</li></ol> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// src/index.js</span>
+<span class="token keyword">var</span> fileHtml <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'html-loader!./assets/file.html'</span><span class="token punctuation">)</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>fileHtml<span class="token punctuation">)</span> <span class="token comment">// '&lt;img src="[object Module]" src="fileJpg.jpg" /&gt;'</span>
+</code></pre></div><p>此时虽然能够成功的转换成字符串, 但是<code>src</code>属性好像是有点问题的.</p> <h2 id="样式"><a href="#样式" class="header-anchor">#</a> 样式</h2> <h3 id="style-loader和css-loader"><a href="#style-loader和css-loader" class="header-anchor">#</a> style-loader和css-loader</h3> <ul><li>style-loader: 将模块的导出作为样式添加到 DOM 中</li> <li>css-loader: 解析 CSS 文件后，使用 import 加载，并且返回 CSS 代码</li></ul> <h3 id="less-loader"><a href="#less-loader" class="header-anchor">#</a> less-loader</h3> <h4 id="基本使用"><a href="#基本使用" class="header-anchor">#</a> 基本使用</h4> <p>加载和转译 LESS 文件</p> <p>前提条件需要安装style-loader、css-loader和less</p> <div class="language- extra-class"><pre class="language-text"><code>$cnpm i --save-dev style-loader less-loader less
+</code></pre></div><p>配置:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// webpack.config.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token operator">...</span>
+    <span class="token literal-property property">module</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+            <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.less$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+            <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+                <span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">"style-loader"</span> <span class="token comment">// creates style nodes from JS strings</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+                <span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">"css-loader"</span> <span class="token comment">// translates CSS into CommonJS</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+                <span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">"less-loader"</span> <span class="token comment">// compiles Less to CSS</span>
+            <span class="token punctuation">}</span><span class="token punctuation">]</span>
+        <span class="token punctuation">}</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>使用:</p> <p><strong>index.js</strong>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> <span class="token string">'./styles/style.less'</span>
+</code></pre></div><p><strong>style.css</strong>:</p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token atrule"><span class="token rule">@import</span> <span class="token string">'./style.less'</span><span class="token punctuation">;</span></span>
+<span class="token selector">.box</span> <span class="token punctuation">{</span>
+    <span class="token property">background-color</span><span class="token punctuation">:</span> coral<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>(不过记得配置一下<code>.css</code>类型的loader)</p> <h4 id="提取less文件"><a href="#提取less文件" class="header-anchor">#</a> 提取less文件</h4> <p>用上面👆的方法能将less文件转换成css并最终和其它的css代码一并添加到页面head的style标签里.</p> <p>也就是说并不会在最终的bundle中生成对应的css文件.</p> <p>但是在实际使用来说, 我们更希望能将less或者css文件提取出来作为一个单独的文件加载到页面上.</p> <p>主要就是依靠一个插件:</p> <p><strong>extract-text-webpack-plugin</strong>.</p> <h4 id="extract-text-webpack-plugin"><a href="#extract-text-webpack-plugin" class="header-anchor">#</a> extract-text-webpack-plugin</h4> <ol><li>安装插件</li></ol> <div class="language- extra-class"><pre class="language-text"><code>$ cnpm i --save-dev extract-text-webpack-plugin@next
+</code></pre></div><p>(如果你用的是webpack4的话, 就要安装<code>@next</code>版本的, 不然打包的时候会报错了)</p> <ol start="2"><li>在webpack.config.js中配置:</li></ol> <div class="language-diff extra-class"><pre class="language-diff"><code>const path = require('path');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+<span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> const ExtractTextPlugin = require('extract-text-webpack-plugin');
+</span><span class="token prefix inserted">+</span><span class="token line"> const extractLess = new ExtractTextPlugin({
+</span><span class="token prefix inserted">+</span><span class="token line">    filename: "[name].[hash].css",
+</span><span class="token prefix inserted">+</span><span class="token line">    disable: process.env.NODE_ENV === "development"
+</span><span class="token prefix inserted">+</span><span class="token line"> });
+</span></span>module.exports = {
+	entry: {
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">       index: './src/index.js'
+</span><span class="token prefix unchanged"> </span><span class="token line">   },
+</span><span class="token prefix unchanged"> </span><span class="token line">   plugins: [
+</span><span class="token prefix unchanged"> </span><span class="token line">       new CleanWebpackPlugin(),
+</span><span class="token prefix unchanged"> </span><span class="token line">       new HTMLWebpackPlugin(),
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">       extractLess
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   ],
+</span><span class="token prefix unchanged"> </span><span class="token line">   output: {
+</span><span class="token prefix unchanged"> </span><span class="token line">       filename: '[name].bundle.js',
+</span><span class="token prefix unchanged"> </span><span class="token line">       path: path.resolve(__dirname, 'dist')
+</span><span class="token prefix unchanged"> </span><span class="token line">   },
+</span><span class="token prefix unchanged"> </span><span class="token line">   devtool: 'inline-source-map',
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">    module: {
+</span><span class="token prefix inserted">+</span><span class="token line">    	rules: [
+</span><span class="token prefix inserted">+</span><span class="token line">    		{
+</span><span class="token prefix inserted">+</span><span class="token line">    			test: /.less$/,
+</span><span class="token prefix inserted">+</span><span class="token line">    			use: extractLess.extract({
+</span><span class="token prefix inserted">+</span><span class="token line">            use: [{
+</span><span class="token prefix inserted">+</span><span class="token line">              	loader: "css-loader"
+</span><span class="token prefix inserted">+</span><span class="token line">             }, {
+</span><span class="token prefix inserted">+</span><span class="token line">              	loader: "less-loader"
+</span><span class="token prefix inserted">+</span><span class="token line">             }],
+</span><span class="token prefix inserted">+</span><span class="token line">            fallback: "style-loader"
+</span><span class="token prefix inserted">+</span><span class="token line">          })
+</span><span class="token prefix inserted">+</span><span class="token line">    		}
+</span><span class="token prefix inserted">+</span><span class="token line">    	]
+</span><span class="token prefix inserted">+</span><span class="token line">    }
+</span></span>}
+</code></pre></div><p>此时执行生产环境的打包命令, 可以看到在最终的bundle中看到生成的css文件.</p> <h2 id="清理和测试"><a href="#清理和测试" class="header-anchor">#</a> 清理和测试</h2> <h3 id="eslint-loader"><a href="#eslint-loader" class="header-anchor">#</a> eslint-loader</h3> <p>PreLoader，使用 <a href="https://eslint.org/" target="_blank" rel="noopener noreferrer">ESLint<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 清理代码</p> <p>安装使用:</p> <div class="language- extra-class"><pre class="language-text"><code>$ cnpm i --save-dev eslint eslint-loader
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

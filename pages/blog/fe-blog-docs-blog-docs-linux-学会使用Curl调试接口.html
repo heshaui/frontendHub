@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学会使用Curl调试接口 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>学会使用Curl调试接口</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>学会使用Curl调试接口</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><blockquote><p>在我们平时开发接口完成后，需要上线联调接口，而接口往往和业务逻辑精密联系，想要调试接口，就需要将业务测一遍，那么有没有更好的办法使得调试更简单？</p></blockquote> <p><strong>常用的接口分为两类</strong></p> <ul><li>第一类：自己开发服务于自己系统的接口，该类接口调试可以在本地使用<code>postman</code>工具调试；</li> <li>第二类：不是自己开发，调用别人能力接口服务于自己的系统，该类接口我们就可以使用<code>curl</code>命令调试。</li></ul> <h1 id="一、curl常用参数"><a href="#一、curl常用参数" class="header-anchor">#</a> 一、Curl常用参数</h1> <ul><li><code>-X/--request [GET|POST|PUT|DELETE|…]</code> 使用指定的<code>http method</code>发出 <code>http request</code></li> <li><code>-H/--header</code> 设定<code>request</code>里的<code>header</code></li> <li><code>-i/--include</code> 显示<code>response</code>的<code>header</code></li> <li><code>-d/--data</code> 设定 <code>http parameters</code></li> <li><code>-v/--verbose</code> 輸出比较多的信息</li> <li><code>-u/--user</code> 使用者账号</li> <li><code>-b/--cookie</code> <code>cookie</code> 文件路径 使用<code>cookie</code></li></ul> <blockquote><p>同一个功能常会有两个完全相同的参数, 一个是比较短的参数, 另一个是比较长的参数</p></blockquote> <blockquote><p>参数<code>-X</code> 和 <code>--request</code> 两个功能是一样的 <code>curl -X POST http://www.example.com</code>  or  <code>curl --request POST http://www.example.com/</code>  是完全相同的.</p></blockquote> <h1 id="二、curl发送请求参数使用"><a href="#二、curl发送请求参数使用" class="header-anchor">#</a> 二、curl发送请求参数使用</h1> <ul><li><code>curl</code>发送请求参数使用</li></ul> <h2 id="_2-1-设置header"><a href="#_2-1-设置header" class="header-anchor">#</a> 2.1 设置header</h2> <div class="language- extra-class"><pre class="language-text"><code>curl -i -H "Content-Type: application/json" http://www.baidu.com
+</code></pre></div><h2 id="_2-2-设置http-parameter"><a href="#_2-2-设置http-parameter" class="header-anchor">#</a> 2.2 设置HTTP parameter</h2> <div class="language- extra-class"><pre class="language-text"><code>curl -X POST -d "param1:value1&amp;param2=value2" 或者 -d "param1=value1" -d "param2=value2"
+</code></pre></div><h2 id="_2-3-session认证"><a href="#_2-3-session认证" class="header-anchor">#</a> 2.3 session认证</h2> <div class="language- extra-class"><pre class="language-text"><code>curl -X GET 'http://www.baidu.com/' --header 'sessionid:sessionid值'
+</code></pre></div><h2 id="_2-4-使用cookie"><a href="#_2-4-使用cookie" class="header-anchor">#</a> 2.4 使用cookie</h2> <div class="language- extra-class"><pre class="language-text"><code>curl -i --header "Content-Type:application/json" -X GET -b ~/cookie.txt http://www.baidu.com
+</code></pre></div><blockquote><p>测试接口上传文件:我们用 <code>-F "file=@__FILE_PATH__"</code> 的方式，传输文件即可, 如果想看到详细的请求信息，可以加上 <code>-v</code> 参数 <code>curl -i -X POST -F 'file=@/User/uploadFile.txt' -H "token:abc123</code>" -v</p></blockquote> <h2 id="_2-5-http基本认证"><a href="#_2-5-http基本认证" class="header-anchor">#</a> 2.5 HTTP基本认证</h2> <div class="language- extra-class"><pre class="language-text"><code>curl -i -u username:password http://www.baidu.com/api/foo'
+</code></pre></div><h2 id="_2-6-post请求"><a href="#_2-6-post请求" class="header-anchor">#</a> 2.6 post请求</h2> <blockquote><p>由于我们平时遇到接口请求都是<code>post</code>请求，所以接下来我们以<code>post</code>请求为例，分别探讨http协议和https协议两种情况下如何通过curl命令来调试接口；</p></blockquote> <p><strong>http协议</strong></p> <div class="language- extra-class"><pre class="language-text"><code>curl -v -X POST http://localhost:3000/api/posts --data '{"title":"controller", "content": "what is controller"}' -H 'Content-Type:application/json; charset=UTF-8'
+</code></pre></div><ul><li><code>-v</code> 显示版本信息</li> <li><code>--header</code>等同于 <code>-H</code> 指定请求头（可校验调用方是否有权限，通过判断请求头信息，如果有规定的请求头信息，则允许调用，否则拒绝调用</li> <li><code>--data</code> 请求参数(请求报文)</li> <li><code>-X</code>：指定请求方式</li></ul> <p><strong>通过 curl 发出的 HTTP 请求的内容就会是下面这样的</strong></p> <div class="language- extra-class"><pre class="language-text"><code>POST /api/posts HTTP/1.1
+Host: localhost:3000
+Content-Type: application/json; charset=UTF-8
+
+{"title": "controller", "content": "what is controller"}
+</code></pre></div><p><strong>https协议</strong></p> <div class="language- extra-class"><pre class="language-text"><code>curl -v -k -X POST http://localhost:3000/api/posts
+–cert '/app/milo/tomcat/milogenius/webapps/client.crt'
+–key '/app/milo/tomcat/milogenius/webapps/client.key'
+–pass 'milogenius'
+</code></pre></div><ul><li><code>-k</code> :允许不使用证书到<code>SSL</code>站点;</li> <li><code>-cert</code>: 客户端证书文件;</li> <li><code>-key</code>: 私钥文件名 (<code>SSL</code>);</li> <li><code>-pass</code>: 私钥密码 (<code>SSL</code>);</li></ul> <h2 id="_2-7-扩展知识"><a href="#_2-7-扩展知识" class="header-anchor">#</a> 2.7 扩展知识</h2> <ul><li><code>curl post</code>请求, 数据可以采用<code>xml</code> 或者<code>json</code>格式, 并且可以发送本地<code>xml</code>和<code>json</code>文件</li></ul> <div class="language- extra-class"><pre class="language-text"><code>curl -H 'Content-Type:application/json' -X POST -d '{"name":"zhangsan"}' http://www.baidu.com/
+</code></pre></div><div class="language- extra-class"><pre class="language-text"><code>curl -X POST -H 'content-type: application/json'  -d /apps/jsonfile.json http://www.baidu.com/
+</code></pre></div><div class="language- extra-class"><pre class="language-text"><code>curl -X POST -H 'content-type:application/xml'  -d '&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;name&gt;zhangsan&lt;/name&gt;' http://www.baidu.com/
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

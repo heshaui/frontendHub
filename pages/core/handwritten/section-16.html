@@ -1,0 +1,224 @@
+<!-- Section: # 16 实现async/await -->
+<div class="section-content" data-section-id="_16-实现async-await">
+<h2 id="_16-实现async-await"><a href="#_16-实现async-await" class="header-anchor">#</a> 16 实现async/await</h2>
+<p><strong>分析</strong></p>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// generator生成器  生成迭代器iterator</span>
+
+<span class="token comment">// 默认这样写的类数组是不能被迭代的，缺少迭代方法</span>
+<span class="token keyword">let</span> likeArray <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string-property property">'0'</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token string-property property">'1'</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token string-property property">'2'</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token string-property property">'3'</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token literal-property property">length</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">}</span>
+
+<span class="token comment">// // 使用迭代器使得可以展开数组</span>
+<span class="token comment">// // Symbol有很多元编程方法，可以改js本身功能</span>
+<span class="token comment">// likeArray[Symbol.iterator] = function () {</span>
+<span class="token comment">//   // 迭代器是一个对象 对象中有next方法 每次调用next 都需要返回一个对象 {value,done}</span>
+<span class="token comment">//   let index = 0</span>
+<span class="token comment">//   return {</span>
+<span class="token comment">//     next: ()=&gt;{</span>
+<span class="token comment">//       // 会自动调用这个方法</span>
+<span class="token comment">//       console.log('index',index)</span>
+<span class="token comment">//       return {</span>
+<span class="token comment">//         // this 指向likeArray</span>
+<span class="token comment">//         value: this[index],</span>
+<span class="token comment">//         done: index++ === this.length</span>
+<span class="token comment">//       }</span>
+<span class="token comment">//     }</span>
+<span class="token comment">//   }</span>
+<span class="token comment">// }</span>
+<span class="token comment">// let arr = [...likeArray]</span>
+
+<span class="token comment">// console.log('arr', arr)</span>
+
+<span class="token comment">// 使用生成器返回迭代器</span>
+<span class="token comment">// likeArray[Symbol.iterator] = function *() {</span>
+<span class="token comment">//   let index = 0</span>
+<span class="token comment">//   while (index != this.length) {</span>
+<span class="token comment">//     yield this[index++]</span>
+<span class="token comment">//   }</span>
+<span class="token comment">// }</span>
+<span class="token comment">// let arr = [...likeArray]</span>
+
+<span class="token comment">// console.log('arr', arr)</span>
+
+
+<span class="token comment">// 生成器 碰到yield就会暂停</span>
+<span class="token comment">// function *read(params) {</span>
+<span class="token comment">//   yield 1;</span>
+<span class="token comment">//   yield 2;</span>
+<span class="token comment">// }</span>
+<span class="token comment">// 生成器返回的是迭代器</span>
+<span class="token comment">// let it = read()</span>
+<span class="token comment">// console.log(it.next())</span>
+<span class="token comment">// console.log(it.next())</span>
+<span class="token comment">// console.log(it.next())</span>
+
+<span class="token comment">// 通过generator来优化promise（promise的缺点是不停的链式调用）</span>
+<span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span>
+<span class="token comment">// const co = require('co') // 帮我们执行generator</span>
+
+<span class="token keyword">const</span> <span class="token function-variable function">promisify</span> <span class="token operator">=</span> <span class="token parameter">fn</span><span class="token operator">=&gt;</span><span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span><span class="token operator">=&gt;</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span>reject</span><span class="token punctuation">)</span><span class="token operator">=&gt;</span><span class="token punctuation">{</span>
+      <span class="token function">fn</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">err<span class="token punctuation">,</span>data</span><span class="token punctuation">)</span><span class="token operator">=&gt;</span><span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token function">reject</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span> 
+        <span class="token function">resolve</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// promise化</span>
+<span class="token keyword">let</span> asyncReadFile <span class="token operator">=</span> <span class="token function">promisify</span><span class="token punctuation">(</span>fs<span class="token punctuation">.</span>readFile<span class="token punctuation">)</span>
+
+<span class="token keyword">function</span> <span class="token operator">*</span> <span class="token function">read</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> content1 <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">asyncReadFile</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span><span class="token string">'./data/name.txt'</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'utf8'</span><span class="token punctuation">)</span>
+  <span class="token keyword">let</span> content2 <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">asyncReadFile</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span><span class="token string">'./data/'</span> <span class="token operator">+</span> content1<span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'utf8'</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> content2
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 这样写太繁琐 需要借助co来实现</span>
+<span class="token comment">// let re = read()</span>
+<span class="token comment">// let {value,done} = re.next()</span>
+<span class="token comment">// value.then(data=&gt;{</span>
+<span class="token comment">//   // 除了第一次传参没有意义外 剩下的传参都赋予了上一次的返回值 </span>
+<span class="token comment">//   let {value,done} = re.next(data) </span>
+<span class="token comment">//   value.then(d=&gt;{</span>
+<span class="token comment">//     let {value,done} = re.next(d)</span>
+<span class="token comment">//     console.log(value,done)</span>
+<span class="token comment">//   })</span>
+<span class="token comment">// }).catch(err=&gt;{</span>
+<span class="token comment">//   re.throw(err) // 手动抛出错误 可以被try catch捕获</span>
+<span class="token comment">// })</span>
+
+
+
+<span class="token comment">// 实现co原理</span>
+<span class="token keyword">function</span> <span class="token function">co</span><span class="token punctuation">(</span><span class="token parameter">it</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token comment">// it 迭代器</span>
+  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span>reject</span><span class="token punctuation">)</span><span class="token operator">=&gt;</span><span class="token punctuation">{</span>
+    <span class="token comment">// 异步迭代 需要根据函数来实现</span>
+    <span class="token keyword">function</span> <span class="token function">next</span><span class="token punctuation">(</span><span class="token parameter">data</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 递归得有中止条件</span>
+      <span class="token keyword">let</span> <span class="token punctuation">{</span>value<span class="token punctuation">,</span>done<span class="token punctuation">}</span> <span class="token operator">=</span> it<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+      <span class="token keyword">if</span><span class="token punctuation">(</span>done<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">resolve</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span> <span class="token comment">// 直接让promise变成成功 用当前返回的结果</span>
+      <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token comment">// Promise.resolve(value).then(data=&gt;{</span>
+        <span class="token comment">//   next(data)</span>
+        <span class="token comment">// }).catch(err=&gt;{</span>
+        <span class="token comment">//   reject(err)</span>
+        <span class="token comment">// })</span>
+        <span class="token comment">// 简写</span>
+        Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>next<span class="token punctuation">,</span>reject<span class="token punctuation">)</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment">// 首次调用</span>
+    <span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token function">co</span><span class="token punctuation">(</span><span class="token function">read</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">d</span><span class="token operator">=&gt;</span><span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>d<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">catch</span><span class="token punctuation">(</span><span class="token parameter">err</span><span class="token operator">=&gt;</span><span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span><span class="token string">'--'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div>
+<p><strong>整体看一下结构</strong></p>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">asyncToGenerator</span><span class="token punctuation">(</span><span class="token parameter">generatorFunc</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> gen <span class="token operator">=</span> <span class="token function">generatorFunc</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> arguments<span class="token punctuation">)</span>
+      <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">function</span> <span class="token function">step</span><span class="token punctuation">(</span><span class="token parameter">key<span class="token punctuation">,</span> arg</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">let</span> generatorResult
+          <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            generatorResult <span class="token operator">=</span> gen<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span>
+          <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token function">reject</span><span class="token punctuation">(</span>error<span class="token punctuation">)</span>
+          <span class="token punctuation">}</span>
+          <span class="token keyword">const</span> <span class="token punctuation">{</span> value<span class="token punctuation">,</span> done <span class="token punctuation">}</span> <span class="token operator">=</span> generatorResult
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>done<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token function">resolve</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
+          <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">val</span> <span class="token operator">=&gt;</span> <span class="token function">step</span><span class="token punctuation">(</span><span class="token string">'next'</span><span class="token punctuation">,</span> val<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token parameter">err</span> <span class="token operator">=&gt;</span> <span class="token function">step</span><span class="token punctuation">(</span><span class="token string">'throw'</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span><span class="token punctuation">)</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token function">step</span><span class="token punctuation">(</span><span class="token string">"next"</span><span class="token punctuation">)</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div>
+<p><strong>分析</strong></p>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">asyncToGenerator</span><span class="token punctuation">(</span><span class="token parameter">generatorFunc</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 返回的是一个新的函数</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  
+    <span class="token comment">// 先调用generator函数 生成迭代器</span>
+    <span class="token comment">// 对应 var gen = testG()</span>
+    <span class="token keyword">const</span> gen <span class="token operator">=</span> <span class="token function">generatorFunc</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> arguments<span class="token punctuation">)</span>
+
+    <span class="token comment">// 返回一个promise 因为外部是用.then的方式 或者await的方式去使用这个函数的返回值的</span>
+    <span class="token comment">// var test = asyncToGenerator(testG)</span>
+    <span class="token comment">// test().then(res =&gt; console.log(res))</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    
+      <span class="token comment">// 内部定义一个step函数 用来一步一步的跨过yield的阻碍</span>
+      <span class="token comment">// key有next和throw两种取值，分别对应了gen的next和throw方法</span>
+      <span class="token comment">// arg参数则是用来把promise resolve出来的值交给下一个yield</span>
+      <span class="token keyword">function</span> <span class="token function">step</span><span class="token punctuation">(</span><span class="token parameter">key<span class="token punctuation">,</span> arg</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">let</span> generatorResult
+        
+        <span class="token comment">// 这个方法需要包裹在try catch中</span>
+        <span class="token comment">// 如果报错了 就把promise给reject掉 外部通过.catch可以获取到错误</span>
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+          generatorResult <span class="token operator">=</span> gen<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">return</span> <span class="token function">reject</span><span class="token punctuation">(</span>error<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment">// gen.next() 得到的结果是一个 { value, done } 的结构</span>
+        <span class="token keyword">const</span> <span class="token punctuation">{</span> value<span class="token punctuation">,</span> done <span class="token punctuation">}</span> <span class="token operator">=</span> generatorResult
+
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>done<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token comment">// 如果已经完成了 就直接resolve这个promise</span>
+          <span class="token comment">// 这个done是在最后一次调用next后才会为true</span>
+          <span class="token comment">// 以本文的例子来说 此时的结果是 { done: true, value: 'success' }</span>
+          <span class="token comment">// 这个value也就是generator函数最后的返回值</span>
+          <span class="token keyword">return</span> <span class="token function">resolve</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+          <span class="token comment">// 除了最后结束的时候外，每次调用gen.next()</span>
+          <span class="token comment">// 其实是返回 { value: Promise, done: false } 的结构，</span>
+          <span class="token comment">// 这里要注意的是Promise.resolve可以接受一个promise为参数</span>
+          <span class="token comment">// 并且这个promise参数被resolve的时候，这个then才会被调用</span>
+          <span class="token keyword">return</span> Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>
+            <span class="token comment">// 这个value对应的是yield后面的promise</span>
+            value
+          <span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>
+            <span class="token comment">// value这个promise被resove的时候，就会执行next</span>
+            <span class="token comment">// 并且只要done不是true的时候 就会递归的往下解开promise</span>
+            <span class="token comment">// 对应gen.next().value.then(value =&gt; {</span>
+            <span class="token comment">//    gen.next(value).value.then(value2 =&gt; {</span>
+            <span class="token comment">//       gen.next() </span>
+            <span class="token comment">//</span>
+            <span class="token comment">//      // 此时done为true了 整个promise被resolve了 </span>
+            <span class="token comment">//      // 最外部的test().then(res =&gt; console.log(res))的then就开始执行了</span>
+            <span class="token comment">//    })</span>
+            <span class="token comment">// })</span>
+            <span class="token keyword">function</span> <span class="token function">onResolve</span><span class="token punctuation">(</span><span class="token parameter">val</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+              <span class="token function">step</span><span class="token punctuation">(</span><span class="token string">"next"</span><span class="token punctuation">,</span> val<span class="token punctuation">)</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token comment">// 如果promise被reject了 就再次进入step函数</span>
+            <span class="token comment">// 不同的是，这次的try catch中调用的是gen.throw(err)</span>
+            <span class="token comment">// 那么自然就被catch到 然后把promise给reject掉啦</span>
+            <span class="token keyword">function</span> <span class="token function">onReject</span><span class="token punctuation">(</span><span class="token parameter">err</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+              <span class="token function">step</span><span class="token punctuation">(</span><span class="token string">"throw"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+      <span class="token function">step</span><span class="token punctuation">(</span><span class="token string">"next"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div>
+</div>

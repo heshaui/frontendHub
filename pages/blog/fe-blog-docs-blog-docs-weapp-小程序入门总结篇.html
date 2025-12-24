@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小程序入门总结篇 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>小程序入门总结篇</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>小程序入门总结篇</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、小程序代码组成"><a href="#一、小程序代码组成" class="header-anchor">#</a> 一、小程序代码组成</h2> <p><img src="https://s.poetries.top/gitee/2019/10/664.png" alt=""></p> <p><strong>须知</strong></p> <ul><li><code>App()</code> 必须在 <code>app.js</code> 中注册，且不能注册多个。</li> <li>编译后的代码包大小需小于 <code>1MB</code>，否则代码包将上传失败。</li> <li>每个页面需要手动在<code>app.json</code>中进行注册，否则不能访问。</li> <li><code>app.json</code>中<code>pages</code>数组的第一项代表小程序的初始页面，小程序中新增/减少页面，都需要对 <code>pages</code> 数组进行修改。</li> <li>直接修改 <code>this.data</code>无效，无法改变页面的状态，还会造成数据不一致。</li> <li>单次设置的数据不能超过<code>1024kB</code>，请尽量避免一次设置过多的数据。</li> <li>不要尝试修改页面栈，会导致路由以及页面状态错误。</li> <li><code>tabBar</code>只能配置最少2个、最多5个，<code>tab</code> 按数组的顺序排序。</li> <li>小程序页面只能同时打开 5 个，如果交互流程较长难以支持。</li> <li>同时只能存在 5 个<code>url</code>请求。</li> <li>无法跳转小程序以外的<code>url</code>。</li> <li>没有<code>cookie</code>。</li> <li>没有开放加载<code>web</code>页面</li> <li>没有a标签链接，不可嵌套<code>iframe</code></li> <li>没有<code>window</code>变量，但微信提供了wx全局方法集</li> <li>事件绑定和条件渲染类似<code>Angular</code>，全部写在<code>WXML</code>中</li></ul> <h3 id="_1-1-主体"><a href="#_1-1-主体" class="header-anchor">#</a> 1.1 主体</h3> <blockquote><p>由<code>app.js</code>、<code>app.json</code>、<code>app.wxss</code>三个文件组成，放在根目录</p></blockquote> <ul><li><code>app.js</code> 根目录的<code>app.js</code>很有用,因为在它内部注册的变量或方法，都是可以被所有页面获取到。可以监听并处理小程序的生命周期、声明全局变量。其余的<code>.js</code>文 件可以通过<code>var app = getApp()</code> 获取其实例，调用其中定义的方法和变量，但不可以调用生命周期的方法</li> <li><code>app.json</code>是小程序的全局配置</li></ul> <div class="language- extra-class"><pre class="language-text"><code>pages 配置小程序的组成页面，第一个代表小程序的初始页面
+window  设置小程序的状态栏、标题栏、导航条、窗口背景颜色
+tabBar  配置小程序tab栏的样式和对应的页面
+</code></pre></div><ul><li><code>app.wxss</code> 是小程序的公共样式表，可以在其他<code>.wxss</code>文件中直接使用</li></ul> <blockquote><p><code>app.json</code></p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token string-property property">"pages"</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token comment">//设置页面的路径</span>
+  <span class="token string">"pages/index/index"</span><span class="token punctuation">,</span> <span class="token comment">//不需要写index.wxml,index.js,index,wxss,框架会自动寻找并整合</span>
+  <span class="token string">"pages/logs/logs"</span>
+<span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token string-property property">"window"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token comment">//设置默认窗口的表现形式</span>
+  <span class="token string-property property">"navigationBarBackgroundColor"</span><span class="token operator">:</span> <span class="token string">"#ffffff"</span><span class="token punctuation">,</span> <span class="token comment">//顶部导航栏背景色</span>
+  <span class="token string-property property">"navigationBarTextStyle"</span><span class="token operator">:</span> <span class="token string">"black"</span><span class="token punctuation">,</span> <span class="token comment">//顶部导航文字的颜色 black/white</span>
+  <span class="token string-property property">"navigationBarTitleText"</span><span class="token operator">:</span> <span class="token string">"微信接口功能演示"</span><span class="token punctuation">,</span> <span class="token comment">//顶部导航的显示文字</span>
+  <span class="token string-property property">"backgroundColor"</span><span class="token operator">:</span> <span class="token string">"#eeeeee"</span><span class="token punctuation">,</span> <span class="token comment">//窗口的背景色</span>
+  <span class="token string-property property">"backgroundTextStyle"</span><span class="token operator">:</span> <span class="token string">"light"</span><span class="token punctuation">,</span> <span class="token comment">//下拉背景字体、loading 图的样式，仅支持 dark/light</span>
+  <span class="token string-property property">"enablePullDownRefresh"</span><span class="token operator">:</span> <span class="token string">"false"</span>， <span class="token comment">//是否支持下拉刷新 ，不支持的话就直接不写！</span>
+  <span class="token string-property property">"disableScroll"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token comment">//  设置true不能上下滚动，true/false，注意！只能在 page.json 中有效，无法在 app.json 中设置该项。</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token string-property property">"tabBar"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token comment">//底部tab或者顶部tab的表现，是个数组，最少配置2个，最多5个</span>
+  <span class="token string-property property">"list"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span> <span class="token comment">//设置tab的属性，最少2个，最多5个</span>
+    <span class="token string-property property">"pagePath"</span><span class="token operator">:</span> <span class="token string">"pages/index/index"</span><span class="token punctuation">,</span> <span class="token comment">//点击底部 tab 跳转的路径</span>
+    <span class="token string-property property">"text"</span><span class="token operator">:</span> <span class="token string">"首页"</span><span class="token punctuation">,</span> <span class="token comment">//tab 按钮上的文字</span>
+    <span class="token string-property property">"iconPath"</span><span class="token operator">:</span> <span class="token string">"../img/a.png"</span><span class="token punctuation">,</span> <span class="token comment">//tab图片的路径</span>
+    <span class="token string-property property">"selectedIconPath"</span><span class="token operator">:</span> <span class="token string">"../img/a.png"</span> <span class="token comment">//tab 在当前页，也就是选中状态的路径</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    <span class="token string-property property">"pagePath"</span><span class="token operator">:</span> <span class="token string">"pages/logs/logs"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"text"</span><span class="token operator">:</span> <span class="token string">"日志"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"color"</span><span class="token operator">:</span> <span class="token string">"red"</span><span class="token punctuation">,</span> <span class="token comment">//tab 的字体颜色</span>
+  <span class="token string-property property">"selectedColor"</span><span class="token operator">:</span> <span class="token string">"#673ab7"</span><span class="token punctuation">,</span> <span class="token comment">//当前页 tab 的颜色，也就是选中页的</span>
+  <span class="token string-property property">"backgroundColor"</span><span class="token operator">:</span> <span class="token string">"#2196f3"</span><span class="token punctuation">,</span> <span class="token comment">//tab 的背景色</span>
+  <span class="token string-property property">"borderStyle"</span><span class="token operator">:</span> <span class="token string">"white"</span><span class="token punctuation">,</span> <span class="token comment">//边框的颜色 black/white</span>
+  <span class="token string-property property">"position"</span><span class="token operator">:</span> <span class="token string">"bottom"</span> <span class="token comment">//tab处于窗口的位置 top/bottom</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token string-property property">"networkTimeout"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token comment">//默认都是 60000 秒一分钟</span>
+    <span class="token string-property property">"request"</span><span class="token operator">:</span> <span class="token number">10000</span><span class="token punctuation">,</span> <span class="token comment">//请求网络超时时间 10000 秒</span>
+    <span class="token string-property property">"downloadFile"</span><span class="token operator">:</span> <span class="token number">10000</span>， <span class="token comment">//链接服务器超时时间 10000 秒</span>
+      <span class="token string-property property">"uploadFile"</span><span class="token operator">:</span> <span class="token string">"10000"</span><span class="token punctuation">,</span> <span class="token comment">//上传图片 10000 秒</span>
+    <span class="token string-property property">"downloadFile"</span><span class="token operator">:</span> <span class="token string">"10000"</span> <span class="token comment">//下载图片超时时间 10000 秒</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token string-property property">"debug"</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token comment">//项目上线后，建议关闭此项，或者不写此项</span>
+</code></pre></div><h3 id="_1-2-pages"><a href="#_1-2-pages" class="header-anchor">#</a> 1.2 pages</h3> <blockquote><p><code>pages</code>文件夹里是小程序的各个页面，每个界面一般都由<code>.wxml</code>、<code>.wxss</code>、<code>.js</code>、<code>.json</code>四个文件组成，四个文件必须是相同的名字和路径</p></blockquote> <ul><li><code>.js</code> 是页面的脚本代码，通过<code>Page()</code>函数注册页面。可以指定页面的初始数据、生命周期、事件处理等</li> <li><code>.wxml</code> 是页面的布局文件，只能使用微信定义的组件</li> <li><code>.wxss</code> 是样式表，需要注意
+<ul><li>尺寸单位：<code>rpx</code> 可以根据屏幕的宽带进行自适应</li> <li>样式导入：<code>@import</code>导入外联样式表，如：<code>@import "test.wxss"</code>;</li> <li>定义在<code>app.wxss</code>中的全局样式，作用于每个页面。定义在<code>page</code>的<code>.wxss</code>文件只作用于对应的页面，会覆盖<code>app.wxss</code>中相同的选择器</li></ul></li> <li><code>.json</code> 是页面的配置文件，只能设置<code>app.json</code>中的<code>window</code>配置内容，会覆盖<code>app.json</code>中<code>window</code>的相同配置项，即使不配置任何东西也需要写<code>{}</code>,否则会报错</li></ul> <h3 id="_1-3-utils"><a href="#_1-3-utils" class="header-anchor">#</a> 1.3 utils</h3> <blockquote><p><code>utils</code> 里面包含一些公共的代码抽取的<code>js</code>文件，作为模块方便使用。模块通过<code>module.exports</code>对外暴露接口</p></blockquote> <ul><li>其他地方使用是<code>var utils = require('../../utils/util.js')</code> 进行引用</li></ul> <h2 id="二、视图层-wxml"><a href="#二、视图层-wxml" class="header-anchor">#</a> 二、视图层 WXML</h2> <h3 id="_2-1-数据绑定"><a href="#_2-1-数据绑定" class="header-anchor">#</a> 2.1 数据绑定</h3> <blockquote><p>传统的视图和数据绑定</p></blockquote> <p><img src="https://s.poetries.top/gitee/2019/10/665.png" alt=""></p> <p><strong>那么微信小程序是通过什么方法来管理视图和对象绑定的呢,状态模式-单向数据流</strong></p> <p><img src="https://s.poetries.top/gitee/2019/10/666.png" alt=""></p> <blockquote><p>数据流向是单向的，即视图变化不会影响对象状态</p></blockquote> <ul><li>用户触发事件不仅要考虑当前<code>UI</code>元素更新，还会通过当前元素更新其他视图。</li> <li>所以视图上的数据都必须用过事件传递给对象，只有用户操作视图，才能获取到数据，并更新对象状态</li></ul> <p><img src="https://s.poetries.top/gitee/2019/10/667.png" alt=""></p> <blockquote><p><code>.wxml</code> 中的动态数据都来自<code>Page</code>中的<code>data</code>。数据绑定使用数据绑定使用双大括号将变量包起来，可以作用于内容、组件属性(需要在双引号之内)、控制属性(需要在双引号之内)、关键字(需要在双引号之内)</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">Page</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">data</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">"Hello"</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">id</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">status</span><span class="token operator">:</span> <span class="token boolean">true</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><div class="language- extra-class"><pre class="language-text"><code>&lt;view&gt; {{message}} &lt;/view&gt;
+&lt;view id="item-{{id}}"&gt; &lt;/view&gt;
+&lt;view wx:if="{{status}}"&gt; &lt;/view&gt;
+&lt;view hidden="{{status}}"&gt; &lt;/checkbox&gt;
+</code></pre></div><blockquote><p>还可以进行简单的运算在大括号里</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>&lt;view hidden="{{status ? true : false}}"&gt; Hidden &lt;/view&gt;
+&lt;view&gt; {{a + b}} + c &lt;/view&gt; 
+&lt;view wx:if="{{num &gt; 6}}"&gt; &lt;/view&gt;
+&lt;view&gt;{{"hello" + word}}&lt;/view&gt;
+</code></pre></div><h3 id="_2-2-条件渲染"><a href="#_2-2-条件渲染" class="header-anchor">#</a> 2.2 条件渲染</h3> <blockquote><p>用 <code>wx:if=””</code>来判断是否渲染代码块</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>&lt;view wx:if="{{status}}"&gt; isShow &lt;/view&gt;
+</code></pre></div><blockquote><p>还可以添加<code>else</code>块</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>&lt;view wx:if="{{num &gt; 5}}"&gt; A &lt;/view&gt;
+&lt;view wx:elif="{{num &gt; 2}}"&gt; B &lt;/view&gt;
+&lt;view wx:else&gt; C &lt;/view&gt;
+</code></pre></div><h3 id="_2-3-列表渲染"><a href="#_2-3-列表渲染" class="header-anchor">#</a> 2.3 列表渲染</h3> <ul><li>在组件上使用 <code>wx:for</code>属性绑定一个数组，就可以渲染组件了</li> <li>默认情况下数组的当前下标变量名为<code>index</code>,当前项的变量名为<code>item</code></li></ul> <div class="language- extra-class"><pre class="language-text"><code>&lt;view wx:for="{{array}}"&gt;
+  {{index}}: {{item.message}}
+&lt;/view&gt;
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">Page</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token literal-property property">data</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">array</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"AA"</span><span class="token punctuation">,</span><span class="token string">"BB"</span><span class="token punctuation">,</span><span class="token string">"CC"</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><blockquote><p>使用 <code>wx:for-item</code> 可以指定数组当前元素的变量名，使用 <code>wx:for-index</code> 可以指定数组当前下标的变量名</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>&lt;view wx:for="{{array}}" wx:for-index="num" wx:for-item="itemName"&gt;
+  {{num}}: {{itemName}}
+&lt;/view&gt;
+</code></pre></div><h3 id="_2-4-模板template"><a href="#_2-4-模板template" class="header-anchor">#</a> 2.4 模板template</h3> <ul><li><code>name</code> 定义组件模版的名称，引用模版的时候使用 <code>is</code> 属性指定模版的名字，<code>is</code> 可以进行简单的三目运算，需要传入模版需要的 <code>data</code> 数据。</li> <li>因为模版拥有自己的作用域，所以只能使用 <code>data</code> 传入数据，而不接受双花括号的写法</li></ul> <div class="language- extra-class"><pre class="language-text"><code>&lt;template name="msgItem"&gt;
+&lt;view&gt;
+&lt;text&gt; {{index}}: {{msg}} &lt;/text&gt;
+&lt;text&gt; Time: {{time}} &lt;/text&gt;
+&lt;/view&gt;
+&lt;/template&gt;
+
+&lt;!-- 其他代码 --&gt;
+&lt;template is="msgItem" data="{{...item}}"/&gt;
+</code></pre></div><h3 id="_2-5-公共模块的引用"><a href="#_2-5-公共模块的引用" class="header-anchor">#</a> 2.5 公共模块的引用</h3> <ul><li><code>WXML</code> 提供 <code>import</code> 和 <code>include</code> 两种文件引用方式。</li> <li><code>import</code> 有作用域的概念，不能多重引用</li></ul> <div class="language- extra-class"><pre class="language-text"><code>&lt;!-- B.wxml --&gt;
+&lt;import src="a.wxml"/&gt;
+
+&lt;!-- A.wxml --&gt;
+&lt;template name="A"&gt;
+ &lt;text&gt; A template &lt;/text&gt;
+&lt;/template&gt;
+</code></pre></div><blockquote><p><code>include</code> 就可以多重引用</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>&lt;!--引用 header、其中 header.wxml 中也引用了 footer.wxml--&gt;
+&lt;include src="header.wxml"/&gt;
+&lt;view&gt; body &lt;/view&gt;
+
+&lt;!-- header.wxml --&gt;
+&lt;view&gt; header &lt;/view&gt;
+&lt;include src="footer.wxml"/&gt;
+</code></pre></div><h3 id="_2-6-事件"><a href="#_2-6-事件" class="header-anchor">#</a> 2.6 事件</h3> <ul><li>名称以 <code>bind</code> 开头的事件不阻止冒泡，名称以 <code>catch</code> 开头的事件冒泡是阻止的。如 <code>bindTap</code> 和 <code>catchTab</code></li> <li>在 <code>WXM</code>L 中，可以使用 <code>dataset</code> 定义<code>data</code>中的数据，会通过事件传递。它的事件以 <code>data-</code>开头，多个单词以 - 链接，如 <code>data-a-b</code></li></ul> <h2 id="三、生命周期"><a href="#三、生命周期" class="header-anchor">#</a> 三、生命周期</h2> <h3 id="_3-1-app-应用生命周期"><a href="#_3-1-app-应用生命周期" class="header-anchor">#</a> 3.1 App()应用生命周期</h3> <p><img src="https://s.poetries.top/gitee/2019/10/668.png" alt=""></p> <ul><li>用户首次打开小程序，触发 <code>onLaunch</code>（全局只触发一次）。</li> <li>小程序初始化完成后，触发<code>onShow</code>方法，监听小程序显示。</li> <li>小程序从前台进入后台，触发 <code>onHide</code>方法。</li> <li>小程序从后台进入前台显示，触发 <code>onShow</code>方法。</li> <li>小程序后台运行一定时间，或系统资源占用过高，会被销毁。</li> <li>小程序出错，触发<code>onError</code></li></ul> <blockquote><p>前台、后台定义： 当用户点击左上角关闭，或者按了设备 Home 键离开微信，小程序并没有直接销毁，而是进入了后台；当再次进入微信或再次打开小程序，又会从后台进入前台</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">//app.js</span>
+<span class="token function">App</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token function-variable function">onLaunch</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+      <span class="token comment">//小程序初始化(全局只触发一次)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function-variable function">onShow</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">//小程序显示</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function-variable function">onHide</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">//小程序隐藏</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function-variable function">onError</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">msg</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">//小程序错误</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token comment">//其他 开发者可以添加任意的函数或数据到 Object 参数中，用 this 可以访问</span>
+</code></pre></div><h3 id="_3-2-page页面生命周期"><a href="#_3-2-page页面生命周期" class="header-anchor">#</a> 3.2 Page页面生命周期</h3> <blockquote><p>每个页面也有自己的生命周期</p></blockquote> <p><img src="https://s.poetries.top/gitee/2019/10/669.png" alt=""></p> <ul><li>小程序注册完成后，加载页面，触发<code>onLoad</code>方法。</li> <li>页面载入后触发<code>onShow</code>方法，显示页面。</li> <li>首次显示页面，会触发<code>onReady</code>方法，渲染页面元素和样式，一个页面只会调用一次。</li> <li>当小程序后台运行或跳转到其他页面时，触发<code>onHide</code>方法。</li> <li>当小程序有后台进入到前台运行或重新进入页面时，触发<code>onShow</code>方法。</li> <li>当使用重定向方法<code>wx.redirectTo(OBJECT)</code>或关闭当前页返回上一页<code>wx.navigateBack()</code>，触发<code>onUnload</code></li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">//index.js</span>
+<span class="token function">Page</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token function-variable function">onLoad</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">//页面加载-----(一个页面只会调用一次)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function-variable function">onReady</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">//页面渲染-----(一个页面只会调用一次)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function-variable function">onShow</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">//页面显示-----(每次打开页面都会调用一次)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function-variable function">onHide</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">//页面隐藏-----(当navigateTo或底部tab切换时调用)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function-variable function">onUnload</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">//页面卸载-----(当redirectTo或navigateBack的时候调用)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token comment">//其他 开发者可以添加任意的函数或数据到 object 参数中，在页面的函数中用 this 可以访问</span>
+</code></pre></div><h3 id="_3-3-应用生命周期影响页面生命周期"><a href="#_3-3-应用生命周期影响页面生命周期" class="header-anchor">#</a> 3.3 应用生命周期影响页面生命周期</h3> <p><img src="https://s.poetries.top/gitee/2019/10/670.png" alt=""></p> <ul><li>小程序初始化完成后，页面首次加载触发<code>onLoad</code>，只会触发一次。</li> <li>当小程序进入到后台，先执行页面<code>onHide</code>方法再执行应用<code>onHide</code>方法。</li> <li>当小程序从后台进入到前台，先执行应用<code>onShow</code>方法再执行页面<code>onShow</code>方法</li></ul> <h2 id="四、小程序限制"><a href="#四、小程序限制" class="header-anchor">#</a> 四、小程序限制</h2> <h3 id="_4-1-程序限制"><a href="#_4-1-程序限制" class="header-anchor">#</a> 4.1 程序限制</h3> <ul><li>脚本内不能使用<code>window</code>等对象</li> <li><code>zepto/jquery</code> 会使用到<code>window</code>对象和<code>document</code>对象，所以无法使用。</li> <li>样式表不支持级联选择器</li> <li>本地资源无法通过 <code>css</code> 获取 <code>background-image</code>可以使用网络图片，或者 <code>base64</code>，或者使用标签</li> <li>不支持 <code>A</code> 标签，无法打开普通网页</li></ul> <h3 id="_4-2-数量限制"><a href="#_4-2-数量限制" class="header-anchor">#</a> 4.2 数量限制</h3> <ul><li>底部或顶部可以添加<code>tab</code>按钮区域 <code>tabBar</code> 是一个数组，只能配置最少2个、最多5个 <code>tab</code>，<code>tab</code>按数组的顺序排序。</li> <li>一个应用同时只能打开5个页面</li> <li>小程序的<code>wx.request</code>请求最开始最大并发数是5个，后来，估计随着用小程序的越来越多，总之，就是增加到了10个</li></ul> <h3 id="_4-3-大小限制"><a href="#_4-3-大小限制" class="header-anchor">#</a> 4.3 大小限制</h3> <ul><li><code>tabBar</code> 上面的按钮 <code>iconPath</code> 图片路径，<code>icon</code>大小限制为<code>40kb</code></li> <li><code>tabBar</code> 上面的按钮 <code>selectedIconPath</code>选中时的图片路径，<code>icon</code> 大小限制为<code>40kb</code></li> <li><code>setData</code> 页面传递数据单次设置的数据不能超过<code>1024kB</code></li> <li><code>setStorage</code> 本地缓存最大为<code>10MB</code></li> <li>小程序源码打包后的大小限制为<code>1M</code></li></ul> <h2 id="五、路由"><a href="#五、路由" class="header-anchor">#</a> 五、路由</h2> <ul><li>微信路由接口有三个，分别是<code>wx.redirectTo</code>、<code>wx.navigateTo</code>和<code>wx.switchTab</code> <code>wx.navigateTo</code>全局最多调用5次</li> <li>如果某页面设置为<code>tab</code>页，则只支持<code>wx.switchTab</code>，不支持其他两种路由方式访问</li></ul> <h3 id="_5-1-哪些情况会触发页面跳转"><a href="#_5-1-哪些情况会触发页面跳转" class="header-anchor">#</a> 5.1 哪些情况会触发页面跳转</h3> <ul><li>小程序启动，初始化第一个页面</li> <li>打开新页面，调用 API <code>wx.navigateTo</code> 或使用<code>&lt;navigator /&gt;</code>组件</li> <li>页面重定向，调用 API <code>wx.redirectTo</code> 或使用<code>&lt;navigator /&gt;</code>组件</li> <li>页面返回，调用 API <code>wx.navigateBack</code>或用户按左上角返回按钮</li> <li><code>tarbar</code>切换</li></ul> <h3 id="_5-2-如何跳转页面"><a href="#_5-2-如何跳转页面" class="header-anchor">#</a> 5.2 如何跳转页面</h3> <ul><li>使用<code>wx.navigateTo</code>接口跳转,原页面保留</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>wx<span class="token punctuation">.</span><span class="token function">navigateTo</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token comment">//目的页面地址</span>
+  <span class="token literal-property property">url</span><span class="token operator">:</span> <span class="token string">'pages/logs/index'</span><span class="token punctuation">,</span>
+  <span class="token function-variable function">success</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">res</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><ul><li>使用<code>wx.redirectTo</code>接口跳转，关闭原页面,不能返回</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>wx<span class="token punctuation">.</span><span class="token function">redirectTo</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token comment">//目的页面地址</span>
+  <span class="token literal-property property">url</span><span class="token operator">:</span> <span class="token string">'pages/logs/index'</span><span class="token punctuation">,</span>
+  <span class="token function-variable function">success</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">res</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="_5-3-使用组件"><a href="#_5-3-使用组件" class="header-anchor">#</a> 5.3 使用组件</h3> <div class="language- extra-class"><pre class="language-text"><code>&lt;navigator url="pages/logs/index" hover-class="navigator-hover"&gt;跳转&lt;/navigator&gt;
+</code></pre></div><blockquote><p>当该组件添加<code>redirect</code>属性时，等同于<code>wx.redirectTo</code>接口；默认<code>redirect</code>属性为<code>false</code>，等同于<code>wx.navigateTo</code>接口</p></blockquote> <p>用户点击左上角返回按钮，或调用<code>wx.navigateBack</code>接口返回上一页</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>wx<span class="token punctuation">.</span><span class="token function">navigateBack</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">delta</span><span class="token operator">:</span> <span class="token number">1</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><blockquote><p><code>delta</code>为1时表示返回上一页，为2时表示上上一页，以此类推；如果dalta大于已打开的页面总数，则返回到首页。返回后，元界面会销毁</p></blockquote> <h3 id="_5-4-页面跳转传值"><a href="#_5-4-页面跳转传值" class="header-anchor">#</a> 5.4 页面跳转传值</h3> <div class="language- extra-class"><pre class="language-text"><code>url?key=value&amp;key1=value1
+</code></pre></div><blockquote><p>传递的参数没有被<code>URIEncode</code>,传递中文没有乱码</p></blockquote> <h3 id="_5-5-如何正确使用页面跳转"><a href="#_5-5-如何正确使用页面跳转" class="header-anchor">#</a> 5.5 如何正确使用页面跳转</h3> <blockquote><p>官方规定小程序最多只能有五个页面同时存在，意思是在不关闭页面的情况，最多新开五个页面，页面深度为5</p></blockquote> <ul><li>对于可逆操作，使用<code>wx.navigateTo</code>,比如从首页跳转到二级页面，从二级页面返回是不需要重新渲染首页</li> <li>对于不可逆操作，使用<code>wx.redirectTo</code>,比如用户登录成功后，关闭登录页面，不能返回到登录界面。</li> <li>对于一些介绍性等不常用页面<code>wx.redirectTo</code>或<code>wx.navigatrBack</code></li> <li>不要在首页使用<code>wx.redirectTo</code>，这样会导致应用无法返回首页</li></ul> <h3 id="_5-6-页面栈"><a href="#_5-6-页面栈" class="header-anchor">#</a> 5.6 页面栈</h3> <ul><li>页面栈以栈（先进后出）的形式维护页面与页面之间的关系</li> <li>小程序提供了<code>getCurrentPages()</code>函数获取页面栈，第一个元素为首页，最后一个元素为当前页面</li></ul> <p><strong>使用wx.navigateTo每新开一个页面，页面栈大小加1,直到页面栈大小为5为止</strong></p> <p><img src="https://s.poetries.top/gitee/2019/10/671.png" alt=""></p> <p><strong>使用wx.navigateTo重复打开界面</strong></p> <p><img src="https://s.poetries.top/gitee/2019/10/672.png" alt=""></p> <blockquote><p>假如使用wx.navigateTo从四级页面跳转到二级页面，此时会在页面栈顶添加一个与二级页面初始状态一样的界面，但两个页面状态是独立的。页面栈大小会加1，如果页面栈大小为5，则wx.navigateTo无效</p></blockquote> <p><strong>使用wx.redirectTo重定向</strong></p> <p><img src="https://s.poetries.top/gitee/2019/10/673.png" alt=""></p> <blockquote><p>假如使用wx.redirectTo从四级页面重定向到二级页面，此时会将关闭四级页面，并使用二级页面替换四级页面，但两个页面状态是独立的。此时的页面栈大小不变，请注意和使用wx.navigateTo的区别</p></blockquote> <p><strong>使用wx.navigateBack返回</strong></p> <p><img src="https://s.poetries.top/gitee/2019/10/674.png" alt=""></p> <p><strong>总结</strong></p> <ul><li><code>wx.navigateTo</code>会增加页面栈大小，直到页面栈大小为5</li> <li><code>wx.redirectTo</code>不会增加页面栈大小</li> <li><code>wx.navigateBack</code>会减少页面栈大小，直到页面栈大小为1</li></ul> <h2 id="六、数据通信"><a href="#六、数据通信" class="header-anchor">#</a> 六、数据通信</h2> <h3 id="_6-1-页面之间的通信"><a href="#_6-1-页面之间的通信" class="header-anchor">#</a> 6.1 页面之间的通信</h3> <ul><li>使用全局变量 <code>app.globalData</code></li> <li>使用本地缓存 <code>wx.setStorageSync</code></li> <li><code>url</code>传递**</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// A页面-传递数据</span>
+
+<span class="token comment">// 需要注意的是，wx.switchTab 中的 url 不能传参数。</span>
+wx<span class="token punctuation">.</span><span class="token function">navigateTo</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+   <span class="token literal-property property">url</span><span class="token operator">:</span><span class="token string">'../pageD/pageD?name=raymond&amp;gender=male'</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// B页面-接收数据//</span>
+
+<span class="token comment">//通过onLoad的option...</span>
+
+<span class="token function">Page</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+<span class="token function-variable function">onLoad</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">option</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+ console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>option<span class="token punctuation">.</span>name <span class="token operator">+</span><span class="token string">'is'</span><span class="token operator">+</span> option<span class="token punctuation">.</span>gender<span class="token punctuation">)</span><span class="token comment">// raymond is male</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setData</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token literal-property property">option</span><span class="token operator">:</span> option <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="_6-2-参数传递"><a href="#_6-2-参数传递" class="header-anchor">#</a> 6.2 参数传递</h3> <h4 id="_6-2-1-小程序传递参数的方式"><a href="#_6-2-1-小程序传递参数的方式" class="header-anchor">#</a> 6.2.1 小程序传递参数的方式</h4> <p><strong>1、通过在<code>App.js</code>中设置全局变量</strong></p> <blockquote><p>通常把不会更改的数据放在<code>app.js</code>的<code>Data</code>中，在各个页面中都可以通过<code>APP</code>实例获取<code>Data</code>数据</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> app <span class="token operator">=</span> <span class="token function">getApp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> data <span class="token operator">=</span> app<span class="token punctuation">.</span>data<span class="token punctuation">;</span>
+</code></pre></div><p><strong>2、通过拼接<code>URL</code>直接传递</strong></p> <blockquote><p><code>wx.navigateTo({})</code>中<code>URL</code>携带参数</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>wx.navigateTo({
+  url: 'test?id=1'
+});
+</code></pre></div><p><strong>在wxml中使用<code>navigator</code>跳转url传递参数</strong></p> <blockquote><p>代码如下，将要传递到另一个页面的字符串testId的值赋值到url中</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>&lt;navigator class="test-item" url="../../pages/test/test?testId={{testData.testId}}"&gt;&lt;/navigator&gt;
+</code></pre></div><blockquote><p>在<code>js</code>页面中<code>onLoad</code>方法中接收</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">Page</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token function-variable function">onLoad</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">var</span> testId <span class="token operator">=</span> options<span class="token punctuation">.</span>testId
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>testId<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p><strong><code>navigator</code>跳转<code>url</code>传递数组</strong></p> <blockquote><p>如果一个页面要将一个数组，如相册列表传递到另一个页面</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>&lt;navigator class="test-item" url="../../pages/test/test?albumList={{testData.albumList}}"&gt;&lt;/navigator&gt;
+</code></pre></div><blockquote><p>传递到js后从<code>options</code>中得到的是个字符串，每个图片的url通过','分隔，所以此时还需要对其进行处理，重新组装为数组</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">Page</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">data</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+         <span class="token comment">// 相册列表数据</span>
+        <span class="token literal-property property">albumList</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>    
+    <span class="token function-variable function">onLoad</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">var</span> that <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+
+        that<span class="token punctuation">.</span><span class="token function">setData</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+            <span class="token literal-property property">albumList</span><span class="token operator">:</span> options<span class="token punctuation">.</span>albumList<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">","</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p><strong>3、在wxml中绑定事件后，通过<code>data-hi="参数"</code>的方式传递</strong></p> <blockquote><p>这种方式一般是在wxml中绑定事件，同时设置需要传递的数据，如果需要传递多个，可以写多个<code>data-[参数]</code>的方式进行传递</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>&lt;view bindtap="clickMe" data-testId={{testId}}"&gt;
+    ...
+&lt;/view&gt;
+</code></pre></div><blockquote><p>在js页面中自定义方法clickMe中接收</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">Page</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token function-variable function">clickMe</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">var</span> testId <span class="token operator">=</span> event<span class="token punctuation">.</span>currentTarget<span class="token punctuation">.</span>dataset<span class="token punctuation">.</span>testid<span class="token punctuation">;</span>
+        wx<span class="token punctuation">.</span><span class="token function">navigateTo</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+            <span class="token literal-property property">url</span><span class="token operator">:</span> <span class="token string">'../../pages/test/test'</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p><strong>wxml中配置data-albumlist传递数组</strong></p> <div class="language- extra-class"><pre class="language-text"><code>&lt;view bindtap="clickMe" data-albumlist={{testData.albumList}}"&gt;
+    
+&lt;/view&gt;
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code>在js页面中自定义方法clickMe中接收
+
+<span class="token function">Page</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token function-variable function">clickMe</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">var</span> albumList <span class="token operator">=</span> event<span class="token punctuation">.</span>currentTarget<span class="token punctuation">.</span>dataset<span class="token punctuation">.</span>albumlist<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">","</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        wx<span class="token punctuation">.</span><span class="token function">navigateTo</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+            <span class="token literal-property property">url</span><span class="token operator">:</span> <span class="token string">'../../pages/test/test'</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p><strong>4、通过数据缓存存储再获取</strong></p> <blockquote><p><code>wx.setStorageSync(KEY,DATA)</code>存储数据</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>try {
+  wx.setStorageSync('key', 'value')
+} catch (e) {    
+}
+</code></pre></div><blockquote><p><code>wx.getStorageSync(KEY)</code>获取数据</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">try</span> <span class="token punctuation">{</span>
+  <span class="token keyword">var</span> value <span class="token operator">=</span> wx<span class="token punctuation">.</span><span class="token function">getStorageSync</span><span class="token punctuation">(</span><span class="token string">'key'</span><span class="token punctuation">)</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>value<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// Do something with return value</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   <span class="token comment">// Do something when catch error</span>
+<span class="token punctuation">}</span>
+或
+wx<span class="token punctuation">.</span><span class="token function">getStorage</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token literal-property property">key</span><span class="token operator">:</span> <span class="token string">'key'</span><span class="token punctuation">,</span>
+  <span class="token function-variable function">success</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">res</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+     console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>data<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><h2 id="七、疑问汇总"><a href="#七、疑问汇总" class="header-anchor">#</a> 七、疑问汇总</h2> <p><strong>为什么脚本内不能使用window等对象</strong></p> <ul><li>页面的脚本逻辑是在<code>JsCore</code>中运行，JsCore是一个没有窗口对象的环境，所以不能在脚本中使用<code>window</code>，也无法在脚本中操作组件</li></ul> <p><strong>为什么 zepto/jquery 无法使用</strong></p> <ul><li><code>zepto/jquery</code> 会使用到<code>window</code>对象和<code>document</code>对象，所以无法使用</li></ul> <p><strong>wx.navigateTo无法打开页面</strong></p> <ul><li>一个应用同时只能打开5个页面，当已经打开了5个页面之后，<code>wx.navigateTo</code>不能正常打开新页面。请避免多层级的交互方式，或者使用<code>wx.redirectTo</code></li></ul> <p><strong>样式表不支持级联选择器</strong></p> <ul><li><code>WXSS</code>支持以<code>.</code>开始的类选择器</li></ul> <p><strong>本地资源无法通过 css 获取</strong></p> <ul><li><code>background-image</code>：可以使用网络图片，或者 <code>base64</code>，或者使用<code>&lt;image/&gt;</code>标签</li></ul> <p><strong>如何修改窗口的背景色</strong></p> <ul><li>使用 page 标签选择器，可以修改顶层节点的样式</li></ul> <div class="language-css extra-class"><pre class="language-css"><code><span class="token selector">page</span> <span class="token punctuation">{</span> 
+  <span class="token property">display</span><span class="token punctuation">:</span> block<span class="token punctuation">;</span> 
+  <span class="token property">min-height</span><span class="token punctuation">:</span> 100%<span class="token punctuation">;</span> 
+  <span class="token property">background-color</span><span class="token punctuation">:</span> red<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+</code></pre></div><p><strong>为什么上传不成功</strong></p> <ul><li>为了提升体验流畅度，编译后的代码包大小需小于 1MB ，大于 1MB 的代码包将上传失败</li></ul> <p><strong>HTTPS 请求不成功</strong></p> <ul><li>tls 仅支持 1.2 及以上版本</li></ul> <p><strong>微信小程序支持fetch或者promise吗?</strong></p> <ul><li><code>promise</code>工具目前不支持，<code>fetch</code> 客户端不支持 工具下个版本保持统一</li></ul> <p><strong>wx.request的POST方法的参数传输服务器接收不到的bug</strong></p> <ul><li><code>wx.request post</code> 的 <code>content-type</code> 默认为 <code>‘application/json '</code></li> <li>如果服务器没有用到 <code>json</code> 解释的话，可以把 <code>content-type</code> 设置回 <code>urlencoded</code></li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>wx<span class="token punctuation">.</span><span class="token function">request</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+<span class="token operator">...</span><span class="token punctuation">.</span>
+<span class="token literal-property property">method</span><span class="token operator">:</span> <span class="token string">"POST"</span><span class="token punctuation">,</span>
+<span class="token literal-property property">header</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+<span class="token string-property property">"content-type"</span><span class="token operator">:</span> <span class="token string">"application/x-www-form-urlencoded"</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token operator">...</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p><strong>wx.uploadFile在手机上返回http码403</strong></p> <ul><li>安卓的微信升级到6.5.2及其以上版本</li></ul> <p><strong>小程序SVG支持吗?</strong></p> <ul><li><code>image</code>的src放远程svg可以，<code>background-image</code>里也可以</li></ul> <p><strong>ipad不能使用小程序？</strong></p> <ul><li>暂时不支持ipad打开小程序</li></ul> <p><strong>请问小程序页内支持长按保存图片或分享图片吗？</strong></p> <ul><li>目前没有这个功能</li></ul> <p><strong>微信小程序不支持cookie</strong></p> <ul><li>使用<code>Reids</code>存储<code>session</code></li></ul> <p><strong>有些手机不支持Object.assign方法，如果使用了该方法会出现莫名其妙的报错（并不会提示Object.assign is not function，而是导致调用了Object.assign方法的方法不能被调用）！</strong></p> <blockquote><p>直接写一个合并对象的方法</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">assignObject</span><span class="token punctuation">(</span><span class="token parameter">o<span class="token punctuation">,</span> n</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">var</span> p <span class="token keyword">in</span> n<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>n<span class="token punctuation">.</span><span class="token function">hasOwnProperty</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token operator">!</span>o<span class="token punctuation">.</span><span class="token function">hasOwnProperty</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            o<span class="token punctuation">[</span>p<span class="token punctuation">]</span> <span class="token operator">=</span> n<span class="token punctuation">[</span>p<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="八、小程序组件"><a href="#八、小程序组件" class="header-anchor">#</a> 八、小程序组件</h2> <p><img src="https://s.poetries.top/gitee/2019/10/675.png" alt=""></p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

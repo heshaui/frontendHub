@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>虚拟DOM（一） - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>虚拟DOM（一）</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>虚拟DOM（一）</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、什么是-vdom"><a href="#一、什么是-vdom" class="header-anchor">#</a> 一、什么是 vdom</h2> <ul><li>用 <code>JS</code> 模拟 <code>DOM</code> 结构</li> <li><code>DOM</code> 变化的对比，放在 <code>JS</code> 层来做</li> <li>提高重绘性能</li></ul> <h2 id="二、设计一个需求场景"><a href="#二、设计一个需求场景" class="header-anchor">#</a> 二、设计一个需求场景</h2> <p><img src="https://s.poetries.top/gitee/2019/10/587.png" alt=""></p> <p><strong>用jQuery实现</strong></p> <p><img src="https://s.poetries.top/gitee/2019/10/588.png" alt=""> <img src="https://s.poetries.top/gitee/2019/10/589.png" alt=""> <img src="https://s.poetries.top/gitee/2019/10/590.png" alt=""></p> <p><strong>遇到的问题</strong></p> <ul><li>DOM 操作是“昂贵”的，js 运行效率高</li> <li>尽量减少 DOM 操作，而不是“推倒重来”</li> <li>项目越复杂，影响就越严重</li> <li>vdom 即可解决这个问题</li></ul> <p><img src="https://s.poetries.top/gitee/2019/10/591.png" alt=""></p> <h2 id="三、vdom-的如何应用-核心-api-是什么"><a href="#三、vdom-的如何应用-核心-api-是什么" class="header-anchor">#</a> 三、vdom 的如何应用，核心 API 是什么</h2> <p><strong>什么是 vdom</strong></p> <p><img src="https://s.poetries.top/gitee/2019/10/592.png" alt=""></p> <p><strong>介绍 snabbdom</strong></p> <p><img src="https://s.poetries.top/gitee/2019/10/593.png" alt=""> <img src="https://s.poetries.top/gitee/2019/10/594.png" alt=""></p> <p><strong>介绍 snabbdom - h 函数</strong></p> <p><img src="https://s.poetries.top/gitee/2019/10/595.png" alt=""></p> <p><strong>介绍 snabbdom - patch 函数</strong></p> <p><img src="https://s.poetries.top/gitee/2019/10/596.png" alt=""></p> <p><strong>重做jQuery的demo</strong></p> <ul><li>使用 <code>data</code>生成 <code>vnode</code></li> <li>第一次渲染，将 <code>vnode</code> 渲染到 <code>#container</code>中</li> <li>并将 <code>vnode</code> 缓存下来</li> <li>修改 <code>data</code> 之后，用新 <code>data</code> 生成 <code>newVnode</code></li> <li>将 <code>vnode</code> 和 <code>newVnode</code> 对比</li></ul> <p><img src="https://s.poetries.top/gitee/2019/10/597.png" alt=""></p> <p><strong>核心 API</strong></p> <ul><li><code>h(‘&lt;标签名&gt;’, {…属性…}, […子元素…])</code></li> <li><code>h(‘&lt;标签名&gt;’, {…属性…}, ‘….’)</code></li> <li><code>patch(container, vnode)</code></li> <li><code>patch(vnode, newVnode)</code></li></ul> <h2 id="四、介绍一下-diff-算法"><a href="#四、介绍一下-diff-算法" class="header-anchor">#</a> 四、介绍一下 diff 算法</h2> <h3 id="_4-1-vdom-为何使用-diff-算法"><a href="#_4-1-vdom-为何使用-diff-算法" class="header-anchor">#</a> 4.1 vdom 为何使用 diff 算法</h3> <ul><li>DOM 操作是“昂贵”的，因此尽量减少 DOM 操作</li> <li>找出本次 DOM 必须更新的节点来更新，其他的不更新</li> <li>这个“找出”的过程，就需要 diff 算法</li></ul> <p><img src="https://s.poetries.top/gitee/2019/10/598.png" alt=""></p> <p><strong>patch(container, vnode)</strong></p> <p><img src="https://s.poetries.top/gitee/2019/10/599.png" alt=""> <img src="https://s.poetries.top/gitee/2019/10/600.png" alt=""></p> <p><strong>演示过程</strong></p> <p><img src="https://s.poetries.top/gitee/2019/10/601.png" alt=""> <img src="https://s.poetries.top/gitee/2019/10/602.png" alt=""> <img src="https://s.poetries.top/gitee/2019/10/603.png" alt=""> <img src="https://s.poetries.top/gitee/2019/10/604.png" alt=""></p> <h3 id="_4-2-diff-实现过程"><a href="#_4-2-diff-实现过程" class="header-anchor">#</a> 4.2 diff 实现过程</h3> <ul><li><code>patch(container, vnode)</code> 和 <code>patch(vnode, newVnode)</code></li> <li><code>createElment</code></li> <li><code>updateChildren</code></li></ul></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

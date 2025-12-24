@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>webpack打包结果依赖分析 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>webpack打包结果依赖分析</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>webpack打包结果依赖分析</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、使用webpack-bundle-analyzer插件分析"><a href="#一、使用webpack-bundle-analyzer插件分析" class="header-anchor">#</a> 一、使用webpack-bundle-analyzer插件分析</h2> <p><strong>安装插件</strong></p> <blockquote><p>https://www.npmjs.com/package/webpack-bundle-analyzer</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>npm install webpack-bundle-analyzer –save-dev
+</code></pre></div><p><strong>配置</strong></p> <blockquote><p>在<code>package.json中</code></p></blockquote> <p>传入环境变量<code>ANALYZE</code>，最后<code>process.env.ANALYZE</code>来读取</p> <div class="language- extra-class"><pre class="language-text"><code>"scripts": {
+  "build": "node scripts/build.js",
+  "analyze": "cross-env ANALYZE=1 npm run build"
+}
+</code></pre></div><blockquote><p>在<code>build/webpack.prod.config.js</code>的<code>plugin</code>后面加上判断</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code>plugins<span class="token punctuation">.</span><span class="token function">concat</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">ANALYZE</span><span class="token operator">?</span><span class="token punctuation">[</span>
+    <span class="token keyword">new</span> <span class="token class-name">BundleAnalyzerPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token comment">//  可以是`server`，`static`或`disabled`。</span>
+    <span class="token comment">//  在`server`模式下，分析器将启动HTTP服务器来显示软件包报告。</span>
+    <span class="token comment">//  在“静态”模式下，会生成带有报告的单个HTML文件。</span>
+    <span class="token comment">//  在`disabled`模式下，你可以使用这个插件来将`generateStatsFile`设置为`true`来生成Webpack Stats JSON文件。</span>
+    <span class="token literal-property property">analyzerMode</span><span class="token operator">:</span> <span class="token string">'server'</span><span class="token punctuation">,</span>
+    <span class="token comment">//  将在“服务器”模式下使用的主机启动HTTP服务器。</span>
+    <span class="token literal-property property">analyzerHost</span><span class="token operator">:</span> <span class="token string">'127.0.0.1'</span><span class="token punctuation">,</span>
+    <span class="token comment">//  将在“服务器”模式下使用的端口启动HTTP服务器。</span>
+    <span class="token literal-property property">analyzerPort</span><span class="token operator">:</span> <span class="token number">8888</span><span class="token punctuation">,</span>
+    <span class="token comment">//  路径捆绑，将在`static`模式下生成的报告文件。</span>
+    <span class="token comment">//  相对于捆绑输出目录。</span>
+    <span class="token literal-property property">reportFilename</span><span class="token operator">:</span> <span class="token string">'report.html'</span><span class="token punctuation">,</span>
+    <span class="token comment">//  模块大小默认显示在报告中。</span>
+    <span class="token comment">//  应该是`stat`，`parsed`或者`gzip`中的一个。</span>
+    <span class="token comment">//  有关更多信息，请参见“定义”一节。</span>
+    <span class="token literal-property property">defaultSizes</span><span class="token operator">:</span> <span class="token string">'parsed'</span><span class="token punctuation">,</span>
+    <span class="token comment">//  在默认浏览器中自动打开报告</span>
+    <span class="token literal-property property">openAnalyzer</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token comment">//  如果为true，则Webpack Stats JSON文件将在bundle输出目录中生成</span>
+    <span class="token literal-property property">generateStatsFile</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token comment">//  如果`generateStatsFile`为`true`，将会生成Webpack Stats JSON文件的名字。</span>
+    <span class="token comment">//  相对于捆绑输出目录。</span>
+    <span class="token literal-property property">statsFilename</span><span class="token operator">:</span> <span class="token string">'stats.json'</span><span class="token punctuation">,</span>
+    <span class="token comment">//  stats.toJson（）方法的选项。</span>
+    <span class="token comment">//  例如，您可以使用`source：false`选项排除统计文件中模块的来源。</span>
+    <span class="token comment">//  在这里查看更多选项：https：  //github.com/webpack/webpack/blob/webpack-1/lib/Stats.js#L21</span>
+    <span class="token literal-property property">statsOptions</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">logLevel</span><span class="token operator">:</span> <span class="token string">'info'</span> <span class="token comment">// 日志级别。可以是'信息'，'警告'，'错误'或'沉默'。</span>
+  	<span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">]</span><span class="token operator">:</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><p><strong>启动</strong></p> <div class="language- extra-class"><pre class="language-text"><code>npm run analyze
+</code></pre></div><blockquote><p>在对应地址后面添加端口<code>8888</code>，即可得到一个可视化模块大小界面</p></blockquote> <p><img src="https://s.poetries.top/gitee/2019/10/636.png" alt=""></p> <blockquote><p>这个插件就是从<code>stats.json</code>中获取<code>chunks</code>然后最终使用<code>Canvas</code>画图。具体代码位于<code>analyzer.js</code>中的<code>getViewerData</code>方法</p></blockquote> <h2 id="二、使用官方提供的在线工具"><a href="#二、使用官方提供的在线工具" class="header-anchor">#</a> 二、使用官方提供的在线工具</h2> <blockquote><p><code>webpack --proile --json &gt; stats.json</code> 生成一份<code>json</code>文件上传到http://webpack.github.io/analyse 分析</p></blockquote> <p><img src="https://s.poetries.top/gitee/2019/10/637.png" alt=""></p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

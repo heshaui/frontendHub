@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录注册功能实现 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>登录注册功能实现</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>登录注册功能实现</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h1 id="登录注册功能实现"><a href="#登录注册功能实现" class="header-anchor">#</a> 登录注册功能实现</h1> <h2 id="用户模型dao操作"><a href="#用户模型dao操作" class="header-anchor">#</a> 用户模型dao操作</h2> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/**
+   * 数据库创建用户
+   * @param  {object} model 用户数据模型
+   * @return {object}       mysql执行结果
+   */</span>
+  <span class="token keyword">async</span> <span class="token function">create</span> <span class="token punctuation">(</span> <span class="token parameter">model</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> result <span class="token operator">=</span> <span class="token keyword">await</span> dbUtils<span class="token punctuation">.</span><span class="token function">insertData</span><span class="token punctuation">(</span> <span class="token string">'user_info'</span><span class="token punctuation">,</span> model <span class="token punctuation">)</span>
+    <span class="token keyword">return</span> result
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token comment">/**
+   * 查找一个存在用户的数据
+   * @param  {obejct} options 查找条件参数
+   * @return {object|null}        查找结果
+   */</span>
+  <span class="token keyword">async</span> <span class="token function">getExistOne</span><span class="token punctuation">(</span><span class="token parameter">options</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> _sql <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+    SELECT * from user_info
+      where email="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>options<span class="token punctuation">.</span>email<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">" or name="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>options<span class="token punctuation">.</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"
+      limit 1</span><span class="token template-punctuation string">`</span></span>
+    <span class="token keyword">let</span> result <span class="token operator">=</span> <span class="token keyword">await</span> dbUtils<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span> _sql <span class="token punctuation">)</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> Array<span class="token punctuation">.</span><span class="token function">isArray</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> result<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">0</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      result <span class="token operator">=</span> result<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      result <span class="token operator">=</span> <span class="token keyword">null</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> result
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token comment">/**
+   * 根据用户名和密码查找用户
+   * @param  {object} options 用户名密码对象
+   * @return {object|null}         查找结果
+   */</span>
+  <span class="token keyword">async</span> <span class="token function">getOneByUserNameAndPassword</span><span class="token punctuation">(</span> <span class="token parameter">options</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> _sql <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+    SELECT * from user_info
+      where password="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>options<span class="token punctuation">.</span>password<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">" and name="</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>options<span class="token punctuation">.</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">"
+      limit 1</span><span class="token template-punctuation string">`</span></span>
+    <span class="token keyword">let</span> result <span class="token operator">=</span> <span class="token keyword">await</span> dbUtils<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span> _sql <span class="token punctuation">)</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> Array<span class="token punctuation">.</span><span class="token function">isArray</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> result<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">0</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      result <span class="token operator">=</span> result<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      result <span class="token operator">=</span> <span class="token keyword">null</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> result
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token comment">/**
+   * 根据用户名查找用户信息
+   * @param  {string} userName 用户账号名称
+   * @return {object|null}     查找结果
+   */</span>
+  <span class="token keyword">async</span> <span class="token function">getUserInfoByUserName</span><span class="token punctuation">(</span> <span class="token parameter">userName</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">let</span> result <span class="token operator">=</span> <span class="token keyword">await</span> dbUtils<span class="token punctuation">.</span><span class="token function">select</span><span class="token punctuation">(</span>
+      <span class="token string">'user_info'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">[</span><span class="token string">'id'</span><span class="token punctuation">,</span> <span class="token string">'email'</span><span class="token punctuation">,</span> <span class="token string">'name'</span><span class="token punctuation">,</span> <span class="token string">'detail_info'</span><span class="token punctuation">,</span> <span class="token string">'create_time'</span><span class="token punctuation">,</span> <span class="token string">'modified_time'</span><span class="token punctuation">,</span> <span class="token string">'modified_time'</span> <span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> Array<span class="token punctuation">.</span><span class="token function">isArray</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> result<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">0</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      result <span class="token operator">=</span> result<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      result <span class="token operator">=</span> <span class="token keyword">null</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> result
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+</code></pre></div><h3 id="业务层操作"><a href="#业务层操作" class="header-anchor">#</a> 业务层操作</h3> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/**
+   * 创建用户
+   * @param  {object} user 用户信息
+   * @return {object}      创建结果
+   */</span>
+  <span class="token keyword">async</span> <span class="token function">create</span><span class="token punctuation">(</span> <span class="token parameter">user</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> result <span class="token operator">=</span> <span class="token keyword">await</span> userModel<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> result
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token comment">/**
+   * 查找存在用户信息
+   * @param  {object} formData 查找的表单数据
+   * @return {object|null}      查找结果
+   */</span>
+  <span class="token keyword">async</span> <span class="token function">getExistOne</span><span class="token punctuation">(</span> <span class="token parameter">formData</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> resultData <span class="token operator">=</span> <span class="token keyword">await</span> userModel<span class="token punctuation">.</span><span class="token function">getExistOne</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token string-property property">'email'</span><span class="token operator">:</span> formData<span class="token punctuation">.</span>email<span class="token punctuation">,</span>
+      <span class="token string-property property">'name'</span><span class="token operator">:</span> formData<span class="token punctuation">.</span>userName
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> resultData
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token comment">/**
+   * 登录业务操作
+   * @param  {object} formData 登录表单信息
+   * @return {object}          登录业务操作结果
+   */</span>
+  <span class="token keyword">async</span> <span class="token function">signIn</span><span class="token punctuation">(</span> <span class="token parameter">formData</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> resultData <span class="token operator">=</span> <span class="token keyword">await</span> userModel<span class="token punctuation">.</span><span class="token function">getOneByUserNameAndPassword</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token string-property property">'password'</span><span class="token operator">:</span> formData<span class="token punctuation">.</span>password<span class="token punctuation">,</span>
+      <span class="token string-property property">'name'</span><span class="token operator">:</span> formData<span class="token punctuation">.</span>userName<span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> resultData
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+
+  <span class="token comment">/**
+   * 根据用户名查找用户业务操作
+   * @param  {string} userName 用户名
+   * @return {object|null}     查找结果
+   */</span>
+  <span class="token keyword">async</span> <span class="token function">getUserInfoByUserName</span><span class="token punctuation">(</span> <span class="token parameter">userName</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    
+    <span class="token keyword">let</span> resultData <span class="token operator">=</span> <span class="token keyword">await</span> userModel<span class="token punctuation">.</span><span class="token function">getUserInfoByUserName</span><span class="token punctuation">(</span> userName <span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+    <span class="token keyword">let</span> userInfo <span class="token operator">=</span> <span class="token punctuation">{</span>
+      <span class="token comment">// id: resultData.id,</span>
+      <span class="token literal-property property">email</span><span class="token operator">:</span> resultData<span class="token punctuation">.</span>email<span class="token punctuation">,</span>
+      <span class="token literal-property property">userName</span><span class="token operator">:</span> resultData<span class="token punctuation">.</span>name<span class="token punctuation">,</span>
+      <span class="token literal-property property">detailInfo</span><span class="token operator">:</span> resultData<span class="token punctuation">.</span>detail_info<span class="token punctuation">,</span>
+      <span class="token literal-property property">createTime</span><span class="token operator">:</span> resultData<span class="token punctuation">.</span>create_time
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> userInfo
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+
+  <span class="token comment">/**
+   * 检验用户注册数据
+   * @param  {object} userInfo 用户注册数据
+   * @return {object}          校验结果
+   */</span>
+  <span class="token function">validatorSignUp</span><span class="token punctuation">(</span> <span class="token parameter">userInfo</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> result <span class="token operator">=</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">success</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[a-z0-9\_\-]{6,16}</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>userInfo<span class="token punctuation">.</span>userName<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token boolean">false</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      result<span class="token punctuation">.</span>message <span class="token operator">=</span> userCode<span class="token punctuation">.</span><span class="token constant">ERROR_USER_NAME</span>
+      <span class="token keyword">return</span> result
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token operator">!</span>validator<span class="token punctuation">.</span><span class="token function">isEmail</span><span class="token punctuation">(</span> userInfo<span class="token punctuation">.</span>email <span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      result<span class="token punctuation">.</span>message <span class="token operator">=</span> userCode<span class="token punctuation">.</span><span class="token constant">ERROR_EMAIL</span>
+      <span class="token keyword">return</span> result
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token operator">!</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[\w+]{6,16}</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span> userInfo<span class="token punctuation">.</span>password <span class="token punctuation">)</span>  <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      result<span class="token punctuation">.</span>message <span class="token operator">=</span> userCode<span class="token punctuation">.</span><span class="token constant">ERROR_PASSWORD</span>
+      <span class="token keyword">return</span> result
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> userInfo<span class="token punctuation">.</span>password <span class="token operator">!==</span> userInfo<span class="token punctuation">.</span>confirmPassword <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      result<span class="token punctuation">.</span>message <span class="token operator">=</span> userCode<span class="token punctuation">.</span><span class="token constant">ERROR_PASSWORD_CONFORM</span>
+      <span class="token keyword">return</span> result
+    <span class="token punctuation">}</span>
+
+    result<span class="token punctuation">.</span>success <span class="token operator">=</span> <span class="token boolean">true</span>
+
+    <span class="token keyword">return</span> result
+  <span class="token punctuation">}</span>
+</code></pre></div><h3 id="controller-操作"><a href="#controller-操作" class="header-anchor">#</a> controller 操作</h3> <div class="language-js extra-class"><pre class="language-js"><code> <span class="token comment">/**
+   * 登录操作
+   * @param  {obejct} ctx 上下文对象
+   */</span>
+  <span class="token keyword">async</span> <span class="token function">signIn</span><span class="token punctuation">(</span> <span class="token parameter">ctx</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> formData <span class="token operator">=</span> ctx<span class="token punctuation">.</span>request<span class="token punctuation">.</span>body
+    <span class="token keyword">let</span> result <span class="token operator">=</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">success</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">data</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">code</span><span class="token operator">:</span> <span class="token string">''</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">let</span> userResult <span class="token operator">=</span> <span class="token keyword">await</span> userInfoService<span class="token punctuation">.</span><span class="token function">signIn</span><span class="token punctuation">(</span> formData <span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> userResult <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span> formData<span class="token punctuation">.</span>userName <span class="token operator">===</span> userResult<span class="token punctuation">.</span>name <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        result<span class="token punctuation">.</span>success <span class="token operator">=</span> <span class="token boolean">true</span>
+      <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        result<span class="token punctuation">.</span>message <span class="token operator">=</span> userCode<span class="token punctuation">.</span><span class="token constant">FAIL_USER_NAME_OR_PASSWORD_ERROR</span>
+        result<span class="token punctuation">.</span>code <span class="token operator">=</span> <span class="token string">'FAIL_USER_NAME_OR_PASSWORD_ERROR'</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      result<span class="token punctuation">.</span>code <span class="token operator">=</span> <span class="token string">'FAIL_USER_NO_EXIST'</span><span class="token punctuation">,</span>
+      result<span class="token punctuation">.</span>message <span class="token operator">=</span> userCode<span class="token punctuation">.</span><span class="token constant">FAIL_USER_NO_EXIST</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> formData<span class="token punctuation">.</span>source <span class="token operator">===</span> <span class="token string">'form'</span> <span class="token operator">&amp;&amp;</span> result<span class="token punctuation">.</span>success <span class="token operator">===</span> <span class="token boolean">true</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">let</span> session <span class="token operator">=</span> ctx<span class="token punctuation">.</span>session
+      session<span class="token punctuation">.</span>isLogin <span class="token operator">=</span> <span class="token boolean">true</span>
+      session<span class="token punctuation">.</span>userName <span class="token operator">=</span> userResult<span class="token punctuation">.</span>name
+      session<span class="token punctuation">.</span>userId <span class="token operator">=</span> userResult<span class="token punctuation">.</span>id
+
+      ctx<span class="token punctuation">.</span><span class="token function">redirect</span><span class="token punctuation">(</span><span class="token string">'/work'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> result
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token comment">/**
+   * 注册操作
+   * @param   {obejct} ctx 上下文对象
+   */</span>
+  <span class="token keyword">async</span> <span class="token function">signUp</span><span class="token punctuation">(</span> <span class="token parameter">ctx</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> formData <span class="token operator">=</span> ctx<span class="token punctuation">.</span>request<span class="token punctuation">.</span>body
+    <span class="token keyword">let</span> result <span class="token operator">=</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">success</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">data</span><span class="token operator">:</span> <span class="token keyword">null</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">let</span> validateResult <span class="token operator">=</span> userInfoService<span class="token punctuation">.</span><span class="token function">validatorSignUp</span><span class="token punctuation">(</span> formData <span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> validateResult<span class="token punctuation">.</span>success <span class="token operator">===</span> <span class="token boolean">false</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      result <span class="token operator">=</span> validateResult
+      ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> result
+      <span class="token keyword">return</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">let</span> existOne  <span class="token operator">=</span> <span class="token keyword">await</span> userInfoService<span class="token punctuation">.</span><span class="token function">getExistOne</span><span class="token punctuation">(</span>formData<span class="token punctuation">)</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span> existOne <span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> existOne  <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span> existOne <span class="token punctuation">.</span>name <span class="token operator">===</span> formData<span class="token punctuation">.</span>userName <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        result<span class="token punctuation">.</span>message <span class="token operator">=</span> userCode<span class="token punctuation">.</span><span class="token constant">FAIL_USER_NAME_IS_EXIST</span>
+        ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> result
+        <span class="token keyword">return</span>
+      <span class="token punctuation">}</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span> existOne <span class="token punctuation">.</span>email <span class="token operator">===</span> formData<span class="token punctuation">.</span>email <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        result<span class="token punctuation">.</span>message <span class="token operator">=</span> userCode<span class="token punctuation">.</span><span class="token constant">FAIL_EMAIL_IS_EXIST</span>
+        ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> result
+        <span class="token keyword">return</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+
+    <span class="token keyword">let</span> userResult <span class="token operator">=</span> <span class="token keyword">await</span> userInfoService<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">email</span><span class="token operator">:</span> formData<span class="token punctuation">.</span>email<span class="token punctuation">,</span>
+      <span class="token literal-property property">password</span><span class="token operator">:</span> formData<span class="token punctuation">.</span>password<span class="token punctuation">,</span>
+      <span class="token literal-property property">name</span><span class="token operator">:</span> formData<span class="token punctuation">.</span>userName<span class="token punctuation">,</span>
+      <span class="token literal-property property">create_time</span><span class="token operator">:</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">level</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span> userResult <span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> userResult <span class="token operator">&amp;&amp;</span> userResult<span class="token punctuation">.</span>insertId <span class="token operator">*</span> <span class="token number">1</span> <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      result<span class="token punctuation">.</span>success <span class="token operator">=</span> <span class="token boolean">true</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      result<span class="token punctuation">.</span>message <span class="token operator">=</span> userCode<span class="token punctuation">.</span><span class="token constant">ERROR_SYS</span>
+    <span class="token punctuation">}</span>
+
+    ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> result
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+</code></pre></div><h3 id="api路由操作"><a href="#api路由操作" class="header-anchor">#</a> api路由操作</h3> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> router <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'koa-router'</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> userInfoController <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./../controllers/user-info'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> routers <span class="token operator">=</span> router
+  <span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'/user/getUserInfo.json'</span><span class="token punctuation">,</span> userInfoController<span class="token punctuation">.</span>getLoginUserInfo<span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string">'/user/signIn.json'</span><span class="token punctuation">,</span> userInfoController<span class="token punctuation">.</span>signIn<span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string">'/user/signUp.json'</span><span class="token punctuation">,</span> userInfoController<span class="token punctuation">.</span>signUp<span class="token punctuation">)</span>
+</code></pre></div><h2 id="前端用react-js实现效果"><a href="#前端用react-js实现效果" class="header-anchor">#</a> 前端用react.js实现效果</h2> <p>登录模式</p> <p><img src="https://s.poetries.top/uploads/2025/10/a2443c1f72324a69.png" alt=""></p> <p>注册模式</p> <p><img src="https://s.poetries.top/uploads/2025/10/820338f846627256.png" alt=""></p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

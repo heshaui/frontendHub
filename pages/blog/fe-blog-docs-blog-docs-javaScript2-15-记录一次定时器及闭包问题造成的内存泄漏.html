@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>记录一次定时器及闭包问题造成的内存泄漏 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>记录一次定时器及闭包问题造成的内存泄漏</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>记录一次定时器及闭包问题造成的内存泄漏</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="前言"><a href="#前言" class="header-anchor">#</a> 前言</h2> <p>这是一篇记录工作上所遇到的关于内存泄漏问题及如何解决的文章。</p> <h3 id="问题描述"><a href="#问题描述" class="header-anchor">#</a> 问题描述</h3> <p>先大概描述一下我的问题：</p> <p>技术栈: 框架:<code>vue</code>  组件库: <code>ant design of vue</code>  图表：<code>g2</code>.</p> <p>项目需求: 在下图的看板中, 需要每20秒切换一次下面的两个小蓝点, 以达到切换并刷新图表的功能.前提是不用<code>web socket</code>等轮询工具.</p> <p>下图的组件结构:
+<code>switch-flex-chart</code> 组件由 <code>flex-chart</code> 组件和 <code>switch-icon-card</code> 两个组件组合而成, 我通过给<code>switch-icon-card</code> 组件(也就是两个小蓝点) 添加一个定时器, 每20秒改变一下<code>index</code>,并且回调给父组件 (<code>switch-flex-chart</code>) 然后刷新并改变 <code>flex-chart</code> 组件里的图表数据.</p> <p><img src="https://s.poetries.top/gitee/2020/09/123.png" alt=""></p> <p>造成的问题: 刚开始还好,但是如果时间久了,就会造成页面非常的卡顿, 可是在代码中, 我在生命周期-销毁阶段的里每次都会把定时器给清除并置为null</p> <h3 id="一、定时器要及时清除"><a href="#一、定时器要及时清除" class="header-anchor">#</a> 一、定时器要及时清除</h3> <p>这里轮询的功能我没有使用<code>setInterval</code>，而是使用了两个<code>setTimeout</code>：</p> <div class="language-vue extra-class"><pre class="language-vue"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>template</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>template</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token function">created</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function">mounted</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">duration</span><span class="token operator">:</span> <span class="token number">20000</span><span class="token punctuation">,</span> <span class="token comment">// 多久刷新一次</span>
+        <span class="token literal-property property">_timer</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token comment">// 定时器</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">methods</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token function">init</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 初始化</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>duration <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span>_timer <span class="token operator">&amp;&amp;</span> <span class="token function">clearTimeout</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>_timer<span class="token punctuation">)</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span>_timer <span class="token operator">=</span> <span class="token keyword">null</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">polling</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token function">autoPlay</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 切换的函数</span>
+        <span class="token operator">...</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token function">polling</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>_timer <span class="token operator">=</span> <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">autoPlay</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span>_timer <span class="token operator">&amp;&amp;</span> <span class="token function">clearTimeout</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>_timer<span class="token punctuation">)</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">polling</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 循环调用自身</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>duration<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p>如上面的代码，我在每次轮询<code>polling</code>的时候，都会使用<code>clearTimeout</code>来清除一下定时器，但是我发现在你切换到其他页面的时候，定时器还是在默默地执行着，于是我想到了在组件每次销毁的时候也必须把定时器也销毁：</p> <div class="language-vue extra-class"><pre class="language-vue"><code>destroyed() { // 生命周期-组件销毁
+    this._timer &amp;&amp; clearTimeout(this._timer) // 先使用clearTimeout
+    this._timer = null // 最好将定时器也设置为null
+}
+</code></pre></div><h3 id="二、图表数据及时清空"><a href="#二、图表数据及时清空" class="header-anchor">#</a> 二、图表数据及时清空</h3> <p>上面的方式解决了切换页面定时器还在运行的问题，但是还是没有解决页面会很卡顿的情况。正常来说就算定时器跑的再久也不会有这个问题。所以肯定是有哪里造成了内存泄漏。</p> <p>为了验证是不是这个原因，我打开了<code>chrome</code>的<code>F12</code>控制台。然后找到了<code>Memory</code>：</p> <p><img src="https://s.poetries.top/gitee/2020/09/124.png" alt=""></p> <p>在这里你可以记录<code>JavaScript</code>对象的堆快照，查找到内存泄漏。</p> <p>此时我每10秒录制一个快照，分别对应<code>Snapshot1-3</code>，发现<code>JavaScript</code>对象的总大小一次比一次大，要不了一会我的浏览器就卡的不行了。</p> <p><img src="https://s.poetries.top/gitee/2020/09/125.png" alt=""></p> <p>首先我想到的是不是图表内容没有清空，所以我在每次绘制<code>g2</code>图表的时候先执行了一遍<code>g2</code>内置的方法<code>destory()</code>进行销毁。</p> <div class="language-vue extra-class"><pre class="language-vue"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>template</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>template</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token function">created</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function">mounted</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">chart</span><span class="token operator">:</span> <span class="token keyword">null</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">methods</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token function">init</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>chart<span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token comment">// 如果存在的话就销毁图表再重新生成</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span>chart<span class="token punctuation">.</span><span class="token function">destroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>chart <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">G2<span class="token punctuation">.</span>Chart</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+            <span class="token operator">...</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span>
+      <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p>以为大功告成的我再次打开浏览器，发现内存泄漏的问题并没有解决。于是我想这个图表对象是不是也要像定时器一样，在销毁的时候释放内存呢？</p> <p>动手试试：</p> <div class="language- extra-class"><pre class="language-text"><code>destroyed () {
+    this.chart.destroy()
+    this.chart = null
+}
+</code></pre></div><p>处理完之后，我再次录制了三个快照，这次<code>JavaScript</code>对象的大小没有再增长了，并且我页面挂在那半个小时也丝毫没有卡顿的迹象。</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

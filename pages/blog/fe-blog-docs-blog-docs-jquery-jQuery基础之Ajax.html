@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery基础之Ajax - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>jQuery基础之Ajax</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>jQuery基础之Ajax</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><ul><li><p><strong>ajax</strong> : <code>Asynchronous Javascript And XML</code> （异步的<code>JavaScript</code>和<code>XML</code>）</p></li> <li><p>创建<code>ajax</code>对象 <code>var xhr = new XMLHttpRequest();</code></p></li> <li><p>准备发送请求</p></li> <li><p><code>get</code></p> <ul><li>传递的数据放在URL后面</li> <li>中文编码  <code>encodeURI( '' );</code></li> <li>缓存 在数据后面加上随机数或者日期对象或者……;</li></ul></li> <li><p><code>post</code></p> <ul><li>传递的数据放在<code>send()</code>里面，并且一定要规定数据格式</li> <li>没有缓存问题</li></ul></li> <li><p>form表单中:</p> <ul><li><code>action</code>:</li> <li><code>method</code>:(默认是<code>get</code>)</li> <li><code>get</code>: 会在url里面以 <code>name=value</code> , 两个数据之间用 <code>&amp;</code> 连接</li> <li><code>post</code>:</li></ul></li> <li><p><code>enctype</code>: <code>"application/x-www-form-urlencoded"</code></p></li> <li><p><code>url</code></p></li> <li><p>是否异步</p> <ul><li>同步(<code>false</code>)：阻塞</li> <li>异步(<code>true</code>)：非阻塞</li></ul></li> <li><p>正式发送请求</p> <ul><li><code>ajax</code>请求处理过程</li></ul></li></ul> <p>案列：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>	<span class="token keyword">var</span> ajx <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+
+  		<span class="token keyword">if</span><span class="token punctuation">(</span>window<span class="token punctuation">.</span>XMLHttpRequest<span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token comment">//兼容处理</span>
+  			<span class="token keyword">var</span> ajx <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">XMLHttpRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//一般浏览器</span>
+  		<span class="token punctuation">}</span><span class="token keyword">else</span>
+  		<span class="token punctuation">{</span>
+  			ajx <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ActiveXObject</span><span class="token punctuation">(</span><span class="token string">"Microsoft.XMLHTTP"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//IE6+</span>
+  		<span class="token punctuation">}</span>
+  		
+  		<span class="token comment">//准备发送请求</span>
+  		ajx<span class="token punctuation">.</span><span class="token function">open</span><span class="token punctuation">(</span><span class="token string">"get"</span><span class="token punctuation">,</span><span class="token string">"ajax.txt"</span><span class="token punctuation">,</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  		<span class="token comment">//正式发送请求</span>
+  		ajx<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  		
+  		<span class="token comment">//处理请求</span>
+  		ajx<span class="token punctuation">.</span><span class="token function-variable function">onreadystatechange</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  			<span class="token keyword">if</span><span class="token punctuation">(</span>ajx<span class="token punctuation">.</span>readState <span class="token operator">==</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  				<span class="token keyword">if</span> <span class="token punctuation">(</span>ajx<span class="token punctuation">.</span>status <span class="token operator">==</span> <span class="token number">200</span><span class="token punctuation">)</span><span class="token comment">//200是HTTP 请求成功的状态码</span>
+  				<span class="token punctuation">{</span>
+  					console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>ajx<span class="token punctuation">.</span>responseText<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  				<span class="token punctuation">}</span><span class="token keyword">else</span><span class="token punctuation">{</span>
+  					<span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"请求出错"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  				<span class="token punctuation">}</span>
+  			<span class="token punctuation">}</span>
+  		<span class="token punctuation">}</span>
+</code></pre></div><ul><li><p><code>onreadystatechange</code> ：当处理过程发生变化的时候执行下面的函数</p></li> <li><p><code>readyState</code> ：<code>ajax</code>处理过程</p> <ul><li>0：请求未初始化（还没有调用<code>open()</code>）。</li> <li>1：请求已经建立，但是还没有发送（还没有调用 <code>send()</code>）。</li> <li>2：请求已发送，正在处理中（通常现在可以从响应中获取内容头）。</li> <li>3：请求在处理中；通常响应中已有部分数据可用了，但是服务器还没有完成响应的生成。</li> <li>4：响应已完成；您可以获取并使用服务器的响应了。</li></ul></li> <li><p><code>responseText</code>：请求服务器返回的数据存在该属性里面</p></li> <li><p><code>status :</code> http状态码</p></li></ul></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

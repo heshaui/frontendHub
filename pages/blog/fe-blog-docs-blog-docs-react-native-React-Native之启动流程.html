@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Native之启动流程 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>React Native之启动流程</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>React Native之启动流程</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><blockquote><p><code>JS</code>程序的入口，将当前<code>APP</code>对象注册到<code>AppRegistry</code>组件中，<code>AppRegistry</code>组件是<code>js module</code></p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">import</span> <span class="token punctuation">{</span> AppRegistry <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span>
+ <span class="token operator">...</span>省略代码
+
+ AppRegistry<span class="token punctuation">.</span><span class="token function">registerComponent</span><span class="token punctuation">(</span><span class="token string">'demo'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Index<span class="token punctuation">)</span>
+</code></pre></div><h2 id="启动流程"><a href="#启动流程" class="header-anchor">#</a> 启动流程</h2> <ul><li>我们新建一个RN的项目，在原生代码中会生成<code>MainActivity</code>和<code>MainApplication</code>两个<code>Java</code>类。顾名思义，<code>MainAcitivity</code>就是我们的<code>Native</code>的入口了，</li> <li>我们先来看下<code>MainApplication</code>都做了哪些操作</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MainApplication</span> <span class="token keyword">extends</span> <span class="token class-name">Application</span> <span class="token keyword">implements</span> <span class="token class-name">ReactApplication</span> <span class="token punctuation">{</span>
+    <span class="token comment">//ReactNativeHost：持有ReactInstanceManager实例，做一些初始化操作。</span>
+  <span class="token keyword">private</span> final ReactNativeHost mReactNativeHost <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ReactNativeHost</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    @Override
+    <span class="token keyword">public</span> boolean <span class="token function">getUseDeveloperSupport</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> BuildConfig<span class="token punctuation">.</span><span class="token constant">DEBUG</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    @Override
+    <span class="token keyword">protected</span> List<span class="token operator">&lt;</span>ReactPackage<span class="token operator">&gt;</span> <span class="token function">getPackages</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> Arrays<span class="token punctuation">.</span><span class="token operator">&lt;</span>ReactPackage<span class="token operator">&gt;</span><span class="token function">asList</span><span class="token punctuation">(</span>
+          <span class="token keyword">new</span> <span class="token class-name">MainReactPackage</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  @Override
+  <span class="token keyword">public</span> ReactNativeHost <span class="token function">getReactNativeHost</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> mReactNativeHost<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  @Override
+  <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onCreate</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">onCreate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//SoLoader：加载C++底层库，准备解析JS。</span>
+    SoLoader<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token comment">/* native exopackage */</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>我们再来看下<code>MainActivity</code>的代码</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MainActivity</span> <span class="token keyword">extends</span> <span class="token class-name">ReactActivity</span> <span class="token punctuation">{</span>
+
+    @Override
+    <span class="token keyword">protected</span> String <span class="token function">getMainComponentName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token string">"demo"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>可以看到其实是继承了<code>ReactActivity</code>类，只是重写了<code>getMainComponentName</code>方法，有没有看出来，其方法的返回值和我们在<code>JS</code>端的值是一样的。如果不一致会怎么样，你可以自己试一下。</p></blockquote> <h2 id="reactactivity"><a href="#reactactivity" class="header-anchor">#</a> ReactActivity</h2> <blockquote><p>我们来看下<code>ReactActivity</code>的方法的<code>onCreate</code>方法</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">public</span> abstract <span class="token keyword">class</span> <span class="token class-name">ReactActivity</span> <span class="token keyword">extends</span> <span class="token class-name">Activity</span>
+    <span class="token keyword">implements</span> <span class="token class-name">DefaultHardwareBackBtnHandler</span><span class="token punctuation">,</span> PermissionAwareActivity <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> final ReactActivityDelegate mDelegate<span class="token punctuation">;</span>
+
+    <span class="token operator">...</span>省略代码
+
+     @Override
+  <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">onCreate</span><span class="token punctuation">(</span><span class="token parameter">Bundle savedInstanceState</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">onCreate</span><span class="token punctuation">(</span>savedInstanceState<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    mDelegate<span class="token punctuation">.</span><span class="token function">onCreate</span><span class="token punctuation">(</span>savedInstanceState<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>    
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p><code>ReactActivity</code>全权委托给<code>ReactActivityDelegate</code>来处理</p></blockquote> <p><strong>ReactActivityDelegate</strong></p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ReactActivityDelegate</span> <span class="token punctuation">{</span>
+      <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">onCreate</span><span class="token punctuation">(</span><span class="token parameter">Bundle savedInstanceState</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 弹框权限判断</span>
+    boolean needsOverlayPermission <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">getReactNativeHost</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getUseDeveloperSupport</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> Build<span class="token punctuation">.</span><span class="token constant">VERSION</span><span class="token punctuation">.</span><span class="token constant">SDK_INT</span> <span class="token operator">&gt;=</span> Build<span class="token punctuation">.</span><span class="token constant">VERSION_CODES</span><span class="token punctuation">.</span><span class="token constant">M</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">// Get permission to show redbox in dev builds.</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>Settings<span class="token punctuation">.</span><span class="token function">canDrawOverlays</span><span class="token punctuation">(</span><span class="token function">getContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        needsOverlayPermission <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        Intent serviceIntent <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Intent</span><span class="token punctuation">(</span>Settings<span class="token punctuation">.</span><span class="token constant">ACTION_MANAGE_OVERLAY_PERMISSION</span><span class="token punctuation">,</span> Uri<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span><span class="token string">"package:"</span> <span class="token operator">+</span> <span class="token function">getContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getPackageName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        FLog<span class="token punctuation">.</span><span class="token function">w</span><span class="token punctuation">(</span>ReactConstants<span class="token punctuation">.</span><span class="token constant">TAG</span><span class="token punctuation">,</span> <span class="token constant">REDBOX_PERMISSION_MESSAGE</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Toast<span class="token punctuation">.</span><span class="token function">makeText</span><span class="token punctuation">(</span><span class="token function">getContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token constant">REDBOX_PERMISSION_MESSAGE</span><span class="token punctuation">,</span> Toast<span class="token punctuation">.</span><span class="token constant">LENGTH_LONG</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">show</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">(</span><span class="token punctuation">(</span>Activity<span class="token punctuation">)</span> <span class="token function">getContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">startActivityForResult</span><span class="token punctuation">(</span>serviceIntent<span class="token punctuation">,</span> <span class="token constant">REQUEST_OVERLAY_PERMISSION_CODE</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+        <span class="token comment">// 加载组建逻辑 mMainComponentName为getMainComponentName返回的值</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mMainComponentName <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>needsOverlayPermission<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">loadApp</span><span class="token punctuation">(</span>mMainComponentName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment">// 双击判断工具类</span>
+    mDoubleTapReloadRecognizer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DoubleTapReloadRecognizer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">loadApp</span><span class="token punctuation">(</span><span class="token parameter">String appKey</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+     <span class="token comment">//空判断</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mReactRootView <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalStateException</span><span class="token punctuation">(</span><span class="token string">"Cannot loadApp while app is already running."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment">// 创建 RN容器根视图</span>
+    mReactRootView <span class="token operator">=</span> <span class="token function">createRootView</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    mReactRootView<span class="token punctuation">.</span><span class="token function">startReactApplication</span><span class="token punctuation">(</span>
+      <span class="token function">getReactNativeHost</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getReactInstanceManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      appKey<span class="token punctuation">,</span>
+      <span class="token function">getLaunchOptions</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token comment">//将rootview添加入activity</span>
+    <span class="token function">getPlainActivity</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setContentView</span><span class="token punctuation">(</span>mReactRootView<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p><code>loadApp</code>做了三件事:创建<code>RootView</code>、创建<code>ReactApplication</code>、创建<code>ReactInstanceManager</code></p></blockquote> <h2 id="reactrootview"><a href="#reactrootview" class="header-anchor">#</a> ReactRootView</h2> <blockquote><p>ReactRootView是一个自定义的View，其父类是FrameLayout。因此，可以把RN看成是一个特殊的 “自定义View”。</p></blockquote> <blockquote><p>我们来看下<code>startReactApplication</code>方法</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">startReactApplication</span><span class="token punctuation">(</span>
+      <span class="token parameter">ReactInstanceManager reactInstanceManager<span class="token punctuation">,</span>
+      String moduleName<span class="token punctuation">,</span>
+      @Nullable Bundle initialProperties</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token operator">...</span>省略代码
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        <span class="token comment">//在UI线程中进行</span>
+      UiThreadUtil<span class="token punctuation">.</span><span class="token function">assertOnUiThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      Assertions<span class="token punctuation">.</span><span class="token function">assertCondition</span><span class="token punctuation">(</span>
+        mReactInstanceManager <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">,</span>
+        <span class="token string">"This root view has already been attached to a catalyst instance manager"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 赋值</span>
+      mReactInstanceManager <span class="token operator">=</span> reactInstanceManager<span class="token punctuation">;</span>
+      mJSModuleName <span class="token operator">=</span> moduleName<span class="token punctuation">;</span>
+      mAppProperties <span class="token operator">=</span> initialProperties<span class="token punctuation">;</span>
+        <span class="token comment">// 判断ReactContext是否初始化，没有就异步进行初始化</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>mReactInstanceManager<span class="token punctuation">.</span><span class="token function">hasStartedCreatingInitialContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        mReactInstanceManager<span class="token punctuation">.</span><span class="token function">createReactContextInBackground</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+        <span class="token comment">//宽高计算完成后添加布局监听</span>
+      <span class="token function">attachToReactInstanceManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+      Systrace<span class="token punctuation">.</span><span class="token function">endSection</span><span class="token punctuation">(</span><span class="token constant">TRACE_TAG_REACT_JAVA_BRIDGE</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+</code></pre></div><blockquote><p><code>startReactApplication</code>中的三个参数</p></blockquote> <table><thead><tr><th>形参</th> <th>描述</th></tr></thead> <tbody><tr><td><code>reactInstanceManager</code></td> <td><code>ReactInstanceManager</code>类型，创建和管理<code>CatalyInstance</code>的实例</td></tr> <tr><td><code>moduleName</code></td> <td>就是之前的组件名</td></tr> <tr><td><code>initialProperties</code></td> <td>是<code>Native</code>向JS传递的数据，以后可能由POJO代替，默认是<code>null</code>，需要的话要重写<code>createReactActivityDelegate</code> ，并重写其中<code>getLaunchOptions</code>方法</td></tr></tbody></table> <blockquote><p><code>startReactApplication</code> 中调用了<code>ReactInstanceManager</code>的<code>createReactContextInBackground</code>方法。</p></blockquote> <h2 id="reactinstancemanager"><a href="#reactinstancemanager" class="header-anchor">#</a> ReactInstanceManager</h2> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">createReactContextInBackground</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">//首次执行</span>
+     mHasStartedCreatingInitialContext <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token function">recreateReactContextInBackgroundInner</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>该方法只会在<code>application</code>中执行一次，JS重载时，会走<code>recreateReactContextInBackground</code>, 这两个方法最终都会调用<code>recreateReactContextInBackgroundInner</code>方法</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code>@<span class="token function">ThreadConfined</span><span class="token punctuation">(</span><span class="token constant">UI</span><span class="token punctuation">)</span>
+  <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">recreateReactContextInBackgroundInner</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 确保在UI线程中执行</span>
+    UiThreadUtil<span class="token punctuation">.</span><span class="token function">assertOnUiThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mUseDeveloperSupport <span class="token operator">&amp;&amp;</span> mJSMainModuleName <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span>
+      <span class="token operator">!</span>Systrace<span class="token punctuation">.</span><span class="token function">isTracing</span><span class="token punctuation">(</span><span class="token constant">TRACE_TAG_REACT_APPS</span> <span class="token operator">|</span> <span class="token constant">TRACE_TAG_REACT_JSC_CALLS</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">// 调试模式，加载服务器bundle</span>
+      <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment">// 加载本地bundle</span>
+    <span class="token function">recreateReactContextInBackgroundFromBundleLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  @<span class="token function">ThreadConfined</span><span class="token punctuation">(</span><span class="token constant">UI</span><span class="token punctuation">)</span>
+  <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">recreateReactContextInBackgroundFromBundleLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">recreateReactContextInBackground</span><span class="token punctuation">(</span>
+        <span class="token keyword">new</span> <span class="token class-name">JSCJavaScriptExecutor<span class="token punctuation">.</span>Factory</span><span class="token punctuation">(</span>mJSCConfig<span class="token punctuation">.</span><span class="token function">getConfigMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        mBundleLoader<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+</code></pre></div><table><thead><tr><th>形参</th> <th>描述</th></tr></thead> <tbody><tr><td><code>jsExecutorFactory</code></td> <td>C++和JS双向通信的中转站</td></tr> <tr><td><code>jsBundleLoader</code></td> <td><code>bundle</code>加载器，根据<code>ReactNativeHost</code>中的配置决定从哪里加载<code>bundle</code>文件</td></tr></tbody></table> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">recreateReactContextInBackground</span><span class="token punctuation">(</span>
+    <span class="token parameter">JavaScriptExecutor<span class="token punctuation">.</span>Factory jsExecutorFactory<span class="token punctuation">,</span>
+    JSBundleLoader jsBundleLoader</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    UiThreadUtil<span class="token punctuation">.</span><span class="token function">assertOnUiThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+     <span class="token comment">//创建ReactContextInitParams对象</span>
+    final ReactContextInitParams initParams <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ReactContextInitParams</span><span class="token punctuation">(</span>
+      jsExecutorFactory<span class="token punctuation">,</span>
+      jsBundleLoader<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mCreateReactContextThread <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">// 新增线程初始化ReactContext</span>
+      <span class="token function">runCreateReactContextOnNewThread</span><span class="token punctuation">(</span>initParams<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      mPendingReactContextInitParams <span class="token operator">=</span> initParams<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+</code></pre></div><blockquote><p><code>runCreateReactContextOnNewThread</code>中有一个核心方法<code>createReactContext</code>来创建<code>ReactContext</code></p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">private</span> ReactApplicationContext <span class="token function">createReactContext</span><span class="token punctuation">(</span>
+      <span class="token parameter">JavaScriptExecutor jsExecutor<span class="token punctuation">,</span>
+      JSBundleLoader jsBundleLoader</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 包装ApplicationContext</span>
+    final ReactApplicationContext reactContext <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ReactApplicationContext</span><span class="token punctuation">(</span>mApplicationContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//创建JavaModule注册表Builder，用来创建JavaModule注册表，JavaModule注册表将所有的JavaModule注册到CatalystInstance中。</span>
+    NativeModuleRegistryBuilder nativeModuleRegistryBuilder <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">NativeModuleRegistryBuilder</span><span class="token punctuation">(</span>
+      reactContext<span class="token punctuation">,</span>
+      <span class="token keyword">this</span><span class="token punctuation">,</span>
+      mLazyNativeModulesEnabled<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token comment">// 创建JavaScriptModule注册表Builder</span>
+    JavaScriptModuleRegistry<span class="token punctuation">.</span>Builder jsModulesBuilder <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">JavaScriptModuleRegistry<span class="token punctuation">.</span>Builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mUseDeveloperSupport<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 调试模式下，将错误交给DevSupportManager处理</span>
+      reactContext<span class="token punctuation">.</span><span class="token function">setNativeModuleCallExceptionHandler</span><span class="token punctuation">(</span>mDevSupportManager<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token operator">...</span>省略代码
+
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+      <span class="token comment">//创建CoreModulesPackage，其中封装了RN Framework核心功能，通信、调试等。</span>
+      CoreModulesPackage coreModulesPackage <span class="token operator">=</span>
+        <span class="token keyword">new</span> <span class="token class-name">CoreModulesPackage</span><span class="token punctuation">(</span>
+          <span class="token keyword">this</span><span class="token punctuation">,</span>
+          mBackBtnHandler<span class="token punctuation">,</span>
+          mUIImplementationProvider<span class="token punctuation">,</span>
+          mLazyViewManagersEnabled<span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token comment">//把各自的Module添加到对应的注册表中</span>
+      <span class="token function">processPackage</span><span class="token punctuation">(</span>coreModulesPackage<span class="token punctuation">,</span> nativeModuleRegistryBuilder<span class="token punctuation">,</span> jsModulesBuilder<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+      Systrace<span class="token punctuation">.</span><span class="token function">endSection</span><span class="token punctuation">(</span><span class="token constant">TRACE_TAG_REACT_JAVA_BRIDGE</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment">// 将我们Application中的ReactPackage循环处理，加入对应的注册表中。</span>
+   <span class="token keyword">for</span> <span class="token punctuation">(</span>ReactPackage reactPackage <span class="token operator">:</span> mPackages<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token operator">...</span>省略代码
+      <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        <span class="token function">processPackage</span><span class="token punctuation">(</span>reactPackage<span class="token punctuation">,</span> nativeModuleRegistryBuilder<span class="token punctuation">,</span> jsModulesBuilder<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+        Systrace<span class="token punctuation">.</span><span class="token function">endSection</span><span class="token punctuation">(</span><span class="token constant">TRACE_TAG_REACT_JAVA_BRIDGE</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token operator">...</span>省略代码
+    <span class="token comment">//生成Java注册表，将Java可调用的API暴露给JS</span>
+    NativeModuleRegistry nativeModuleRegistry<span class="token punctuation">;</span>
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+       nativeModuleRegistry <span class="token operator">=</span> nativeModuleRegistryBuilder<span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+      Systrace<span class="token punctuation">.</span><span class="token function">endSection</span><span class="token punctuation">(</span><span class="token constant">TRACE_TAG_REACT_JAVA_BRIDGE</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      ReactMarker<span class="token punctuation">.</span><span class="token function">logMarker</span><span class="token punctuation">(</span><span class="token constant">BUILD_NATIVE_MODULE_REGISTRY_END</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    NativeModuleCallExceptionHandler exceptionHandler <span class="token operator">=</span> mNativeModuleCallExceptionHandler <span class="token operator">!=</span> <span class="token keyword">null</span>
+        <span class="token operator">?</span> mNativeModuleCallExceptionHandler
+        <span class="token operator">:</span> mDevSupportManager<span class="token punctuation">;</span>
+     <span class="token comment">//构建CatalystInstanceImpl实例</span>
+    CatalystInstanceImpl<span class="token punctuation">.</span>Builder catalystInstanceBuilder <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CatalystInstanceImpl<span class="token punctuation">.</span>Builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">setReactQueueConfigurationSpec</span><span class="token punctuation">(</span>mUseSeparateUIBackgroundThread <span class="token operator">?</span>
+        ReactQueueConfigurationSpec<span class="token punctuation">.</span><span class="token function">createWithSeparateUIBackgroundThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">:</span>
+        ReactQueueConfigurationSpec<span class="token punctuation">.</span><span class="token function">createDefault</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token comment">//JS执行通信类</span>
+      <span class="token punctuation">.</span><span class="token function">setJSExecutor</span><span class="token punctuation">(</span>jsExecutor<span class="token punctuation">)</span>
+      <span class="token comment">//Java模块注册表</span>
+      <span class="token punctuation">.</span><span class="token function">setRegistry</span><span class="token punctuation">(</span>nativeModuleRegistry<span class="token punctuation">)</span>
+      <span class="token comment">// JS注册表</span>
+      <span class="token punctuation">.</span><span class="token function">setJSModuleRegistry</span><span class="token punctuation">(</span>jsModulesBuilder<span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+      <span class="token comment">// Bundle加载工具类</span>
+      <span class="token punctuation">.</span><span class="token function">setJSBundleLoader</span><span class="token punctuation">(</span>jsBundleLoader<span class="token punctuation">)</span>
+      <span class="token comment">// 异常处理器</span>
+      <span class="token punctuation">.</span><span class="token function">setNativeModuleCallExceptionHandler</span><span class="token punctuation">(</span>exceptionHandler<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 省略代码</span>
+
+   final CatalystInstance catalystInstance<span class="token punctuation">;</span>
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+      catalystInstance <span class="token operator">=</span> catalystInstanceBuilder<span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+        <span class="token comment">//省略代码</span>
+   <span class="token punctuation">}</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mBridgeIdleDebugListener <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      catalystInstance<span class="token punctuation">.</span><span class="token function">addBridgeIdleDebugListener</span><span class="token punctuation">(</span>mBridgeIdleDebugListener<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>Systrace<span class="token punctuation">.</span><span class="token function">isTracing</span><span class="token punctuation">(</span><span class="token constant">TRACE_TAG_REACT_APPS</span> <span class="token operator">|</span> <span class="token constant">TRACE_TAG_REACT_JSC_CALLS</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+ <span class="token comment">//调用CatalystInstanceImpl的Native方法把Java Registry转换为Json，再由C++层传送到JS层。     catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">//关联ReacContext与CatalystInstance</span>
+    reactContext<span class="token punctuation">.</span><span class="token function">initializeWithInstance</span><span class="token punctuation">(</span>catalystInstance<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//通过CatalystInstance开始加载JS Bundle</span>
+    catalystInstance<span class="token punctuation">.</span><span class="token function">runJSBundle</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> reactContext<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>这段代码比较长，它主要做了这几件事：</p></blockquote> <ul><li>创建<code>JavaModule</code>注册表和<code>JavaScriptModule</code>注册表，交给<code>CatalystInstance</code>管理。</li> <li>处理<code>ReactPackage</code>，将各自的<code>Module</code>放入对应的注册表中。</li> <li>通过上面的各个参数创建<code>CatalystInstance</code>实例。
+<code>CatalystInstance</code>关联<code>ReactContext</code>，开始加载<code>JS Bundle</code></li></ul> <h2 id="catalystinstance"><a href="#catalystinstance" class="header-anchor">#</a> CatalystInstance</h2> <blockquote><p>我们来看下<code>CatalystInstance</code>的实现类<code>CatalystInstanceImpl</code>的构造方法</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">private</span> <span class="token function">CatalystInstanceImpl</span><span class="token punctuation">(</span>
+      <span class="token parameter">final ReactQueueConfigurationSpec reactQueueConfigurationSpec<span class="token punctuation">,</span>
+      final JavaScriptExecutor jsExecutor<span class="token punctuation">,</span>
+      final NativeModuleRegistry registry<span class="token punctuation">,</span>
+      final JavaScriptModuleRegistry jsModuleRegistry<span class="token punctuation">,</span>
+      final JSBundleLoader jsBundleLoader<span class="token punctuation">,</span>
+      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">//用来创建JNI相关方法，并返回mHybridData</span>
+    mHybridData <span class="token operator">=</span> <span class="token function">initHybrid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// Android UI线程、JS线程、NativeMOdulesQueue线程</span>
+    mReactQueueConfiguration <span class="token operator">=</span> ReactQueueConfigurationImpl<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span>
+        reactQueueConfigurationSpec<span class="token punctuation">,</span>
+        <span class="token keyword">new</span> <span class="token class-name">NativeExceptionHandler</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// 省略代码</span>
+    <span class="token comment">//调用 C++ 层代码进行初始化Bridge</span>
+    <span class="token function">initializeBridge</span><span class="token punctuation">(</span>
+      <span class="token keyword">new</span> <span class="token class-name">BridgeCallback</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      jsExecutor<span class="token punctuation">,</span>
+      mReactQueueConfiguration<span class="token punctuation">.</span><span class="token function">getJSQueueThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      mNativeModulesQueueThread<span class="token punctuation">,</span>
+      mUIBackgroundQueueThread<span class="token punctuation">,</span>
+      mJavaRegistry<span class="token punctuation">.</span><span class="token function">getJavaModules</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      mJavaRegistry<span class="token punctuation">.</span><span class="token function">getCxxModules</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">private</span> native <span class="token keyword">void</span> <span class="token function">initializeBridge</span><span class="token punctuation">(</span>
+      ReactCallback callback<span class="token punctuation">,</span>
+      JavaScriptExecutor jsExecutor<span class="token punctuation">,</span>
+      MessageQueueThread jsQueue<span class="token punctuation">,</span>
+      MessageQueueThread moduleQueue<span class="token punctuation">,</span>
+      MessageQueueThread uiBackgroundQueue<span class="token punctuation">,</span>
+      Collection<span class="token operator">&lt;</span>JavaModuleWrapper<span class="token operator">&gt;</span> javaModules<span class="token punctuation">,</span>
+      Collection<span class="token operator">&lt;</span>ModuleHolder<span class="token operator">&gt;</span> cxxModules<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><table><thead><tr><th>形参</th> <th>描述</th></tr></thead> <tbody><tr><td><code>ReactCallback</code></td> <td>CatalystInstanceImpl的静态内部类<code>ReactCallback</code>，负责接口回调</td></tr> <tr><td><code>JavaScriptExecutor</code></td> <td>JS执行器，将JS的调用传给C++层</td></tr> <tr><td><code>MessageQueueThread</code></td> <td><code>JS</code>线程</td></tr> <tr><td><code>MessageQueueThread moduleQueue</code></td> <td><code>Java</code>线程</td></tr> <tr><td><code>MessageQueueThread uiBackgroundQueue</code></td> <td><code>UI</code>背景线程</td></tr> <tr><td><code>javaModules</code></td> <td><code>java module</code></td></tr> <tr><td><code>cxxModules</code></td> <td><code>c++ module</code></td></tr></tbody></table> <blockquote><p><code>createReactContext</code>方法中用<code>catalystInstance.runJSBundle()</code> 来加载 <code>JS bundle</code></p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code>@Override
+  <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">runJSBundle</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+    <span class="token operator">...</span>
+    mJSBundleLoader<span class="token punctuation">.</span><span class="token function">loadScript</span><span class="token punctuation">(</span>CatalystInstanceImpl<span class="token punctuation">.</span>this<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">...</span>
+  <span class="token punctuation">}</span>
+</code></pre></div><h2 id="jsbundleloader"><a href="#jsbundleloader" class="header-anchor">#</a> JSBundleLoader</h2> <blockquote><p><code>CatalystInstanceImpl.runJSBundle()</code>会调用<code>JSBundleLoader</code>去加载<code>JS Bundle</code>，由于不同的情况可能会有不同的<code>JSBundleLoader</code>，我们假设其中一种</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">public</span> abstract <span class="token keyword">class</span> <span class="token class-name">JSBundleLoader</span> <span class="token punctuation">{</span>
+
+  <span class="token comment">/**
+   * This loader is recommended one for release version of your app. In that case local JS executor
+   * should be used. JS bundle will be read from assets in native code to save on passing large
+   * strings from java to native memory.
+   */</span>
+  <span class="token keyword">public</span> <span class="token keyword">static</span> JSBundleLoader <span class="token function">createAssetLoader</span><span class="token punctuation">(</span>
+      <span class="token parameter">final Context context<span class="token punctuation">,</span>
+      final String assetUrl<span class="token punctuation">,</span>
+      final boolean loadSynchronously</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">JSBundleLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      @Override
+      <span class="token keyword">public</span> String <span class="token function">loadScript</span><span class="token punctuation">(</span><span class="token parameter">CatalystInstanceImpl instance</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        instance<span class="token punctuation">.</span><span class="token function">loadScriptFromAssets</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">getAssets</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> assetUrl<span class="token punctuation">,</span> loadSynchronously<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> assetUrl<span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>可以看到它会继续调用<code>CatalystInstance</code>中的<code>loadScriptFromAssets</code>方法</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CatalystInstanceImpl</span> <span class="token punctuation">{</span>
+
+  <span class="token comment">/* package */</span> <span class="token keyword">void</span> <span class="token function">loadScriptFromAssets</span><span class="token punctuation">(</span><span class="token parameter">AssetManager assetManager<span class="token punctuation">,</span> String assetURL</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    mSourceURL <span class="token operator">=</span> assetURL<span class="token punctuation">;</span>
+    <span class="token function">jniLoadScriptFromAssets</span><span class="token punctuation">(</span>assetManager<span class="token punctuation">,</span> assetURL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">private</span> native <span class="token keyword">void</span> <span class="token function">jniLoadScriptFromAssets</span><span class="token punctuation">(</span>AssetManager assetManager<span class="token punctuation">,</span> String assetURL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>最终呢，还是会调用<code>CatalystInstanceImpl.cpp</code>去加载<code>JS Bundle</code>，我们去<code>C++</code>层看一下实现</p></blockquote> <p>我们先看下源码的结构图</p> <p><img src="https://s.poetries.top/gitee/2019/10/677.png" alt=""></p> <h2 id="catalystinstanceimpl-cpp"><a href="#catalystinstanceimpl-cpp" class="header-anchor">#</a> CatalystInstanceImpl.cpp</h2> <blockquote><p>在ReactAndroid的Jni中，我们看下相关代码：</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">void</span> <span class="token literal-property property">CatalystInstanceImpl</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">jniLoadScriptFromAssets</span><span class="token punctuation">(</span>
+    <span class="token parameter"><span class="token literal-property property">jni</span><span class="token operator">:</span><span class="token operator">:</span>alias_ref<span class="token operator">&lt;</span>JAssetManager<span class="token operator">:</span><span class="token operator">:</span>javaobject<span class="token operator">&gt;</span> assetManager<span class="token punctuation">,</span>
+    <span class="token keyword">const</span> <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span>string<span class="token operator">&amp;</span> assetURL<span class="token punctuation">,</span>
+    bool loadSynchronously</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> int kAssetsLength <span class="token operator">=</span> <span class="token number">9</span><span class="token punctuation">;</span>  <span class="token comment">// strlen("assets://");</span>
+  <span class="token comment">// 获取soure js Bundle的路径名</span>
+  auto sourceURL <span class="token operator">=</span> assetURL<span class="token punctuation">.</span><span class="token function">substr</span><span class="token punctuation">(</span>kAssetsLength<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// 获取AssetManager</span>
+  auto manager <span class="token operator">=</span> <span class="token function">extractAssetManager</span><span class="token punctuation">(</span>assetManager<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// 读取JS Bundle里的内容</span>
+  auto script <span class="token operator">=</span> <span class="token function">loadScriptFromAssets</span><span class="token punctuation">(</span>manager<span class="token punctuation">,</span> sourceURL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// unbundle命令打包判断</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>JniJSModulesUnbundle<span class="token operator">:</span><span class="token operator">:</span><span class="token function">isUnbundle</span><span class="token punctuation">(</span>manager<span class="token punctuation">,</span> sourceURL<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    instance_<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">loadUnbundle</span><span class="token punctuation">(</span>
+      <span class="token literal-property property">folly</span><span class="token operator">:</span><span class="token operator">:</span>make_unique<span class="token operator">&lt;</span>JniJSModulesUnbundle<span class="token operator">&gt;</span><span class="token punctuation">(</span>manager<span class="token punctuation">,</span> sourceURL<span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>script<span class="token punctuation">)</span><span class="token punctuation">,</span>
+      sourceURL<span class="token punctuation">,</span>
+      loadSynchronously<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+    <span class="token comment">//bundle命令打包走次流程，instance_是Instan.h中类的实例</span>
+    instance_<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">loadScriptFromString</span><span class="token punctuation">(</span>std<span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>script<span class="token punctuation">)</span><span class="token punctuation">,</span> sourceURL<span class="token punctuation">,</span> loadSynchronously<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="instance-cpp"><a href="#instance-cpp" class="header-anchor">#</a> Instance.cpp</h2> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">void</span> <span class="token literal-property property">Instance</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">loadScriptFromString</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span>unique_ptr<span class="token operator">&lt;</span><span class="token keyword">const</span> JSBigString<span class="token operator">&gt;</span> string<span class="token punctuation">,</span>
+                                    <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span>string sourceURL<span class="token punctuation">,</span>
+                                    bool loadSynchronously</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  SystraceSection <span class="token function">s</span><span class="token punctuation">(</span><span class="token string">"reactbridge_xplat_loadScriptFromString"</span><span class="token punctuation">,</span> <span class="token string">"sourceURL"</span><span class="token punctuation">,</span> sourceURL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>loadSynchronously<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">loadApplicationSync</span><span class="token punctuation">(</span>nullptr<span class="token punctuation">,</span> <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>string<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>sourceURL<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+    <span class="token function">loadApplication</span><span class="token punctuation">(</span>nullptr<span class="token punctuation">,</span> <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>string<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>sourceURL<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">void</span> <span class="token literal-property property">Instance</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">loadApplicationSync</span><span class="token punctuation">(</span>
+    <span class="token parameter"><span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span>unique_ptr<span class="token operator">&lt;</span>JSModulesUnbundle<span class="token operator">&gt;</span> unbundle<span class="token punctuation">,</span>
+    <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span>unique_ptr<span class="token operator">&lt;</span><span class="token keyword">const</span> JSBigString<span class="token operator">&gt;</span> string<span class="token punctuation">,</span>
+    <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span>string sourceURL</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span>unique_lock<span class="token operator">&lt;</span>std<span class="token operator">:</span><span class="token operator">:</span>mutex<span class="token operator">&gt;</span> <span class="token function">lock</span><span class="token punctuation">(</span>m_syncMutex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  m_syncCV<span class="token punctuation">.</span><span class="token function">wait</span><span class="token punctuation">(</span>lock<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">]</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> m_syncReady<span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  SystraceSection <span class="token function">s</span><span class="token punctuation">(</span><span class="token string">"reactbridge_xplat_loadApplicationSync"</span><span class="token punctuation">,</span> <span class="token string">"sourceURL"</span><span class="token punctuation">,</span> sourceURL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">//nativeToJsBridge_也是在Instance::initializeBridget()方法里初始化的，具体实现在NativeToJsBridge.cpp里。</span>
+  nativeToJsBridge_<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">loadApplicationSync</span><span class="token punctuation">(</span>std<span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>unbundle<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>string<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>sourceURL<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><strong>NativeToJsBridge.cpp</strong></p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">void</span> <span class="token literal-property property">NativeToJsBridge</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">loadApplication</span><span class="token punctuation">(</span>
+    <span class="token parameter"><span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span>unique_ptr<span class="token operator">&lt;</span>JSModulesUnbundle<span class="token operator">&gt;</span> unbundle<span class="token punctuation">,</span>
+    <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span>unique_ptr<span class="token operator">&lt;</span><span class="token keyword">const</span> JSBigString<span class="token operator">&gt;</span> startupScript<span class="token punctuation">,</span>
+    <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span>string startupScriptSourceURL</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+  <span class="token comment">//获取一个MessageQueueThread，探后在线程中执行一个Task。</span>
+  <span class="token function">runOnExecutorQueue</span><span class="token punctuation">(</span>
+      m_mainExecutorToken<span class="token punctuation">,</span>
+      <span class="token punctuation">[</span>unbundleWrap<span class="token operator">=</span>folly<span class="token operator">:</span><span class="token operator">:</span><span class="token function">makeMoveWrapper</span><span class="token punctuation">(</span>std<span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>unbundle<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+       startupScript<span class="token operator">=</span>folly<span class="token operator">:</span><span class="token operator">:</span><span class="token function">makeMoveWrapper</span><span class="token punctuation">(</span>std<span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>startupScript<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+       startupScriptSourceURL<span class="token operator">=</span>std<span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>startupScriptSourceURL<span class="token punctuation">)</span><span class="token punctuation">]</span>
+        <span class="token punctuation">(</span>JSExecutor<span class="token operator">*</span> executor<span class="token punctuation">)</span> mutable <span class="token punctuation">{</span>
+
+    auto unbundle <span class="token operator">=</span> unbundleWrap<span class="token punctuation">.</span><span class="token function">move</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>unbundle<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      executor<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">setJSModulesUnbundle</span><span class="token punctuation">(</span>std<span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>unbundle<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">//executor从runOnExecutorQueue()返回的map中取得，与OnLoad中的JSCJavaScriptExecutorHolder对应，也与</span>
+    <span class="token comment">//Java中的JSCJavaScriptExecutor对应。它的实例在JSExecutor.cpp中实现。</span>
+    executor<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">loadApplicationScript</span><span class="token punctuation">(</span>std<span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span><span class="token operator">*</span>startupScript<span class="token punctuation">)</span><span class="token punctuation">,</span>
+                                    <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">move</span><span class="token punctuation">(</span>startupScriptSourceURL<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>unbundle命令，使用方式和bundle命令完全相同。unbundle命令是在bundle命令的基础上增加了一项功能，除了生成整合JS文件index.android.bundle外，还会
+生成各个单独的未整合JS文件（但会被优化），全部放在js-modules目录下，同时会生成一个名为UNBUNDLE的标识文件，一并放在其中。UNBUNDLE标识文件的前4个字节
+固定为0xFB0BD1E5，用于加载前的校验。</p></blockquote> <ul><li>该函数进一步调用<code>JSExecutor.cpp</code>的<code>loadApplicationScript()</code>方法。</li> <li>到了这个方法，就是去真正加载JS文件了。</li></ul> <p><strong>JSCExecutor.cpp</strong></p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">void</span> <span class="token literal-property property">JSCExecutor</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">loadApplicationScript</span><span class="token punctuation">(</span><span class="token parameter"><span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span>unique_ptr<span class="token operator">&lt;</span><span class="token keyword">const</span> JSBigString<span class="token operator">&gt;</span> script<span class="token punctuation">,</span> <span class="token literal-property property">std</span><span class="token operator">:</span><span class="token operator">:</span>string sourceURL</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+    <span class="token operator">...</span>
+    <span class="token comment">//使用Webkit JSC去解释执行JS</span>
+    <span class="token function">evaluateSourceCode</span><span class="token punctuation">(</span>m_context<span class="token punctuation">,</span> bcSourceCode<span class="token punctuation">,</span> jsSourceURL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">void</span> <span class="token literal-property property">JSCExecutor</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token operator">...</span>
+    <span class="token comment">//绑定bridge，核心就是通过getGlobalObject()将JS与C++通过Webkit jSC实现绑定</span>
+      <span class="token function">bindBridge</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token comment">//返回给callNativeModules</span>
+    <span class="token function">callNativeModules</span><span class="token punctuation">(</span>m_flushedQueueJS<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">callAsFunction</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">void</span> <span class="token literal-property property">JSCExecutor</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">callNativeModules</span><span class="token punctuation">(</span><span class="token parameter">Value<span class="token operator">&amp;&amp;</span> value</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token operator">...</span>
+    <span class="token comment">//把JS层相关通信数据转换为JSON格式</span>
+    auto calls <span class="token operator">=</span> value<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//m_delegate为JsToNativeBridge对象。</span>
+    m_delegate<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">callNativeModules</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token literal-property property">folly</span><span class="token operator">:</span><span class="token operator">:</span><span class="token function">parseJson</span><span class="token punctuation">(</span>calls<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li><code>m_flushedQueueJS</code>支线的是<code>MessageQueue.js</code>的<code>flushedQueue()</code>方法，此时JS已经被加载到队列中，等待Java层来驱动它。</li> <li><code>JS Bundle</code>加载并解析完成后，我们回到Java代码中看看后续的流程</li> <li>我们在之前的<code>runCreateReactContextOnNewThread</code>方法中，在<code>creatReactContext</code>之后还有一句核心的代码</li></ul> <div class="language- extra-class"><pre class="language-text"><code>setupReactContext(reactApplicationContext);
+</code></pre></div><blockquote><p>这就是加载<code>JS Bundle</code>之后执行的代码</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ReactInstanceManager</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">setupReactContext</span><span class="token punctuation">(</span><span class="token parameter">ReactApplicationContext reactContext</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token operator">...</span>
+        <span class="token comment">// Native Java module初始化</span>
+    catalystInstance<span class="token punctuation">.</span><span class="token function">initialize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//重置ReactContext </span>
+    mDevSupportManager<span class="token punctuation">.</span><span class="token function">onNewReactContextCreated</span><span class="token punctuation">(</span>reactContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token comment">//内存状态回调设置 mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);</span>
+    <span class="token comment">// 复位生命周期</span>
+    <span class="token function">moveReactContextToCurrentLifecycleState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    ReactMarker<span class="token punctuation">.</span><span class="token function">logMarker</span><span class="token punctuation">(</span><span class="token constant">ATTACH_MEASURED_ROOT_VIEWS_START</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">synchronized</span> <span class="token punctuation">(</span><span class="token parameter">mAttachedRootViews</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">//mAttachedRootViews保存的是ReactRootView</span>
+      <span class="token keyword">for</span> <span class="token punctuation">(</span>ReactRootView rootView <span class="token operator">:</span> mAttachedRootViews<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">attachRootViewToInstance</span><span class="token punctuation">(</span>rootView<span class="token punctuation">,</span> catalystInstance<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token operator">...</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">attachMeasuredRootViewToInstance</span> <span class="token punctuation">(</span>     <span class="token parameter">final ReactRootView rootView<span class="token punctuation">,</span>
+      CatalystInstance catalystInstance</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token operator">...</span>
+            <span class="token comment">//将ReactRootView作为根布局</span>
+    UIManagerModule uiManagerModule <span class="token operator">=</span> catalystInstance<span class="token punctuation">.</span><span class="token function">getNativeModule</span><span class="token punctuation">(</span>UIManagerModule<span class="token punctuation">.</span>class<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    int rootTag <span class="token operator">=</span> uiManagerModule<span class="token punctuation">.</span><span class="token function">addMeasuredRootView</span><span class="token punctuation">(</span>rootView<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//设置相关</span>
+    rootView<span class="token punctuation">.</span><span class="token function">setRootViewTag</span><span class="token punctuation">(</span>rootTag<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    rootView<span class="token punctuation">.</span><span class="token function">runApplication</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">...</span>
+      <span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code> <span class="token comment">/* package */</span> <span class="token keyword">void</span> <span class="token function">runApplication</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token operator">...</span>
+      CatalystInstance catalystInstance <span class="token operator">=</span> reactContext<span class="token punctuation">.</span><span class="token function">getCatalystInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      WritableNativeMap appParams <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">WritableNativeMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      appParams<span class="token punctuation">.</span><span class="token function">putDouble</span><span class="token punctuation">(</span><span class="token string">"rootTag"</span><span class="token punctuation">,</span> <span class="token function">getRootViewTag</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      @Nullable Bundle appProperties <span class="token operator">=</span> <span class="token function">getAppProperties</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>appProperties <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        appParams<span class="token punctuation">.</span><span class="token function">putMap</span><span class="token punctuation">(</span><span class="token string">"initialProps"</span><span class="token punctuation">,</span> Arguments<span class="token punctuation">.</span><span class="token function">fromBundle</span><span class="token punctuation">(</span>appProperties<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+
+      String jsAppModuleName <span class="token operator">=</span> <span class="token function">getJSModuleName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token comment">//启动流程入口：由Java层调用启动</span>
+      catalystInstance<span class="token punctuation">.</span><span class="token function">getJSModule</span><span class="token punctuation">(</span>AppRegistry<span class="token punctuation">.</span>class<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">runApplication</span><span class="token punctuation">(</span>jsAppModuleName<span class="token punctuation">,</span> appParams<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token operator">...</span>
+  <span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>可以看到，最终调用的是<code>catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams)</code>， <code>AppRegistry.class</code>是JS层暴露给Java层的接口方法。它的真正实现在<code>AppRegistry.js</code>里，<code>AppRegistry.js</code>是运行所有<code>RN</code>应用的<code>JS</code>层入口，我们来看看它的实现：</p></blockquote> <ul><li><strong>在<code>Libraries/ReactNative</code>中的<code>AppRegistry.js</code></strong></li></ul> <h2 id="appregistry-js"><a href="#appregistry-js" class="header-anchor">#</a> AppRegistry.js</h2> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">runApplication</span><span class="token punctuation">(</span>appKey<span class="token operator">:</span> string<span class="token punctuation">,</span> <span class="token literal-property property">appParameters</span><span class="token operator">:</span> any<span class="token punctuation">)</span><span class="token operator">:</span> <span class="token keyword">void</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> msg <span class="token operator">=</span>
+      <span class="token string">'Running application "'</span> <span class="token operator">+</span> appKey <span class="token operator">+</span> <span class="token string">'" with appParams: '</span> <span class="token operator">+</span>
+      <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>appParameters<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">'. '</span> <span class="token operator">+</span>
+      <span class="token string">'__DEV__ === '</span> <span class="token operator">+</span> <span class="token function">String</span><span class="token punctuation">(</span>__DEV__<span class="token punctuation">)</span> <span class="token operator">+</span>
+      <span class="token string">', development-level warning are '</span> <span class="token operator">+</span> <span class="token punctuation">(</span>__DEV__ <span class="token operator">?</span> <span class="token string">'ON'</span> <span class="token operator">:</span> <span class="token string">'OFF'</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+      <span class="token string">', performance optimizations are '</span> <span class="token operator">+</span> <span class="token punctuation">(</span>__DEV__ <span class="token operator">?</span> <span class="token string">'OFF'</span> <span class="token operator">:</span> <span class="token string">'ON'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">infoLog</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    BugReporting<span class="token punctuation">.</span><span class="token function">addSource</span><span class="token punctuation">(</span><span class="token string">'AppRegistry.runApplication'</span> <span class="token operator">+</span> runCount<span class="token operator">++</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">invariant</span><span class="token punctuation">(</span>
+      runnables<span class="token punctuation">[</span>appKey<span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> runnables<span class="token punctuation">[</span>appKey<span class="token punctuation">]</span><span class="token punctuation">.</span>run<span class="token punctuation">,</span>
+      <span class="token string">'Application '</span> <span class="token operator">+</span> appKey <span class="token operator">+</span> <span class="token string">' has not been registered.\n\n'</span> <span class="token operator">+</span>
+      <span class="token string">'Hint: This error often happens when you\'re running the packager '</span> <span class="token operator">+</span>
+      <span class="token string">'(local dev server) from a wrong folder. For example you have '</span> <span class="token operator">+</span>
+      <span class="token string">'multiple apps and the packager is still running for the app you '</span> <span class="token operator">+</span>
+      <span class="token string">'were working on before.\nIf this is the case, simply kill the old '</span> <span class="token operator">+</span>
+      <span class="token string">'packager instance (e.g. close the packager terminal window) '</span> <span class="token operator">+</span>
+      <span class="token string">'and start the packager in the correct app folder (e.g. cd into app '</span> <span class="token operator">+</span>
+      <span class="token string">'folder and run \'npm start\').\n\n'</span> <span class="token operator">+</span>
+      <span class="token string">'This error can also happen due to a require() error during '</span> <span class="token operator">+</span>
+      <span class="token string">'initialization or failure to call AppRegistry.registerComponent.\n\n'</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    SceneTracker<span class="token punctuation">.</span><span class="token function">setActiveScene</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token literal-property property">name</span><span class="token operator">:</span> appKey<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    runnables<span class="token punctuation">[</span>appKey<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>appParameters<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+</code></pre></div><ul><li>到这里就会去调用JS进行渲染，在通过<code>UIManagerModule</code>将JS组件转换成Android组件，最终显示在<code>ReactRootView</code>上。</li> <li>最后总结一下，就是先在应用终端启动并创建上下文对象，启动<code>JS Runtime</code>，进行布局，将JS端的代码通过C++层，<code>UIManagerMoodule</code>转化成<code>Android</code>组件，再进行渲染，最后将渲染的View添加到<code>ReactRootView</code>上，最终呈现在用户面前。</li></ul> <h2 id="系统框架图"><a href="#系统框架图" class="header-anchor">#</a> 系统框架图</h2> <p><img src="https://s.poetries.top/gitee/2019/10/678.png" alt=""></p> <h2 id="启动流程图"><a href="#启动流程图" class="header-anchor">#</a> 启动流程图</h2> <p><img src="https://s.poetries.top/gitee/2019/10/679.png" alt=""></p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

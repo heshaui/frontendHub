@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nginx之location的匹配规则 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>nginx之location的匹配规则</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>nginx之location的匹配规则</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><blockquote><p>Nginx 配置文件在线生成: https://nginxconfig.io/</p></blockquote> <h2 id="一、语法规则"><a href="#一、语法规则" class="header-anchor">#</a> 一、语法规则</h2> <div class="language- extra-class"><pre class="language-text"><code>location [=|~|~*|^~] /uri/ { … }
+</code></pre></div><table><thead><tr><th>符号</th> <th>含义</th></tr></thead> <tbody><tr><td><code>=</code></td> <td>开头表示精确匹配</td></tr> <tr><td><code>^~</code></td> <td>开头表示 uri 以某个常规字符串开头，理解为匹配 <code>url</code> 路径即可。<code>nginx</code> 不对 <code>url</code> 做编码，因此请求为<code>/static/20%/aa</code>，可以被规则<code>^~ /static/ /aa</code>匹配到（注意是空格）</td></tr> <tr><td><code>~</code></td> <td>开头表示区分大小写的正则匹配</td></tr> <tr><td><code>~</code>*</td> <td>开头表示不区分大小写的正则匹配</td></tr> <tr><td><code>/</code></td> <td>通用匹配，任何请求都会匹配到</td></tr></tbody></table> <blockquote><p>多个 <code>location</code> 配置的情况下匹配顺序为</p></blockquote> <ul><li>首先匹配 <code>=</code></li> <li>其次匹配 <code>^~</code></li> <li>其次是按文件中顺序的正则匹配</li> <li>最后是交给 / 通用匹配</li> <li>当有匹配成功时候，停止匹配，按当前匹配规则处理请求</li></ul> <div class="language-nginx extra-class"><pre class="language-nginx"><code><span class="token directive"><span class="token keyword">location</span> = /</span> <span class="token punctuation">{</span>
+   <span class="token comment">#规则A</span>
+<span class="token punctuation">}</span>
+<span class="token directive"><span class="token keyword">location</span> = /login</span> <span class="token punctuation">{</span>
+   <span class="token comment">#规则B</span>
+<span class="token punctuation">}</span>
+<span class="token directive"><span class="token keyword">location</span> ^~ /static/</span> <span class="token punctuation">{</span>
+   <span class="token comment">#规则C</span>
+<span class="token punctuation">}</span>
+<span class="token directive"><span class="token keyword">location</span> ~ \.(gif|jpg|png|js|css)$</span> <span class="token punctuation">{</span>
+   <span class="token comment">#规则D</span>
+<span class="token punctuation">}</span>
+<span class="token directive"><span class="token keyword">location</span> ~* \.png$</span> <span class="token punctuation">{</span>
+   <span class="token comment">#规则E</span>
+<span class="token punctuation">}</span>
+<span class="token directive"><span class="token keyword">location</span> /</span> <span class="token punctuation">{</span>
+   <span class="token comment">#规则F</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>那么产生的效果如下</p></blockquote> <ul><li>访问根目录 <code>/</code>， 比如 <code>http://localhost/</code> 将匹配规则 <code>A</code></li> <li>访问 <code>http://localhost/login</code> 将匹配规则 <code>B</code>，<code>http://localhost/register</code> 则匹配规则 <code>F</code></li> <li>访问 <code>http://localhost/static/a.html</code> 将匹配规则 <code>C</code></li> <li>访问 <code>http://localhost/a.gif</code>, <code>http://localhost/b.jpg</code> 将匹配规则 <code>D</code>和规则 <code>E</code>，但是规则 <code>D</code> 顺序优先，规则 <code>E</code>不起作用，而 <code>http://localhost/static/c.png</code>则优先匹配到规则 <code>C</code></li> <li>访问 <code>http://localhost/a.PNG</code> 则匹配规则 <code>E</code>，而不会匹配规则 <code>D</code>，因为规则 <code>E</code> 不区分大小写</li></ul> <blockquote><p>访问 <code>http://localhost/category/id/1111</code> 则最终匹配到规则 <code>F</code>，因为以上规则都不匹配，这个时候应该是 <code>nginx</code> 转发请求给后端应用服务器，比如 <code>FastCGI（PHP</code>），<code>tomcat（jsp）</code>，<code>nginx</code> 作为反向代理服务器存在</p></blockquote> <h2 id="二、运用场景"><a href="#二、运用场景" class="header-anchor">#</a> 二、运用场景</h2> <blockquote><p>实际使用中，至少有三个匹配规则定义，如下</p></blockquote> <div class="language-nginx extra-class"><pre class="language-nginx"><code><span class="token comment"># 直接匹配网站根，通过域名访问网站首页比较频繁，使用这个会加速处理，官网如是说。</span>
+<span class="token comment"># 这里是直接转发给后端应用服务器了，也可以是一个静态首页</span>
+<span class="token comment"># 第一个必选规则</span>
+<span class="token directive"><span class="token keyword">location</span> = /</span> <span class="token punctuation">{</span>
+    proxy_pass http://tomcat:8080/index
+<span class="token punctuation">}</span>
+
+<span class="token comment"># 第二个必选规则是处理静态文件请求，这是 nginx 作为 http 服务器的强项</span>
+<span class="token comment"># 有两种配置模式，目录匹配或后缀匹配，任选其一或搭配使用</span>
+<span class="token directive"><span class="token keyword">location</span> ^~ /static/</span> <span class="token punctuation">{</span>
+    <span class="token directive"><span class="token keyword">root</span> /webroot/static/</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token directive"><span class="token keyword">location</span> ~* \.(gif|jpg|jpeg|png|css|js|ico)$</span> <span class="token punctuation">{</span>
+    <span class="token directive"><span class="token keyword">root</span> /webroot/res/</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment"># 第三个规则就是通用规则，用来转发动态请求到后端应用服务器</span>
+<span class="token comment"># 非静态文件请求就默认是动态请求，自己根据实际把握</span>
+<span class="token comment"># 毕竟目前的一些框架的流行，带.php、.jsp后缀的情况很少了</span>
+<span class="token directive"><span class="token keyword">location</span> /</span> <span class="token punctuation">{</span>
+    proxy_pass http://tomcat:8080/
+<span class="token punctuation">}</span>
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

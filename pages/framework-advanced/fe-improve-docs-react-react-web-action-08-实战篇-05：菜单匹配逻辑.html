@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实战篇 05 菜单匹配逻辑 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>实战篇 05 菜单匹配逻辑</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>实战篇 05 菜单匹配逻辑</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h1 id="实战篇-05-菜单匹配逻辑"><a href="#实战篇-05-菜单匹配逻辑" class="header-anchor">#</a> 实战篇 05：菜单匹配逻辑</h1> <blockquote><p>本节参考代码：
+<a href="https://github.com/AlanWei/react-sider" target="_blank" rel="noopener noreferrer">react-sider<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></blockquote> <p><img src="https://s.poetries.top/images/202202221106950.png" alt=""></p> <p>在大部分企业管理系统中，页面的基础布局所采取的一般都是侧边栏菜单加页面内容这样的组织形式。在成熟的组件库支持下，UI 层面想要做出一个漂亮的侧边栏菜单并不困难，但因为在企业管理系统中菜单还承担着页面导航的功能，于是就导致了两大难题，一是多级菜单如何处理，二是菜单项的子页面（如点击门店管理中的某一个门店进入的门店详情页在菜单中并没有对应的菜单项）如何高亮其隶属于的父级菜单。</p> <h2 id="多级菜单"><a href="#多级菜单" class="header-anchor">#</a> 多级菜单</h2> <p>为了增强系统的可扩展性，企业管理系统中的菜单一般都需要提供多级支持，对应的数据结构就是在每一个菜单项中都要有 children 属性来配置下一级菜单项。</p> <div class="language- extra-class"><pre class="language-text"><code>const menuData = [{
+  name: '仪表盘',
+  icon: 'dashboard',
+  path: 'dashboard',
+  children: [{
+    name: '分析页',
+    path: 'analysis',
+    children: [{
+      name: '实时数据',
+      path: 'realtime',
+    }, {
+      name: '离线数据',
+      path: 'offline',
+    }],
+  }],
+}];
+
+</code></pre></div><h3 id="递归渲染父菜单及子菜单"><a href="#递归渲染父菜单及子菜单" class="header-anchor">#</a> 递归渲染父菜单及子菜单</h3> <p>想要支持多级菜单，首先要解决的问题就是如何统一不同级别菜单项的交互。</p> <p>在大多数的情况下，每一个菜单项都代表着一个不同的页面路径，点击后会触发 url 的变化并跳转至相应页面，也就是上面配置中的 path 字段。</p> <p><img src="https://s.poetries.top/images/202202221107874.png" alt=""></p> <p>但对于一个父菜单来说，点击还意味着打开或关闭相应的子菜单，这就与点击跳转页面发生了冲突。为了简化这个问题，我们先统一菜单的交互为点击父菜单（包含 children 属性的菜单项）为打开或关闭子菜单，点击子菜单（不包含 children 属性的菜单项）为跳转至相应页面。</p> <p>首先，为了成功地渲染多级菜单，菜单的渲染函数是需要支持递归的，即如果当前菜单项含有 children 属性就将其渲染为父菜单并优先渲染其 children 字段下的子菜单，这在算法上被叫做<a href="https://baike.baidu.com/item/%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E9%81%8D%E5%8E%86" target="_blank" rel="noopener noreferrer">深度优先遍历<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>。</p> <div class="language- extra-class"><pre class="language-text"><code>renderMenu = data =&gt; (
+  map(data, (item) =&gt; {
+    if (item.children) {
+      return (
+        &lt;SubMenu
+          key={item.path}
+          title={
+            &lt;span&gt;
+              &lt;Icon type={item.icon} /&gt;
+              &lt;span&gt;{item.name}&lt;/span&gt;
+            &lt;/span&gt;
+          }
+        &gt;
+          {this.renderMenu(item.children)}
+        &lt;/SubMenu&gt;
+      );
+    }
+
+    return (
+      &lt;Menu.Item key={item.path}&gt;
+        &lt;Link to={item.path} href={item.path}&gt;
+          &lt;Icon type={item.icon} /&gt;
+          &lt;span&gt;{item.name}&lt;/span&gt;
+        &lt;/Link&gt;
+      &lt;/Menu.Item&gt;
+    );
+  })
+)
+
+</code></pre></div><p>这样我们就拥有了一个支持多级展开、子菜单分别对应页面路由的侧边栏菜单。细心的朋友可能还发现了，虽然父菜单并不对应一个具体的路由但在配置项中依然还有 path 这个属性，这是为什么呢？</p> <h2 id="处理菜单高亮"><a href="#处理菜单高亮" class="header-anchor">#</a> 处理菜单高亮</h2> <p>在传统的企业管理系统中，为不同的页面配置页面路径是一件非常痛苦的事情，对于页面路径，许多开发者唯一的要求就是不重复即可，如上面的例子中，我们把菜单数据配置成这样也是可以的。</p> <div class="language- extra-class"><pre class="language-text"><code>const menuData = [{
+  name: '仪表盘',
+  icon: 'dashboard',
+  children: [{
+    name: '分析页',
+    children: [{
+      name: '实时数据',
+      path: '/realtime',
+    }, {
+      name: '离线数据',
+      path: '/offline',
+    }],
+  }],
+}];
+
+&lt;Router&gt;
+  &lt;Route path="/realtime" render={() =&gt; &lt;div /&gt;}
+  &lt;Route path="/offline" render={() =&gt; &lt;div /&gt;}
+&lt;/Router&gt;
+
+</code></pre></div><p>用户在点击菜单项时一样可以正确地跳转到相应页面。但这样做的一个致命缺陷就是，对于 <code>/realtime</code> 这样一个路由，如果只根据当前的 <code>pathname</code> 去匹配菜单项中 <code>path</code> 属性的话，要怎样才能同时也匹配到「分析页」与「仪表盘」呢？因为如果匹配不到的话，「分析页」和「仪表盘」就不会被高亮了。我们能不能在页面的路径中直接体现出菜单项之间的继承关系呢？来看下面这个工具函数。</p> <div class="language- extra-class"><pre class="language-text"><code>import map from 'lodash/map';
+
+const formatMenuPath = (data, parentPath = '/') =&gt; (
+  map(data, (item) =&gt; {
+    const result = {
+      ...item,
+      path: `${parentPath}${item.path}`,
+    };
+    if (item.children) {
+      result.children = formatMenuPath(item.children, `${parentPath}${item.path}/`);
+    }
+    return result;
+  })
+);
+
+</code></pre></div><p>这个工具函数把菜单项中可能有的 <code>children</code> 字段考虑了进去，将一开始的菜单数据传入就可以得到如下完整的菜单数据。</p> <div class="language- extra-class"><pre class="language-text"><code>[{
+  name: '仪表盘',
+  icon: 'dashboard',
+  path: '/dashboard',  // before is 'dashboard'
+  children: [{
+    name: '分析页',
+    path: '/dashboard/analysis', // before is 'analysis'
+    children: [{
+      name: '实时数据',
+      path: '/dashboard/analysis/realtime', // before is 'realtime'
+    }, {
+      name: '离线数据',
+      path: '/dashboard/analysis/offline', // before is 'offline'
+    }],
+  }],
+}];
+
+</code></pre></div><p>然后让我们再对当前页面的路由做一下逆向推导，即假设当前页面的路由为 <code>/dashboard/analysis/realtime</code>，我们希望可以同时匹配到 <code>['/dashboard', '/dashboard/analysis', '/dashboard/analysis/realtime']</code>，方法如下：</p> <div class="language- extra-class"><pre class="language-text"><code>import map from 'lodash/map';
+
+const urlToList = (url) =&gt; {
+  if (url) {
+    const urlList = url.split('/').filter(i =&gt; i);
+    return map(urlList, (urlItem, index) =&gt; `/${urlList.slice(0, index + 1).join('/')}`);
+  }
+  return [];
+};
+
+</code></pre></div><p>上面的这个数组代表着不同级别的菜单项，将这三个值分别与菜单数据中的 <code>path</code> 属性进行匹配就可以一次性地匹配到所有当前页面应当被高亮的菜单项了。</p> <p>这里需要注意的是，虽然菜单项中的 <code>path</code> 一般都是普通字符串，但有些特殊的路由也可能是正则的形式，如 <code>/outlets/:id</code>。所以我们在对二者进行匹配时，还需要引入 <code>path-to-regexp</code> 这个库来处理类似 <code>/outlets/1</code> 和 <code>/outlets/:id</code> 这样的路径。又因为初始时菜单数据是树形结构的，不利于进行 <code>path</code> 属性的匹配，所以我们还需要先将树形结构的菜单数据扁平化，然后再传入 <code>getMeunMatchKeys</code> 中。</p> <div class="language- extra-class"><pre class="language-text"><code>import pathToRegexp from 'path-to-regexp';
+import reduce from 'lodash/reduce';
+import filter from 'lodash/filter';
+
+const getFlatMenuKeys = menuData =&gt; (
+  reduce(menuData, (keys, item) =&gt; {
+    keys.push(item.path);
+    if (item.children) {
+      return keys.concat(getFlatMenuKeys(item.children));
+    }
+    return keys;
+  }, [])
+);
+
+const getMeunMatchKeys = (flatMenuKeys, paths) =&gt;
+  reduce(paths, (matchKeys, path) =&gt; (
+    matchKeys.concat(filter(flatMenuKeys, item =&gt; pathToRegexp(item).test(path)))
+  ), []);
+
+</code></pre></div><p>在这些工具函数的帮助下，多级菜单的高亮也不再是问题了。</p> <h2 id="知识点-记忆化-memoization"><a href="#知识点-记忆化-memoization" class="header-anchor">#</a> 知识点：记忆化（Memoization）</h2> <p>在侧边栏菜单中，有两个重要的状态：一个是 <code>selectedKeys</code>，即当前选定的菜单项；另一个是 <code>openKeys</code>，即多个多级菜单的打开状态。这二者的含义是不同的，因为在 <code>selectedKeys</code> 不变的情况下，用户在打开或关闭其他多级菜单后，<code>openKeys</code> 是会发生变化的，如下面二图所示，<code>selectedKeys</code> 相同但 <code>openKeys</code> 不同。</p> <p><img src="https://s.poetries.top/images/202202221107449.png" alt=""> <img src="https://s.poetries.top/images/202202221107983.png" alt=""></p> <p>对于 <code>selectedKeys</code> 来说，由于它是由页面路径（<code>pathname</code>）决定的，所以每一次 <code>pathname</code> 发生变化都需要重新计算 <code>selectedKeys</code> 的值。又因为通过 <code>pathname</code> 以及最基础的菜单数据 <code>menuData</code> 去计算 <code>selectedKeys</code> 是一件非常昂贵的事情（要做许多数据格式处理和计算），有没有什么办法可以优化一下这个过程呢？</p> <p><a href="https://en.wikipedia.org/wiki/Memoization" target="_blank" rel="noopener noreferrer">Memoization<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 可以赋予普通函数记忆输出结果的功能，它会在每次调用函数之前检查传入的参数是否与之前执行过的参数完全相同，如果完全相同则直接返回上次计算过的结果，就像常用的缓存一样。</p> <div class="language- extra-class"><pre class="language-text"><code>import memoize from 'memoize-one';
+
+constructor(props) {
+  super(props);
+
+  this.fullPathMenuData = memoize(menuData =&gt; formatMenuPath(menuData));
+  this.selectedKeys = memoize((pathname, fullPathMenu) =&gt; (
+    getMeunMatchKeys(getFlatMenuKeys(fullPathMenu), urlToList(pathname))
+  ));
+
+  const { pathname, menuData } = props;
+
+  this.state = {
+    openKeys: this.selectedKeys(pathname, this.fullPathMenuData(menuData)),
+  };
+}
+
+</code></pre></div><p>在组件的构造器中我们可以根据当前 props 传来的 <code>pathname</code> 及 <code>menuData</code> 计算出当前的 <code>selectedKeys</code> 并将其当做 <code>openKeys</code> 的初始值初始化组件内部 state。因为 <code>openKeys</code> 是由用户所控制的，所以对于后续 <code>openKeys</code> 值的更新我们只需要配置相应的回调将其交给 <code>Menu</code> 组件控制即可。</p> <div class="language- extra-class"><pre class="language-text"><code>import Menu from 'antd/lib/menu';
+
+handleOpenChange = (openKeys) =&gt; {
+  this.setState({
+    openKeys,
+  });
+};
+
+&lt;Menu
+  style={{ padding: '16px 0', width: '100%' }}
+  mode="inline"
+  theme="dark"
+  openKeys={openKeys}
+  selectedKeys={this.selectedKeys(pathname, this.fullPathMenuData(menuData))}
+  onOpenChange={this.handleOpenChange}
+&gt;
+  {this.renderMenu(this.fullPathMenuData(menuData))}
+&lt;/Menu&gt;
+
+</code></pre></div><p>这样我们就实现了对于 <code>selectedKeys</code> 及 <code>openKeys</code> 的分别管理，开发者在使用侧边栏组件时只需要将应用当前的页面路径同步到侧边栏组件中的 <code>pathname</code> 属性即可，侧边栏组件会自动处理相应的菜单高亮（<code>selectedKeys</code>）和多级菜单的打开与关闭（<code>openKeys</code>）。</p> <h2 id="知识点-正确区分-prop-与-state"><a href="#知识点-正确区分-prop-与-state" class="header-anchor">#</a> 知识点：正确区分 prop 与 state</h2> <p>上述这个场景也是一个非常经典的关于如何正确区分 prop 与 state 的例子。</p> <p><code>selectedKeys</code> 由传入的 <code>pathname</code> 决定，于是我们就可以将 <code>selectedKeys</code> 与 <code>pathname</code> 之间的转换关系封装在组件中，使用者只需要传入正确的 <code>pathname</code> 就可以获得相应的 <code>selectedKeys</code> 而不需要关心它们之间的转换是如何完成的。而 <code>pathname</code> 作为组件渲染所需的基础数据，组件无法从自身内部获得，所以就需要使用者通过 props 将其传入进来。</p> <p>另一方面， <code>openKeys</code> 作为组件内部的 state，初始值可以由 <code>pathname</code> 计算而来，后续的更新则与组件外部的数据无关而是会根据用户的操作在组件内部完成，那么它就是一个 state，与其相关的所有逻辑都可以彻底地被封装在组件内部而不需要暴露给使用者。</p> <p>简而言之，一个数据如果想成为 prop 就必须是组件内部无法获得的，而且在它成为了 prop 之后，所有可以根据它的值推导出来的数据都不再需要成为另外的 props，否则将违背 React 单一数据源的原则。对于 state 来说也是同样，如果一个数据想成为 state，那么它就不应该再能够被组件外部的值所改变，否则也会违背单一数据源的原则而导致组件的表现不可预测，产生难解的 bug。</p> <h2 id="组合式开发-应用菜单"><a href="#组合式开发-应用菜单" class="header-anchor">#</a> 组合式开发：应用菜单</h2> <p>严格来说，在这一小节中着重探讨的应用菜单部分的思路并不属于组合式开发思想的范畴，更多地是如何写出一个支持无限级子菜单及自动匹配当前路由的菜单组件。组件当然是可以随意插拔的，但前提是应用该组件的父级部分不依赖于组件所提供的信息。这也是我们在编写组件时所应当遵循的一个规范，即组件可以从外界获取信息并在此基础上进行组件内部的逻辑判断。但当组件向其外界抛出信息时，更多的时候应该是以回调的形式让调用者去主动触发，然后更新外部的数据再以 props 的形式传递给组件以达到更新组件的目的，而不是强制需要在外部再配置一个回调的接收函数去直接改变组件的内部状态。</p> <p>从这点上来说，组合式开发与组件封装其实是有着异曲同工之妙的，关键都在于对内部状态的严格控制。不论一个模块或一个组件需要向外暴露多少接口，在它的内部都应该是解决了某一个或某几个具体问题的。就像工厂产品生产流水线上的一个环节，在经过了这一环节后产品相较于进入前一定产生了某种区别，不论是增加了某些功能还是被打上某些标签，产品一定会变得更利于下游合作者使用。更理想的情况则是即使删除掉了这一环节，原来这一环节的上下游依然可以无缝地衔接在一起继续工作，这就是我们所说的模块或者说组件的可插拔性。</p> <h2 id="小结"><a href="#小结" class="header-anchor">#</a> 小结</h2> <p>在本节中我们讨论了配置式菜单的数据结构设计以及基于这样的数据结构，如何做到在页面路径中体现页面与页面之间的父子级关系并在侧边栏菜单中高亮其对应的菜单项，还引出了「记忆化」的概念，为各位在处理组件中的复杂计算提供了一种优化方案以及如何正确地区分组件的 props 与 state，如何在不牺牲组件功能的前提下降低组件使用时的复杂度并提升组件的稳定性。</p> <p>在下一节中我们将会探讨如何处理企业管理系统中的系统通知以及全局级别的用户操作反馈。</p> <p>如果你想参与到文章中内容的讨论，欢迎在下面的评论区留言，期待与大家的交流。</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

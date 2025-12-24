@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React笔记 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>React笔记</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>React笔记</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="react笔记"><a href="#react笔记" class="header-anchor">#</a> React笔记</h2> <h3 id="react的理念"><a href="#react的理念" class="header-anchor">#</a> React的理念</h3> <p><strong>快速响应</strong>：</p> <ul><li>速度快</li> <li>响应自然</li></ul> <p><strong>速度快：</strong></p> <p>由于<code>React</code>语法的灵活性，在编译时无法区分可能变化的部分，所以它为了速度快需要在运行时做更多的努力，例如：</p> <ul><li>使用<code>PureComponent</code>或<code>React.memo</code>构建组件</li> <li>使用<code>shouldComponentUpdate</code>生命周期钩子</li> <li>渲染列表时使用<code>key</code></li> <li>使用<code>useCallback</code>和<code>useMemo</code>缓存函数和变量</li></ul> <p><strong>响应自然：</strong></p> <p>将同步更新变为可中断的异步更新，在浏览器每一帧的时间中，预留一些时间给JS线程，<code>React</code>利用这部分时间更新组件，源码中预留的时间是<code>5ms</code>。当预留的时间不够用时，<code>React</code>将线程控制权交还给浏览器使其有时间渲染UI，<code>React</code>则等待下一帧时间到来继续被中断的工作。</p> <h3 id="react15架构及缺点"><a href="#react15架构及缺点" class="header-anchor">#</a> React15架构及缺点</h3> <h4 id="架构"><a href="#架构" class="header-anchor">#</a> 架构</h4> <ul><li><code>Reconciler</code>(协调器)：负责找出变化的组件</li> <li><code>Renderer</code>(渲染器)：负责将变化的组件渲染到页面上</li></ul> <h4 id="更新流程"><a href="#更新流程" class="header-anchor">#</a> 更新流程</h4> <p>当有发生更新时，<code>Reconciler</code>会做：</p> <ul><li>调用函数组件、或class组件的<code>render</code>方法，将返回的JSX转化为虚拟DOM</li> <li>将虚拟DOM和上次更新时的虚拟DOM对比</li> <li>通过对比找出本次更新中变化的虚拟DOM</li> <li>通知<strong>Renderer</strong>将变化的虚拟DOM渲染到页面上</li></ul> <h4 id="react15架构的缺点"><a href="#react15架构的缺点" class="header-anchor">#</a> React15架构的缺点：</h4> <p>在<strong>Reconciler</strong>中，更新的方式是递归更新子组件，而对于递归更新，更新一旦开始，中途就无法中断，所以当层级很深时，递归更新时间就可能会超过<code>16.6ms</code>(主流浏览器刷新频率为60Hz，即每1000ms/60Hz，16.6ms刷新一次)，这样用户交互就会卡顿。</p> <p>而解决以上问题的关键就是用<strong>可中断的异步更新</strong>代替<strong>同步的更新</strong>，但是React15的架构却是不支持异步更新的。</p> <p>因为在React15，<code>Reconciler</code>和<code>Renderer</code>是交替着工作，当前一轮更新的任务结束之后，第二轮再进行<code>Renconciler</code>，由于整个过程都是同步的，所以如果此时中途中断更新，就会使得后面的任务不执行，渲染也就停止了。</p> <h3 id="react16架构"><a href="#react16架构" class="header-anchor">#</a> React16架构</h3> <h4 id="架构-2"><a href="#架构-2" class="header-anchor">#</a> 架构：</h4> <ul><li><code>Scheduler</code>(调度器)：调度任务的优先级，高优先级的任务先进入<code>Reconciler</code></li> <li><code>Reconciler</code>(协调器)：负责找出变化的组件</li> <li><code>Renderer</code>(渲染器)：负责将变化的组件渲染到页面上</li></ul> <p>相比于React15，新增了<code>Scheduler</code>。</p> <h4 id="scheduler"><a href="#scheduler" class="header-anchor">#</a> Scheduler:</h4> <p>一个独立于React的库，实际上是一个功能完备的<code>requestIdleCallback</code>polyfill。</p> <p>它产生的原因是：</p> <ul><li>浏览器需要用是否有剩余时间作为任务中断的标准，所以我们需要一种机制，当浏览器有剩余时间的时候通知我们。</li> <li>部分浏览器已经实现了这个API，也就是<code>requestIdleCallback</code>，不过由于它有以下缺点而被<code>React</code>放弃使用了：
+<ul><li>浏览器兼容性问题</li> <li>触发频率不稳定，受很多因素影响。比如当我们的浏览器切换tab后，之前tab注册的<code>requestIdleCallback</code>触发的频率会变得很低</li></ul></li></ul> <p>所以React实现了一个功能更完备的<code>requestIdleCallback</code>polyfill：Scheduler。</p> <p>作用：</p> <ul><li>在空闲时间触发回调，以通知我们浏览器是否有剩余时间做任务中断</li> <li>提供了多种调度优先级供任务设置</li></ul> <h4 id="更新流程-2"><a href="#更新流程-2" class="header-anchor">#</a> 更新流程</h4> <ul><li><strong>Reconciler</strong>与<strong>Renderer</strong>不再是交替工作</li> <li>当产生一个更新，先将更新内容交给<strong>Scheduler</strong>，<strong>Scheduler</strong>会判断有没有其它高优先级更新需要执行，若是没有的话则将更新的内容交给<strong>Reconcoler</strong></li> <li>当<strong>Scheduler</strong>将任务交给<strong>Reconciler</strong>后，<strong>Reconciler</strong>会为变化的虚拟DOM打上代表增/删/更新的标记</li> <li>整个<strong>Scheduler</strong>与<strong>Reconciler</strong>的工作都在内存中进行。只有当所有组件都完成<strong>Reconciler</strong>的工作，才会统一交给<strong>Renderer</strong></li> <li><strong>Renderer</strong>接收到通知，将变化的虚拟DOM渲染到页面上</li></ul> <h3 id="fiber架构"><a href="#fiber架构" class="header-anchor">#</a> Fiber架构</h3> <h4 id="代数效应"><a href="#代数效应" class="header-anchor">#</a> 代数效应</h4> <p><code>代数效应</code>是<code>函数式编程</code>中的一个概念，用于将<code>副作用</code>从<code>函数</code>调用中分离。</p> <p><strong>代数效应在React中的应用：</strong></p> <ul><li><code>useState</code></li> <li><code>useRef</code></li> <li><code>useReducer</code></li></ul> <p><strong>代数效应与Generator：</strong></p> <p><code>异步可中断更新</code>可以理解为：<code>更新</code>在执行过程中可能会被打断（浏览器时间分片用尽或有更高优任务插队），当可以继续执行时恢复之前执行的中间状态。</p> <p>代数效应中<code>try...handle</code>的作用就是为了满足以上需求。</p> <p>而此功能与浏览器原生的<code>Generator</code>很像，但它存在一些缺陷，因此不被使用：</p> <ul><li>类似<code>async</code>，<code>Generator</code>也是<code>传染性</code>的，使用了<code>Generator</code>则上下文的其他函数也需要作出改变。这样心智负担比较重。</li> <li><code>Generator</code>执行的<code>中间状态</code>是上下文关联的。如果后面的计算需要依赖与前面的计算结果，就需要重新计算。</li></ul> <p><strong>代数效应与Fiber：</strong></p> <p>Fiber：中文翻译为<code>纤程</code>，与进程（Process）、线程（Thread）、协程（Coroutine）同为程序执行过程。</p> <p>可以理解为<code>纤程</code>是协程的一种实现，而在JS中协程的实现就是<code>Generator</code>。</p> <p>所以，我们可以将<code>纤程</code>(Fiber)、<code>协程</code>(Generator)理解为<code>代数效应</code>思想在<code>JS</code>中的体现。</p> <p><code>React Fiber</code>可以理解为：</p> <p><code>React</code>内部实现的一套状态更新机制。支持任务不同<code>优先级</code>，可中断与恢复，并且恢复后可以复用之前的<code>中间状态</code>。</p> <p>其中每个任务更新单元为<code>React Element</code>对应的<code>Fiber节点</code>。</p> <h3 id="fiber架构的工作原理"><a href="#fiber架构的工作原理" class="header-anchor">#</a> Fiber架构的工作原理</h3> <p><code>Fiber</code>树是什么？它的构建和替换过程又是怎样的？</p> <h4 id="双缓存"><a href="#双缓存" class="header-anchor">#</a> 双缓存：</h4> <p>在内存中构建并直接替换的技术叫做<strong>双缓存</strong>。</p> <h4 id="双缓存fiber树"><a href="#双缓存fiber树" class="header-anchor">#</a> 双缓存Fiber树：</h4> <p>在React中最多同时存在两颗<code>Fiber树</code>：</p> <ul><li>屏幕上显示内容对应着：<code>current Fiber树</code></li> <li>正在内存中构建对应着：<code>workInProgress Fiber树</code></li></ul> <p><strong><code>Fiber树</code>的节点：</strong></p> <ul><li><code>current Fiber树</code>中的节点：<code>currentFiber</code></li> <li><code>workInProgress Fiber树</code>：<code>workInProgressFiber</code></li></ul> <p>两种节点之间的关系，靠<code>alternate</code>属性连接：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>currentFiber<span class="token punctuation">.</span>alternate <span class="token operator">===</span> workInProgressFiber<span class="token punctuation">;</span>
+workInProgressFiber<span class="token punctuation">.</span>alternate <span class="token operator">===</span> currentFiber<span class="token punctuation">;</span>
+</code></pre></div><p>而在React应用的根节点就是通过<code>current</code>指针在不同的<code>Fiber树</code>的<code>rootFiber</code>间切换来实现<code>Fiber树</code>的切换，这个过程伴随着<code>DOM</code>的更新。</p> <p><strong>FiberRootNode和rootFiber</strong></p> <p>在讲解切换更新流程时，需要明确几个概念：</p> <p>如下的代码：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">App</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> <span class="token punctuation">[</span>num<span class="token punctuation">,</span> add<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">useState</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span>
+    <span class="token operator">&lt;</span>p onClick<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">add</span><span class="token punctuation">(</span>num <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token operator">&gt;</span><span class="token punctuation">{</span>num<span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span>p<span class="token operator">&gt;</span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+ReactDOM<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token operator">&lt;</span>App<span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">,</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'root'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>首次执行<code>ReactDOM.render</code>时会创建：</p> <ul><li><code>fiberRootNode</code>(源码中为<code>fiberRoot</code>)，它是整个应用的根节点；</li> <li><code>rootFiber</code>，它是<code>&lt;App /&gt;</code>组件树的根节点。</li></ul> <p>在应用中我们可能会多次调用<code>ReactDOM.render</code>渲染不同的组件树，所以它们可能会有不同的<code>rootFiber</code>，但是<code>fiberRootNode</code>在整个应用中就只有一个。</p> <p>它俩之间的关系，是靠<code>fiberRootNode</code>的一个名为<code>current</code>的属性来联系的：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>fiberRootNode<span class="token punctuation">.</span>current <span class="token operator">=</span> rootFiber
+</code></pre></div><p><strong>mount和update阶段</strong></p> <p>而对应着生命周期来说，会分为<code>mount</code>和<code>update</code>阶段。</p> <p>在<code>mount</code>时，会有三个阶段：</p> <ol><li>首屏渲染时，页面没有挂载任何的<code>DOM</code>，此时<code>fiberRootNode.current = rootFiber</code>，但是<code>rootFiber</code>并没有任何的子<code>Fiber节点</code>，所以此时<code>currentFiber</code>为空。</li></ol> <img src="https://react.iamkasong.com/img/rootfiber.png" style="zoom:50%;"> <ol start="2"><li>到了<code>render阶段</code>，根据组件的<code>JSX</code>在内存中依次构建了<code>Fiber节点</code>并连接成了<code>Fiber树</code>，这棵树也就是<code>workInProgress Fiber树</code>:</li></ol> <img src="https://react.iamkasong.com/img/workInProgressFiber.png" style="zoom:50%;"> <ol start="3"><li>已构建完的<code>workInProgress Fiber树</code>在<code>commit阶段</code>渲染到页面，此时<code>fiberRootNode</code>的<code>current</code>指针指向<code>workInProgress Fiber树</code>使其变为<code>current Fiber 树</code>：</li></ol> <img src="https://react.iamkasong.com/img/wipTreeFinish.png" style="zoom:50%;"> <p><code>update</code>阶段其实就像是我们前面说的了，当有节点触发状态改变：</p> <ol><li>会开启一次新的<code>render</code>阶段，构建一个新的<code>workInProgress Fiber树</code>：</li></ol> <img src="https://react.iamkasong.com/img/wipTreeUpdate.png" style="zoom:50%;"> <ol start="2"><li><code>workInProgress Fiber 树</code>在<code>render阶段</code>完成构建后进入<code>commit阶段</code>渲染到页面上。渲染完毕后，<code>workInProgress Fiber 树</code>变为<code>current Fiber 树</code>：</li></ol> <img src="https://react.iamkasong.com/img/currentTreeUpdate.png" style="zoom:50%;"> <h3 id="react源码文件结果"><a href="#react源码文件结果" class="header-anchor">#</a> React源码文件结果</h3> <div class="language- extra-class"><pre class="language-text"><code>根目录
+├── fixtures        # 包含一些给贡献者准备的小型 React 测试项目
+├── packages        # 包含元数据（比如 package.json）和 React 仓库中所有 package 的源码（子目录 src）
+├── scripts         # 各种工具链的脚本，比如git、jest、eslint等
+</code></pre></div><h4 id="packages"><a href="#packages" class="header-anchor">#</a> packages</h4> <p>具体来看看<code>packages</code>文件夹：</p> <ul><li><code>react</code>文件夹：React的核心，包含所有全局 React API，例如<code>React.createElement、React.Component</code>等</li> <li><code>scheduler</code>文件夹：Scheduler（调度器）的实现</li> <li><code>share</code>文件夹：源码中其他模块公用的<strong>方法</strong>和<strong>全局变量</strong></li></ul> <p><strong>Renderer相关文件夹</strong>：</p> <div class="language- extra-class"><pre class="language-text"><code>- react-art
+- react-dom                 # 注意这同时是DOM和SSR（服务端渲染）的入口
+- react-native-renderer
+- react-noop-renderer       # 用于debug fiber（后面会介绍fiber）
+- react-test-renderer
+</code></pre></div><p><strong>试验性包的文件夹</strong>：</p> <div class="language- extra-class"><pre class="language-text"><code>- react-server        # 创建自定义SSR流
+- react-client        # 创建自定义的流
+- react-fetch         # 用于数据请求
+- react-interactions  # 用于测试交互相关的内部特性，比如React的事件模型
+- react-reconciler    # Reconciler的实现，你可以用他构建自己的Renderer
+</code></pre></div><p><strong>辅助包的文件夹</strong>：</p> <div class="language- extra-class"><pre class="language-text"><code>- react-is       # 用于测试组件是否是某类型
+- react-client   # 创建自定义的流
+- react-fetch    # 用于数据请求
+- react-refresh  # “热重载”的React官方实现
+</code></pre></div><p>比较重要的：</p> <ul><li><code>react-reconciler</code>，他一边对接<strong>Scheduler</strong>，一边对接不同平台的<strong>Renderer</strong>，构成了整个 React16 的架构体系。</li></ul> <h3 id="调试源码"><a href="#调试源码" class="header-anchor">#</a> 调试源码</h3> <p>说明：</p> <ul><li>现在我们通过<code>create-react-app</code>创建的<code>React</code>项目中使用到的<code>react</code>源码不一定和 <a href="https://github.com/facebook/react" target="_blank" rel="noopener noreferrer">facebook/react<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 仓库中<code>master</code>分支的一样，因为给用户使用的必须是趋于稳定的一个版本。</li> <li>当我们在调试源码的时候可以选择仓库中的最新代码。</li></ul> <p>其实想要调试源码，大体来说只需要这么几个步骤：</p> <ul><li><p>从  <a href="https://github.com/facebook/react" target="_blank" rel="noopener noreferrer">facebook/react<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 仓库中<code>clone</code>下<code>master</code>分支的最新源码</p></li> <li><p>在本地用最新的源码<code>build</code>出<code>react</code>、<code>scheduler</code>、<code>react-dom</code>三个包为<code>dev</code>环境可以使用的<code>cjs</code>包，可以使用指令：</p> <ul><li><div class="language- extra-class"><pre class="language-text"><code>yarn build react/index,react-dom/index,scheduler --type=NODE
+</code></pre></div></li> <li><p>此时源码目录<code>build/node_modules</code>下会生成最新代码的包，为接下来的<code>link</code>做准备。</p></li></ul></li> <li><p>使用<code>create-react-app</code>创建一个项目用于调试源码，然后将上述源码中的<code>build</code>包与此项目进行<code>yarn link</code>关联。</p></li></ul> <h3 id="jsx"><a href="#jsx" class="header-anchor">#</a> JSX</h3> <h4 id="为什么引入jsx"><a href="#为什么引入jsx" class="header-anchor">#</a> 为什么引入JSX？</h4> <p>React 认为<strong>组件</strong>才是王道，而组件是和模板紧密关联的，组件模板和组件逻辑分离让问题复杂化了。</p> <p>所以就有了 JSX 这种语法，就是为了把 HTML 模板直接嵌入到 JS 代码里面，这样就做到了模板和组件关联，但是 JS 不支持这种包含 HTML 的语法，所以需要通过工具将 JSX 编译输出成 JS 代码才能使用。</p> <p>例如页面已有的HTML代码为：</p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>app<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p>我们想要在其中添加上一个简单的a标签：</p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://lindaidai.wang<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>LinDaiDai<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p>如果想要将它用JS代码表示出来，你可能想到的会是用下面这种方式：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> app <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'app'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> a <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">'a'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+a<span class="token punctuation">.</span><span class="token function">setAttribute</span><span class="token punctuation">(</span><span class="token string">'href'</span><span class="token punctuation">,</span> <span class="token string">'https://lindaidai.wang'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+a<span class="token punctuation">.</span>innerHTML <span class="token operator">=</span> <span class="token string">'LinDaiDai'</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>映射到React中，可能会是这样写：</p> <div class="language-js extra-class"><pre class="language-js"><code>React<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">'a'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">href</span><span class="token operator">:</span> <span class="token string">'https://lindaidai.wang'</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token string">'LinDaiDai'</span><span class="token punctuation">)</span>
+</code></pre></div><ul><li><code>type</code>：可以是一个<code>string</code>类型，也可以是一个组件</li></ul> <p><code>JSX</code>到<code>js</code>的映射：</p> <p>输入<code>JSX</code>：</p> <div class="language-jsx extra-class"><pre class="language-jsx"><code><span class="token keyword">var</span> a <span class="token operator">=</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://lindaidai.wang<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span><span class="token plain-text">LinDaiDai</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">;</span>
+</code></pre></div><p>通过<code>Babel</code>编译输出<code>JS</code>：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> a <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">'a'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">href</span><span class="token operator">:</span> <span class="token string">'https://lindaidai.wang'</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token string">'LinDaiDai'</span><span class="token punctuation">)</span>
+</code></pre></div><p>所以我们在每个<code>JSX</code>文件都必须显式的声明引入<code>React</code>：</p> <div class="language-jsx extra-class"><pre class="language-jsx"><code><span class="token keyword">import</span> React <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+</code></pre></div><p><code>JSX</code>返回的是一个<code>ReactElement</code>对象，不是组件实例</p> <p>而在<code>JS</code>，也就是<code>React.createElement</code>它返回的是对组件的引用也就是组件实例</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// A ReactElement</span>
+<span class="token keyword">const</span> myComponent <span class="token operator">=</span> <span class="token operator">&lt;</span>MyComponent <span class="token operator">/</span><span class="token operator">&gt;</span>
+
+<span class="token comment">// render</span>
+<span class="token keyword">const</span> myComponentInstance <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span>MyComponent<span class="token punctuation">,</span> mountNode<span class="token punctuation">)</span><span class="token punctuation">;</span>
+myComponentInstance<span class="token punctuation">.</span><span class="token function">doSomething</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>另外，需要注意的是，<code>JSX</code>并不只会被编译为<code>React.createEelement</code>这种形式。</p> <p>当使用<a href="https://babeljs.io/docs/en/babel-plugin-transform-react-jsx" target="_blank" rel="noopener noreferrer">@babel/plugin-transform-react-jsx<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>插件的时候，可以显式的告诉<code>Babel</code>编译时需要把<code>JSX</code>编译成一种函数调用的方式。</p> <p>比如在<a href="https://github.com/preactjs/preact" target="_blank" rel="noopener noreferrer">preact<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>这个类<code>React</code>库中，<code>JSX</code>会被编译为一个名为<code>h</code>的函数调用。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 编译前</span>
+<span class="token operator">&lt;</span>span<span class="token operator">&gt;</span>LinDaiDai<span class="token operator">&lt;</span><span class="token operator">/</span>span<span class="token operator">&gt;</span>
+<span class="token comment">// 编译后</span>
+<span class="token function">h</span><span class="token punctuation">(</span><span class="token string">"span"</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token string">"LinDaiDai"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h4 id="源码中的reac-createelement"><a href="#源码中的reac-createelement" class="header-anchor">#</a> 源码中的Reac.createElement</h4> <p>源码中的位置为：https://github.com/facebook/react/blob/master/packages/react/src/ReactElement.js</p> <p>最终是会返回一个带有<code>$typeof: REACT_ELEMENT_TYPE</code>标记的对象，这个对象就表示这其为<code>React Element</code>。</p> <p>全局有一个函数用于检测是不是<code>React Element</code>：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">isValidElement</span><span class="token punctuation">(</span><span class="token parameter">object</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span>
+    <span class="token keyword">typeof</span> object <span class="token operator">===</span> <span class="token string">'object'</span> <span class="token operator">&amp;&amp;</span>
+    object <span class="token operator">!==</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span>
+    object<span class="token punctuation">.</span>$<span class="token keyword">typeof</span> <span class="token operator">===</span> <span class="token constant">REACT_ELEMENT_TYPE</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>在<code>React</code>中，所有<code>JSX</code>在运行时的返回结果（即<code>React.createElement()</code>的返回值）都是<code>React Element</code>。</p> <h4 id="jsx和react-component的关系"><a href="#jsx和react-component的关系" class="header-anchor">#</a> JSX和React Component的关系</h4> <p>在<code>React</code>中，我们常使用<code>ClassComponent</code>与<code>FunctionComponent</code>构建组件。</p> <p>对于两种组件来说，我们如果将其在控制台中打印出来，会发现打印对象的<code>type</code>都是它们自身。</p> <p>而如果想要区分是哪种组件的话，可以通过<code>ClassComponent</code>实例原型上的<code>isReactComponent</code>变量判断是否是<code>ClassComponent</code>：</p> <div class="language-jsx extra-class"><pre class="language-jsx"><code><span class="token class-name">ClassComponent</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>isReactComponent <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>但是不能通过引用类型来区分，因为：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>AppClass <span class="token keyword">instanceof</span> <span class="token class-name">Function</span> <span class="token operator">===</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+AppFunc <span class="token keyword">instanceof</span> <span class="token class-name">Function</span> <span class="token operator">===</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+</code></pre></div><h4 id="jsx和fiber节点"><a href="#jsx和fiber节点" class="header-anchor">#</a> JSX和Fiber节点</h4> <p>从上面的内容我们可以发现，<code>JSX</code>是一种描述当前组件内容的数据结构，他不包含组件<strong>schedule</strong>、<strong>reconcile</strong>、<strong>render</strong>所需的相关信息。</p> <p>比如如下信息就不包括在<code>JSX</code>中：</p> <ul><li>组件在更新中的<code>优先级</code></li> <li>组件的<code>state</code></li> <li>组件被打上的用于<strong>Renderer</strong>的<code>标记</code></li></ul> <p>这些内容都包含在<code>Fiber节点</code>中。</p> <p>所以，在组件<code>mount</code>时，<code>Reconciler</code>根据<code>JSX</code>描述的组件内容生成组件对应的<code>Fiber节点</code>。</p> <ul><li><code>React</code>元素：创建开销极小的普通对象</li> <li>能够直接使用HTML标签这样的写法：<code>const element = &lt;div className="foo" /&gt;</code>是因为<code>JSX</code></li> <li>将一个元素渲染为<code>DOM</code>：<code>ReactDOM.render(element, container)</code></li> <li><code>JSX</code>是一种描述当前组件内容的数据结构</li> <li><code>Fiber</code>节点包含组件在更新中的优先级，组件的<code>state</code>，组件被打上用于<code>Renderer</code>的标记</li></ul></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

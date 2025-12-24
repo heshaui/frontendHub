@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue多页路由与模板解析 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Vue多页路由与模板解析</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>Vue多页路由与模板解析</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、路由配置"><a href="#一、路由配置" class="header-anchor">#</a> 一、路由配置</h2> <p><strong>1. 跳转</strong></p> <blockquote><p>在配置路由前，首先我们要明确一点就是，多页应用中的每个单页都是相互隔离的，即如果你想从 <code>page1</code> 下的路由跳到 <code>page2</code> 下的路由，你无法使用 <code>vue-router</code> 中的方法进行跳转，需要使用原生方法：<code>location.href</code> 或 <code>location.replace</code></p></blockquote> <p>此外为了能够清晰的分辨路由属于哪个单页，我们应该给每个单页路由添加前缀，比如</p> <ul><li><code>index</code> 单页：<code>/vue/</code></li> <li><code>page1</code> 单页：<code>/vue/page1/</code></li> <li><code>page2</code> 单页：<code>/vue/page2/-</code></li></ul> <blockquote><p>其中 <code>/vue/</code> 为项目的二级目录，其后的目录代表路由属于哪个单页。因此我们每个单页的路由配置可以像这样</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/* page1 单页路由配置 */</span>
+
+<span class="token keyword">import</span> Vue <span class="token keyword">from</span> <span class="token string">'vue'</span>
+<span class="token keyword">import</span> Router <span class="token keyword">from</span> <span class="token string">'vue-router'</span>
+
+<span class="token comment">// 首页</span>
+<span class="token keyword">const</span> Home <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">resolve</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    require<span class="token punctuation">.</span><span class="token function">ensure</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'../views/home.vue'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'../views/home.vue'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+Vue<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>Router<span class="token punctuation">)</span>
+
+<span class="token keyword">let</span> base <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">BASE_URL</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span> <span class="token operator">+</span> <span class="token string">'page1'</span><span class="token punctuation">;</span> <span class="token comment">// 添加单页前缀</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">new</span> <span class="token class-name">Router</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">mode</span><span class="token operator">:</span> <span class="token string">'history'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">base</span><span class="token operator">:</span> base<span class="token punctuation">,</span>
+    <span class="token literal-property property">routes</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+            <span class="token literal-property property">path</span><span class="token operator">:</span> <span class="token string">'/'</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'home'</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">component</span><span class="token operator">:</span> Home
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><blockquote><p>我们通过设置路由的 <code>base</code> 值来为每个单页添加路由前缀，如果是 <code>index</code> 单页我们无需拼接路由前缀，直接跳转至二级目录即可</p></blockquote> <p>那么在单页间跳转的地方，我们可以这样写</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token operator">&lt;</span>template<span class="token operator">&gt;</span>
+  <span class="token operator">&lt;</span>div id<span class="token operator">=</span><span class="token string">"app"</span><span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span>div id<span class="token operator">=</span><span class="token string">"nav"</span><span class="token operator">&gt;</span>
+      <span class="token operator">&lt;</span>a @click<span class="token operator">=</span><span class="token string">"goFn('')"</span><span class="token operator">&gt;</span>Index<span class="token operator">&lt;</span><span class="token operator">/</span>a<span class="token operator">&gt;</span> <span class="token operator">|</span>
+      <span class="token operator">&lt;</span>a @click<span class="token operator">=</span><span class="token string">"goFn('page1')"</span><span class="token operator">&gt;</span>Page1<span class="token operator">&lt;</span><span class="token operator">/</span>a<span class="token operator">&gt;</span> <span class="token operator">|</span>
+      <span class="token operator">&lt;</span>a @click<span class="token operator">=</span><span class="token string">"goFn('page2')"</span><span class="token operator">&gt;</span>Page2<span class="token operator">&lt;</span><span class="token operator">/</span>a<span class="token operator">&gt;</span> <span class="token operator">|</span>
+    <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span>router<span class="token operator">-</span>view<span class="token operator">/</span><span class="token operator">&gt;</span>
+  <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>template<span class="token operator">&gt;</span>
+
+<span class="token operator">&lt;</span>script<span class="token operator">&gt;</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">methods</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token function">goFn</span><span class="token punctuation">(</span><span class="token parameter">name</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            location<span class="token punctuation">.</span>href <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">BASE_URL</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span> <span class="token operator">+</span> name
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">&gt;</span>
+</code></pre></div><blockquote><p>但是为了保持和 <code>Vue</code> 路由跳转同样的风格，我可以对单页之间的跳转做一下封装，实现一个 <code>Navigator</code> 类，类的代码可以查看本文最后的示例，封装完成后我们可以将跳转方法修改为</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">$openRouter</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">name</span><span class="token operator">:</span> name<span class="token punctuation">,</span> <span class="token comment">// 跳转地址</span>
+    <span class="token literal-property property">query</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">text</span><span class="token operator">:</span> <span class="token string">'hello'</span> <span class="token comment">// 可以进行参数传递</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><blockquote><p>使用上述 <code>$openRouter</code> 方法我们还需要一个前提条件，便是将其绑定到 Vue 的原型链上，我们在所有单页的入口文件中添加</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">import</span> <span class="token punctuation">{</span> Navigator <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'../../common'</span> <span class="token comment">// 引入 Navigator</span>
+
+<span class="token class-name">Vue</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>$openRouter <span class="token operator">=</span> Navigator<span class="token punctuation">.</span>openRouter<span class="token punctuation">;</span> <span class="token comment">// 添加至 Vue 原型链</span>
+</code></pre></div><blockquote><p>至此我们已经能够成功模仿 <code>vue-router</code> 进行单页间的跳转，但是需要注意的是因为其本质使用的是 <code>location</code> 跳转，所以必然会产生浏览器的刷新与重载</p></blockquote> <p><strong>2. 重定向</strong></p> <blockquote><p>当我们完成上述路由跳转的功能后，可以在本地服务器上来进行一下测试，你会发现 <code>Index</code> 首页可以正常打开，但是跳转 <code>Page1</code>、<code>Page2</code> 却仍然处于 <code>Index</code> 父组件下，这是因为浏览器认为你所要跳转的页面还是在 <code>Index</code> 根路由下，同时又没有匹配到 <code>Index</code> 单页中对应的路由。这时候我们服务器需要做一次重定向，将下方路由指向对应的 <code>html</code> 文件即可</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>/vue/page1 -&gt; /vue/page1.html
+/vue/page2 -&gt; /vue/page2.html
+</code></pre></div><blockquote><p>在 <code>vue.config.js</code> 中，我们需要对 <code>devServer</code> 进行配置，添加 <code>historyApiFallback</code>配置项，该配置项主要用于解决 <code>HTML5 History API</code> 产生的问题，比如其 <code>rewrites</code> 选项用于重写路由</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/* vue.config.js */</span>
+
+<span class="token keyword">let</span> baseUrl <span class="token operator">=</span> <span class="token string">'/vue/'</span><span class="token punctuation">;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token operator">...</span>
+    
+    <span class="token literal-property property">devServer</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">historyApiFallback</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token literal-property property">rewrites</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                <span class="token punctuation">{</span> <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token keyword">new</span> <span class="token class-name">RegExp</span><span class="token punctuation">(</span>baseUrl <span class="token operator">+</span> <span class="token string">'page1'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token literal-property property">to</span><span class="token operator">:</span> baseUrl <span class="token operator">+</span> <span class="token string">'page1.html'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token punctuation">{</span> <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token keyword">new</span> <span class="token class-name">RegExp</span><span class="token punctuation">(</span>baseUrl <span class="token operator">+</span> <span class="token string">'page2'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token literal-property property">to</span><span class="token operator">:</span> baseUrl <span class="token operator">+</span> <span class="token string">'page2.html'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token punctuation">]</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    
+    <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>上方我们通过 <code>rewrites</code> 匹配正则表达式的方式将 <code>/vue/page1</code> 这样的路由替换为访问服务器下正确 <code>html</code> 文件的形式，如此不同单页间便可以进行正确跳转和访问了</p></blockquote> <h2 id="二、模板配置"><a href="#二、模板配置" class="header-anchor">#</a> 二、模板配置</h2> <p><strong>1. 模板渲染</strong></p> <blockquote><p>这里所说的模板渲染是在我们的 <code>html</code> 模板文件中使用 <code>html-webpack-plugin</code> 提供的 <code>default template</code> 语法进行模板编写，比如</p></blockquote> <div class="language-html extra-class"><pre class="language-html"><code><span class="token doctype"><span class="token punctuation">&lt;!</span><span class="token doctype-tag">DOCTYPE</span> <span class="token name">html</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>utf-8<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">http-equiv</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>X-UA-Compatible<span class="token punctuation">"</span></span> <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>IE=edge<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>viewport<span class="token punctuation">"</span></span> <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>width=device-width,initial-scale=1.0<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">&gt;</span></span>模板<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">&gt;</span></span>
+    &lt;% for (var chunk in htmlWebpackPlugin.files.css) { %&gt;
+        &lt;% if(htmlWebpackPlugin.files.css[chunk]) {%&gt;
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>&lt;%= htmlWebpackPlugin.files.css[chunk] %&gt;<span class="token punctuation">"</span></span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>stylesheet<span class="token punctuation">"</span></span> <span class="token punctuation">/&gt;</span></span>
+        &lt;%}%&gt;
+    &lt;% } %&gt;
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>app<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    <span class="token comment">&lt;!-- built files will be auto injected --&gt;</span>
+
+    &lt;% for (var chunk in htmlWebpackPlugin.files.js) { %&gt;
+        &lt;% if(htmlWebpackPlugin.files.js[chunk]) {%&gt;
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>text/javascript<span class="token punctuation">"</span></span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>&lt;%= htmlWebpackPlugin.files.js[chunk] %&gt;<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+        &lt;%}%&gt;
+    &lt;% } %&gt;
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><blockquote><p>以上我们使用模板语法手动获取并遍历 <code>htmlWebpackPlugin</code> 打包后的文件并生成到模板中，其中的 <code>htmlWebpackPlugin</code> 变量是模板提供的可访问变量，其有以下特定数据</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token string-property property">"htmlWebpackPlugin"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token string-property property">"files"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token string-property property">"css"</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">"main.css"</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token string-property property">"js"</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">"assets/head_bundle.js"</span><span class="token punctuation">,</span> <span class="token string">"assets/main_bundle.js"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token string-property property">"chunks"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token string-property property">"head"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                <span class="token string-property property">"entry"</span><span class="token operator">:</span> <span class="token string">"assets/head_bundle.js"</span><span class="token punctuation">,</span>
+                <span class="token string-property property">"css"</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">"main.css"</span> <span class="token punctuation">]</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string-property property">"main"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                <span class="token string-property property">"entry"</span><span class="token operator">:</span> <span class="token string">"assets/main_bundle.js"</span><span class="token punctuation">,</span>
+                <span class="token string-property property">"css"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>我们通过 <code>htmlWebpackPlugin.files</code>可以获取打包输出的 <code>js</code>及 <code>css</code> 文件路径，包括入口文件路径等</li> <li>需要注意的是如果你在模板中编写了插入对应 <code>js</code> 及 <code>css</code> 的语法，你需要设置 <code>inject</code> 的值为 <code>false</code> 来关闭资源的自动注入</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/* utils.js */</span>
+<span class="token operator">...</span>
+
+<span class="token keyword">let</span> conf <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">entry</span><span class="token operator">:</span> filePath<span class="token punctuation">,</span> <span class="token comment">// page 的入口</span>
+    <span class="token literal-property property">template</span><span class="token operator">:</span> filePath<span class="token punctuation">,</span> <span class="token comment">// 模板路径</span>
+    <span class="token literal-property property">filename</span><span class="token operator">:</span> filename <span class="token operator">+</span> <span class="token string">'.html'</span><span class="token punctuation">,</span> <span class="token comment">// 生成 html 的文件名</span>
+    <span class="token literal-property property">chunks</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'manifest'</span><span class="token punctuation">,</span> <span class="token string">'vendor'</span><span class="token punctuation">,</span>  filename<span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">inject</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token comment">// 关闭资源自动注入</span>
+<span class="token punctuation">}</span>
+
+<span class="token operator">...</span>
+</code></pre></div><p>否则在页面会引入两次资源，如下图所示</p> <p><img src="https://s.poetries.top/gitee/2020/09/84.png" alt=""></p> <p><strong>2. 自定义配置</strong></p> <blockquote><p>在模板渲染中，我们只能够使用 <code>htmlWebpackPlugin</code> 内部的一些属性和方法来进行模板的定制化开发，那么如果遇到需要根据不同环境来引入不同资源，同时不同模板间的配置还可能不一样的需求情况的话，我们使用自定义配置会比较方便。比如我们需要在生产环境模板中引入第三方统计脚本</p></blockquote> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/* vue.config.js */</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token operator">...</span>
+    
+    <span class="token literal-property property">pages</span><span class="token operator">:</span> utils<span class="token punctuation">.</span><span class="token function">setPages</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        <span class="token function">addScript</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">===</span> <span class="token string">'production'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+                    &lt;script src="https://s95.cnzz.com/z_stat.php?id=xxx&amp;web_id=xxx" language="JavaScript"&gt;&lt;/script&gt;
+                </span><span class="token template-punctuation string">`</span></span>
+            <span class="token punctuation">}</span>
+
+            <span class="token keyword">return</span> <span class="token string">''</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    
+    <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p>然后在页面模板中通过 <code>htmlWebpackPlugin.options</code> 获取自定义配置对象并进行输出</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>&lt;% if(htmlWebpackPlugin.options.addScript){ %&gt;
+    &lt;%= htmlWebpackPlugin.options.addScript() %&gt;
+&lt;%}%&gt;
+</code></pre></div><p>同时你也可以针对个别模板进行配置，比如我想只在 Index 单页中添加统计脚本，在 Page1 单页中添加其他脚本，那么你可以给 addScript 传入标识符来进行判断输出，比如</p> <div class="language- extra-class"><pre class="language-text"><code>&lt;% if(htmlWebpackPlugin.options.addScript){ %&gt;
+    &lt;%= htmlWebpackPlugin.options.addScript('index') %&gt;
+&lt;%}%&gt;
+</code></pre></div><p>同时为 <code>addScript</code> 方法添加参数 <code>from</code>：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">addScript</span><span class="token punctuation">(</span><span class="token parameter"><span class="token keyword">from</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">===</span> <span class="token string">'production'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">let</span> url <span class="token operator">=</span> <span class="token string">"https://xxx"</span><span class="token punctuation">;</span>
+    
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>from <span class="token operator">===</span> <span class="token string">'index'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            url <span class="token operator">=</span> <span class="token string">"https://s95.cnzz.com/z_stat.php?id=xxx&amp;web_id=xxx"</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        
+        <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+            &lt;script src=</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>url<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> language="JavaScript"&gt;&lt;/script&gt;
+        </span><span class="token template-punctuation string">`</span></span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">return</span> <span class="token string">''</span>
+<span class="token punctuation">}</span>
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

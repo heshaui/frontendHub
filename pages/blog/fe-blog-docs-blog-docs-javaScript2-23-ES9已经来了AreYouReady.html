@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ES9已经来了AreYouReady - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>ES9已经来了AreYouReady</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>ES9已经来了AreYouReady</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h1 id="es9"><a href="#es9" class="header-anchor">#</a> ES9</h1> <h3 id="前言"><a href="#前言" class="header-anchor">#</a> 前言</h3> <p>该篇文章主要是介绍了ES9新加的一些特性。</p> <h3 id="_1-异步迭代"><a href="#_1-异步迭代" class="header-anchor">#</a> 1. 异步迭代</h3> <p>在<code>async/await</code>的某些时刻，你可能尝试在同步循环中调用异步函数。例如：</p> <div class="language- extra-class"><pre class="language-text"><code>async function process(array) {
+  for (let i of array) {
+    await doSomething(i);
+  }
+}
+复制代码
+</code></pre></div><p>这段代码不会正常运行，下面这段同样也不会：</p> <div class="language- extra-class"><pre class="language-text"><code>async function process(array) {
+  array.forEach(async i =&gt; {
+    await doSomething(i);
+  });
+}
+复制代码
+</code></pre></div><p>这段代码中，循环本身依旧保持同步，并在在内部异步函数之前全部调用完成。</p> <p>ES2018引入异步迭代器（asynchronous iterators），这就像常规迭代器，除了<code>next()</code>方法返回一个Promise。因此<code>await</code>可以和<code>for...of</code>循环一起使用，以串行的方式运行异步操作。例如：</p> <div class="language- extra-class"><pre class="language-text"><code>async function process(array) {
+  for await (let i of array) {
+    doSomething(i);
+  }
+}
+</code></pre></div><h3 id="_2-promise-finally"><a href="#_2-promise-finally" class="header-anchor">#</a> 2. Promise.finally()</h3> <p>在ES6中，一个<code>Promise</code>链要么成功进入最后一个<code>then()</code>要么失败触发<code>catch()</code>。而实际中，我们可能需要无论<code>Promise</code>无论成功还是失败，都运行相同的代码。例如清除，删除回话，关闭数据库连接等操作。</p> <p>ES9中，允许使用<code>finally()</code>来指定最终的逻辑。</p> <p>如下：</p> <div class="language- extra-class"><pre class="language-text"><code>        let count = () =&gt; {
+            return new Promise((resolve, reject) =&gt; {
+                setTimeout(() =&gt; {
+                    resolve(100)
+                }, 1000);
+            })
+        }
+        let list = () =&gt; {
+            return new Promise((resolve, reject) =&gt; {
+                setTimeout(() =&gt; {
+                    resolve([1, 2, 3])
+                }, 1000);
+            })
+        }
+
+        let getList = async () =&gt; {
+            let c = await count()
+            console.log('async')
+            let l = await list()
+            return { count: c, list: l }
+        }
+        console.time('start');
+        getList().then(res =&gt; {
+            console.log(res)
+        })
+        .catch(err =&gt; {
+            console.timeEnd('start')
+            console.log(err)
+        })
+        .finally(() =&gt; {
+            console.log('finally')
+        }) 
+        
+        //执行结果
+        async
+        {count: 100, list: [1, 2, 3]}
+        finally
+</code></pre></div><h3 id="_3-rest-spread-属性"><a href="#_3-rest-spread-属性" class="header-anchor">#</a> 3. Rest/Spread 属性</h3> <h4 id="_3-1-es6中"><a href="#_3-1-es6中" class="header-anchor">#</a> 3.1 ES6中(...)</h4> <p>在ES6中引入了三点<code>...</code>，作用主要是<code>Rest参数和扩展运算符</code>:</p> <p>作用对象仅用于数组</p> <p>1.将一个未知数量的参数表示一个数组:</p> <div class="language- extra-class"><pre class="language-text"><code>restParam(1, 2, 3, 4, 5);
+
+function restParam(p1, p2, ...p3) {
+  // p1 = 1
+  // p2 = 2
+  // p3 = [3, 4, 5]
+}
+</code></pre></div><p>2.扩展运算符：</p> <div class="language- extra-class"><pre class="language-text"><code>const values = [99, 100, -1, 48, 16];
+console.log( Math.max(...values) ); // 100
+</code></pre></div><h4 id="_3-2-es9中"><a href="#_3-2-es9中" class="header-anchor">#</a> 3.2 ES9中(...)</h4> <p>在ES9中为对象提供了像数组一样的Rest参数和展开运算符。</p> <blockquote><p>Rest参数用法</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>        var obj = {
+            a: 1,
+            b: 2,
+            c: 3
+        }
+        const { a, ...param } = obj;
+        console.log(a)     //1
+        console.log(param) //{b: 2, c: 3}
+        
+</code></pre></div><blockquote><p>Spread用法，用于收集所有的剩余参数：</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>        var obj = {
+            a: 1,
+            b: 2,
+            c: 3
+        }
+		function foo({a, ...param}) {
+            console.log(a);
+            console.log(param)
+        }
+</code></pre></div><p>跟数组一样，Rest参数只能在声明的结尾处使用。此外，它只适用于每个对象的顶层，如果对象中嵌套对象则无法适用。</p> <blockquote><p>扩展运算符可以在其他对象内使用</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>const obj1 = { a: 1, b: 2, c: 3 };
+const obj2 = { ...obj1, z: 26 };
+// obj2 is { a: 1, b: 2, c: 3, z: 26 }
+</code></pre></div><h4 id="_3-3-spread的使用场景"><a href="#_3-3-spread的使用场景" class="header-anchor">#</a> 3.3 Spread的使用场景</h4> <blockquote><p>1.浅拷贝</p> <p>可以利用(...)来进行一个对象的拷贝，但是这种拷贝只能拷贝对象的可枚举自有属性。</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>        var obj = {
+            name: 'LinDaiDai',
+            looks: 'handsome',
+            foo() {
+                console.log('old');
+            },
+            set setLooks(newVal) {
+                this.looks = newVal
+            },
+            get getName() {
+                console.log(this.name)
+            }
+        }
+
+        var cloneObj = {...obj};
+        cloneObj.foo = function() {
+            console.log('new')
+        };
+        console.log(obj)     
+        // { name: 'LinDaiDai',looks: 'handsome', foo: f foo(), get getName:f getName(), set setLooks: f setLooks(newVal)}
+        console.log(cloneObj)
+        // { name: 'LinDaiDai',looks: 'handsome', foo: f foo(), getName: undefined, setLooks: undefined }
+        obj.foo()
+        // old
+        cloneObj.foo()
+        // new 
+</code></pre></div><p>如上所示，定义了一个对象<code>obj</code> 并使用<code>(...)</code>进行对象的拷贝，修改对象内的函数<code>foo()</code>，并不会影响原有的对象，但是原有对象的<code>setter</code>和<code>getter</code>却不能拷贝过去。</p> <blockquote><p>2.合并俩个对象</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>const merged = {...obj1, ...obj2};
+//同：
+const merged = Object.assign({}, obj1, obj2);
+</code></pre></div><h3 id="_4-正则表达式命名捕获组"><a href="#_4-正则表达式命名捕获组" class="header-anchor">#</a> 4. 正则表达式命名捕获组</h3> <h4 id="_4-1-基本用法"><a href="#_4-1-基本用法" class="header-anchor">#</a> 4.1 基本用法</h4> <p><code>Javascript</code>正则表达式中使用<code>exec()</code>匹配能够返回一个对象，一个包含匹配字符串的类数组。</p> <p>如下面案例中的匹配日期格式：</p> <div class="language- extra-class"><pre class="language-text"><code>//正则表达式命名捕获组
+        const reDate = /(\d{4})-(\d{2})-(\d{2})/,
+              match = reDate.exec('2018-08-06');
+        console.log(match);
+        // [2018-08-06, 2018, 08, 06]
+        
+        // 这样就可以直接用索引来获取年月日：
+        match[1] // 2018
+        match[2] // 08
+        match[3] // 06
+</code></pre></div><p>返回一个数组，数组第0项为与正则表达式相匹配的文本，第 1 个元素是与 RegExpObject 的第 1 个子表达式相匹配的文本（如果有的话），第 2 个元素是与 RegExpObject 的第 2 个子表达式相匹配的文本（如果有的话），以此类推。</p> <p>上面的案例，若是改变正则表达式的结构就有可能改变匹配对象的索引。</p> <p>如进行如下修改：</p> <div class="language- extra-class"><pre class="language-text"><code>//正则表达式命名捕获组
+        const reDate = /(\d{2})-(\d{2})-(\d{4})/,
+              match = reDate.exec('2018-08-06');
+        console.log(match);
+        // [2018-08-06, 08, 06, 2018]
+        
+        // 但此时年月日的索引就改变了
+        match[3] // 2018
+        match[1] // 08
+        match[2] // 06
+</code></pre></div><p><strong>可以看到上面写法的弊端，因此在ES9中允许命名捕获组使用符号<code>?&lt;name&gt;</code>,如下：</strong></p> <div class="language- extra-class"><pre class="language-text"><code>        const reDate = /(?&lt;year&gt;\d{4})-(?&lt;month&gt;\d{2})-(?&lt;day&gt;\d{2})/,
+              match = reDate.exec('2018-08-06')
+        console.log(match);
+        // [2018-08-06, 08, 06, 2018, groups: {day: 06, month: 08, year: 2018}]
+        
+        //此时可以使用groups对象来获取年月日
+        match.groups.year // 2018
+        match.groups.month // 08
+        match.groups.day  // 06
+</code></pre></div><p>命名捕获组的写法相当于是把每个匹配到的捕获组都定义了一个名字，然后存储到返回值的<code>groups</code>属性中。</p> <h4 id="_4-2-结合replace"><a href="#_4-2-结合replace" class="header-anchor">#</a> 4.2 结合<code>replace()</code></h4> <p>命名捕获也可以使用在<code>replace()</code>方法中。例如将日期转换为美国的 MM-DD-YYYY 格式：</p> <div class="language- extra-class"><pre class="language-text"><code>const reDate = /(?&lt;year&gt;\d{4})-(?&lt;month&gt;\d{2})-(?&lt;day&gt;\d{2})/,
+      d = '2018-08-06'
+      USADate = d.replace(reDate, '<div class="article-content">
+                        <!-- 这里是从原HTML文件中提取的内容 -->
+                        <p>这是一个内容页面模板。将原始HTML中的内容放在这里。</p>
+                        
+                        <h2>示例标题 1</h2>
+                        <p>示例内容...</p>
+                        
+                        <h3>示例子标题 1.1</h3>
+                        <p>更多示例内容...</p>
+
+                        <div class="note info">
+                            <div class="note-title"><i class="fas fa-info-circle"></i> 提示</div>lt;month&gt;-<div class="article-content">
+                        <!-- 这里是从原HTML文件中提取的内容 -->
+                        <p>这是一个内容页面模板。将原始HTML中的内容放在这里。</p>
+                        
+                        <h2>示例标题 1</h2>
+                        <p>示例内容...</p>
+                        
+                        <h3>示例子标题 1.1</h3>
+                        <p>更多示例内容...</p>
+
+                        <div class="note info">
+                            <div class="note-title"><i class="fas fa-info-circle"></i> 提示</div>lt;day&gt;-<div class="article-content">
+                        <!-- 这里是从原HTML文件中提取的内容 -->
+                        <p>这是一个内容页面模板。将原始HTML中的内容放在这里。</p>
+                        
+                        <h2>示例标题 1</h2>
+                        <p>示例内容...</p>
+                        
+                        <h3>示例子标题 1.1</h3>
+                        <p>更多示例内容...</p>
+
+                        <div class="note info">
+                            <div class="note-title"><i class="fas fa-info-circle"></i> 提示</div>lt;year&gt;');
+console.log(USADate);
+// 08-06-2018
+</code></pre></div><p>还可以将中文名的姓和名调换：</p> <div class="language- extra-class"><pre class="language-text"><code>const reName = /(?&lt;sur&gt;[a-zA-Z]+)-(?&lt;name&gt;[a-zA-Z]+)/;
+      Chinese = 'Lin-DaiDai',
+      USA = Chinese.replace(reName, '<div class="article-content">
+                        <!-- 这里是从原HTML文件中提取的内容 -->
+                        <p>这是一个内容页面模板。将原始HTML中的内容放在这里。</p>
+                        
+                        <h2>示例标题 1</h2>
+                        <p>示例内容...</p>
+                        
+                        <h3>示例子标题 1.1</h3>
+                        <p>更多示例内容...</p>
+
+                        <div class="note info">
+                            <div class="note-title"><i class="fas fa-info-circle"></i> 提示</div>lt;name&gt;-<div class="article-content">
+                        <!-- 这里是从原HTML文件中提取的内容 -->
+                        <p>这是一个内容页面模板。将原始HTML中的内容放在这里。</p>
+                        
+                        <h2>示例标题 1</h2>
+                        <p>示例内容...</p>
+                        
+                        <h3>示例子标题 1.1</h3>
+                        <p>更多示例内容...</p>
+
+                        <div class="note info">
+                            <div class="note-title"><i class="fas fa-info-circle"></i> 提示</div>lt;sur&gt;');
+console.log(USA);
+// DaiDai-Lin
+</code></pre></div><h3 id="_5-正则表达式反向断言"><a href="#_5-正则表达式反向断言" class="header-anchor">#</a> 5. 正则表达式反向断言</h3> <h4 id="_5-1-基本用法"><a href="#_5-1-基本用法" class="header-anchor">#</a> 5.1 基本用法</h4> <p>先来看下正则表达式先行断言是什么：</p> <p>如获取货币的符号</p> <div class="language- extra-class"><pre class="language-text"><code>        const noReLookahead = /\D(\d+)/,
+        	  reLookahead = /\D(?=\d+)/,
+        	  match1 = noReLookahead.exec('$123.45'),
+              match2 = reLookahead.exec('$123.45');
+        console.log(match1[0]); // $123   
+        console.log(match2[0]); // $
+</code></pre></div><p>可以看到若是在正则表达式中加入<code>?=</code>的话，匹配会发生，但不会有任何捕获，并且断言没有包含在整个匹配字段中。</p> <p>在ES9中可以允许反向断言：</p> <div class="language- extra-class"><pre class="language-text"><code>        const reLookahead = /(?&lt;=\D)[\d\.]+/;
+              match = reLookahead.exec('$123.45');
+        console.log(match[0]); // 123.45
+</code></pre></div><p>使用<code>?&lt;=</code>进行反向断言，可以使用反向断言获取货币的价格，而忽略货币符号。</p> <h4 id="_5-2-肯定反向断言"><a href="#_5-2-肯定反向断言" class="header-anchor">#</a> 5.2 肯定反向断言</h4> <p>上面的案例为肯定反向断言，也就是说<code>\D</code>这个条件必须存在，若是:</p> <div class="language- extra-class"><pre class="language-text"><code>        const reLookahead = /(?&lt;=\D)[\d\.]+/;
+              match1 = reLookahead.exec('123.45'),
+              match2 = reLookahead.exec('12345');
+        console.log(match1[0]); // 45
+        console.log(match2);  // null
+</code></pre></div><p>可以看到<code>match1</code>匹配到的是<code>45</code>,这是由于在<code>123</code>前面没有任何符合<code>\D</code>的匹配内容，它会一直找到符合<code>\D</code>的内容，也就是<code>.</code>然后返回后面的内容。</p> <p>而若是没有满足前面肯定反向断言的条件的话，则返回<code>null</code>.</p> <h3 id="_6-正则表达式dotall模式"><a href="#_6-正则表达式dotall模式" class="header-anchor">#</a> 6. 正则表达式<code>dotAll</code>模式</h3> <p>正则表达式中点<code>.</code>匹配除回车外的任何单字符，标记<code>s</code>改变这种行为，允许行终止符的出现:</p> <div class="language- extra-class"><pre class="language-text"><code>/hello.world/.test('hello\nworld');  // false
+
+/hello.world/s.test('hello\nworld'); // true
+
+console.log(/hello.world/s.test(`hello
+world`))   // true
+</code></pre></div><h3 id="_7-正则表达式-unicode-转义"><a href="#_7-正则表达式-unicode-转义" class="header-anchor">#</a> 7. 正则表达式 Unicode 转义</h3> <p>到目前为止，在正则表达式中本地访问 Unicode 字符属性是不被允许的。ES2018添加了 Unicode 属性转义——形式为<code>\p{...}</code>和<code>\P{...}</code>，在正则表达式中使用标记 <code>u</code> (unicode) 设置，在<code>\p</code>块儿内，可以以键值对的方式设置需要匹配的属性而非具体内容。</p> <div class="language- extra-class"><pre class="language-text"><code>    const reGreekSymbol = /\p{Script=Greek}/u;
+    console.log(reGreekSymbol.test('π')); // true
+</code></pre></div><p><code>Greek</code>为希腊语的意思。</p> <h3 id="_8-非转义序列的模板字符串"><a href="#_8-非转义序列的模板字符串" class="header-anchor">#</a> 8. 非转义序列的模板字符串</h3> <p>最后，ES2018 移除对 ECMAScript 在带标签的模版字符串中转义序列的语法限制。</p> <p>之前，<code>\u</code>开始一个 unicode 转义，<code>\x</code>开始一个十六进制转义，<code>\</code>后跟一个数字开始一个八进制转义。这使得创建特定的字符串变得不可能，例如Windows文件路径 <code>C:\uuu\xxx\111</code>。更多细节参考<a href="https://link.juejin.im?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FJavaScript%2FReference%2Ftemplate_strings" target="_blank" rel="noopener noreferrer">模板字符串<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>。</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Z字型变幻 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Z字型变幻</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>Z字型变幻</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h3 id="题目描述"><a href="#题目描述" class="header-anchor">#</a> 题目描述</h3> <p>将一个给定字符串根据给定的行数，以从上往下、从左到右进行 Z 字形排列。</p> <p>比如输入字符串为 <code>"LEETCODEISHIRING"</code> 行数为 3 时，排列如下：</p> <div class="language- extra-class"><pre class="language-text"><code>L   C   I   R
+E T O E S I I G
+E   D   H   N
+</code></pre></div><p>之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如：<code>"LCIRETOESIIGEDHN"</code>。</p> <p>请你实现这个将字符串进行指定行数变换的函数：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">conver</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> numRows<span class="token punctuation">)</span>
+</code></pre></div><p><strong>示例一🌰</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">输入</span><span class="token operator">:</span> s <span class="token operator">=</span> <span class="token string">"LEETCODEISHIRING"</span><span class="token punctuation">,</span> numRows <span class="token operator">=</span> <span class="token number">3</span>
+<span class="token literal-property property">输出</span><span class="token operator">:</span> <span class="token string">"LCIRETOESIIGEDHN"</span>
+</code></pre></div><p><strong>示例二🌰</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token literal-property property">输入</span><span class="token operator">:</span> s <span class="token operator">=</span> <span class="token string">"LEETCODEISHIRING"</span><span class="token punctuation">,</span> numRows <span class="token operator">=</span> <span class="token number">4</span>
+<span class="token literal-property property">输出</span><span class="token operator">:</span> <span class="token string">"LDREOEIIECIHNTSG"</span>
+<span class="token literal-property property">解释</span><span class="token operator">:</span>
+
+<span class="token constant">L</span>     <span class="token constant">D</span>     <span class="token constant">R</span>
+<span class="token constant">E</span>   <span class="token constant">O</span> <span class="token constant">E</span>   <span class="token constant">I</span> <span class="token constant">I</span>
+<span class="token constant">E</span> <span class="token constant">C</span>   <span class="token constant">I</span> <span class="token constant">H</span>   <span class="token constant">N</span>
+<span class="token constant">T</span>     <span class="token constant">S</span>     <span class="token constant">G</span>
+</code></pre></div><h3 id="解题思路"><a href="#解题思路" class="header-anchor">#</a> 解题思路</h3> <ol><li>考虑字符串长度为0或者1的情况;</li> <li>考虑输入的<code>numRows</code>为0或者小于字符串长度的情况;</li> <li>通过比较字符串的长度和<code>numRows</code>来定义一个行的最小长度<code>len</code>;</li> <li>定义当前的下标<code>loc</code>和是否向下移动<code>down</code>;</li> <li>判断<code>loc</code>是否是在列的头或者列的尾部,从而改变移动的方向<code>down</code>;</li> <li><code>down</code>决定了<code>loc</code>是<code>+1</code>还是<code>-1</code></li></ol> <h3 id="coding"><a href="#coding" class="header-anchor">#</a> coding</h3> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">/**
+ * @param {string} s
+ * @param {number} numRows
+ * @return {string}
+ */</span>
+<span class="token keyword">var</span> <span class="token function-variable function">convert</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">s<span class="token punctuation">,</span> numRows</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>s <span class="token operator">||</span> <span class="token operator">!</span>numRows<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token string">''</span>
+    <span class="token keyword">let</span> len <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">min</span><span class="token punctuation">(</span>s<span class="token punctuation">.</span>length<span class="token punctuation">,</span> numRows<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>len <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">return</span> s
+    
+    <span class="token keyword">let</span> array <span class="token operator">=</span> Array<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token literal-property property">length</span><span class="token operator">:</span> len<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token parameter">i</span> <span class="token operator">=&gt;</span> <span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token keyword">let</span> loc <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span>
+        down <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> rstStr <span class="token operator">=</span> <span class="token string">''</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> c <span class="token keyword">of</span> s<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        array<span class="token punctuation">[</span>loc<span class="token punctuation">]</span> <span class="token operator">+=</span> c<span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>loc <span class="token operator">===</span> <span class="token number">0</span> <span class="token operator">||</span> loc <span class="token operator">===</span> numRows <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token comment">// 在列的头部或者尾部</span>
+            down <span class="token operator">=</span> <span class="token operator">!</span>down
+        loc <span class="token operator">+=</span> down <span class="token operator">?</span> <span class="token number">1</span> <span class="token operator">:</span> <span class="token operator">-</span><span class="token number">1</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> array<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p><strong>测试代码</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">convert</span><span class="token punctuation">(</span><span class="token string">'A'</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span>
+<span class="token comment">// 'A'</span>
+<span class="token function">convert</span><span class="token punctuation">(</span><span class="token string">'AB'</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token comment">// 'AB'</span>
+<span class="token function">convert</span><span class="token punctuation">(</span><span class="token string">'LinDaiDai'</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span>
+<span class="token comment">// 'LaiiDianD'</span>
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

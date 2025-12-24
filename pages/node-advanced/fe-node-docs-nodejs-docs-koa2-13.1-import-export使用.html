@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>import export使用 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>import export使用</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>import export使用</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="前言"><a href="#前言" class="header-anchor">#</a> 前言</h2> <p>Node 9最激动人心的是提供了在flag模式下使用<code>ECMAScript Modules</code>，虽然现在还是<code>Stability: 1 - Experimental</code>阶段，但是可以让Noder抛掉babel等工具的束缚，直接在Node环境下愉快地去玩耍<code>import/export</code></p> <p>如果觉得文字太多，看不下去，可以直接去玩玩demo，地址是<a href="https://github.com/chenshenhai/node-modules-demo" target="_blank" rel="noopener noreferrer">https://github.com/chenshenhai/node-modules-demo<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h2 id="node-9下import-export使用简单须知"><a href="#node-9下import-export使用简单须知" class="header-anchor">#</a> Node 9下import/export使用简单须知</h2> <ul><li>Node 环境必须在 9.0以上</li> <li>不加loader时候，使用<code>import/export</code>的文件后缀名必须为<code>*.mjs</code>（下面会讲利用Loader Hooks兼容<code>*.js</code>后缀文件）</li> <li>启动必须加上flag <code>--experimental-modules</code></li> <li>文件的<code>import</code>和<code>export</code>必须严格按照<code>ECMAScript Modules</code>语法</li> <li><code>ECMAScript Modules</code>和<code>require()</code>的cache机制不一样</li></ul> <h2 id="使用简述"><a href="#使用简述" class="header-anchor">#</a> 使用简述</h2> <p>Node 9.x官方文档 <a href="https://nodejs.org/dist/latest-v9.x/docs/api/esm.html" target="_blank" rel="noopener noreferrer">https://nodejs.org/dist/latest-v9.x/docs/api/esm.html<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h3 id="与require-区别"><a href="#与require-区别" class="header-anchor">#</a> 与require()区别</h3> <table><thead><tr><th>能力</th> <th>描述</th> <th>require()</th> <th>import</th></tr></thead> <tbody><tr><td>NODE_PATH</td> <td>从NODE_PATH加载依赖模块</td> <td>Y</td> <td>N</td></tr> <tr><td>cache</td> <td>缓存机制</td> <td>可以通过require的API操作缓存</td> <td>自己独立的缓存机制，目前不可访问</td></tr> <tr><td>path</td> <td>引用路径</td> <td>文件路径</td> <td>URL格式文件路径，例如<code>import A from './a?v=2017'</code></td></tr> <tr><td>extensions</td> <td>扩展名机制</td> <td>require.extensions</td> <td>Loader Hooks</td></tr> <tr><td>natives</td> <td>原生模块引用</td> <td>直接支持</td> <td>直接支持</td></tr> <tr><td>npm</td> <td>npm模块引用</td> <td>直接支持</td> <td>需要Loader Hooks</td></tr> <tr><td>file</td> <td>文件(引用)</td> <td><code>*.js</code>,<code>*.json</code>等直接支持</td> <td>默认只能是<code>*.mjs</code>，通过<code>Loader Hooks</code>可以自定义配置规则支持<code>*.js</code>,<code>*.json</code>等Node原有支持文件</td></tr></tbody></table> <h2 id="loader-hooks模式使用"><a href="#loader-hooks模式使用" class="header-anchor">#</a> Loader Hooks模式使用</h2> <blockquote><p>由于历史原因，在ES6的Modules还没确定之前，JavaScript的模块化处理方案都是八仙过海，各显神通，例如前端的AMD、CMD模块方案，Node的CommonJS方案也在这个“乱世”诞生。
+当到了ES6规范确定后，Node的CommonJS方案已经是JavaScript中比较成熟的模块化方案，但ES6怎么说都是正统的规范，“法理”上是需要兼容的，所以<code>*.mjs</code>这个针对<code>ECMAScript Modules</code>规范的Node文件方案在一片讨论声中应运而生。</p></blockquote> <blockquote><p>当然如果<code>import/export</code>只能对<code>*.mjs</code>文件起作用，意味着Node原生模块和npm所有第三方模块都不能。所以这时候Node 9就提供了 <code>Loader Hooks</code>，开发者可自定义配置<code>Resolve Hook</code>规则去利用<code>import/export</code>加载使用Node原生模块，<code>*.js</code>文件，npm模块，C/C++的Node编译模块等Node生态圈的模块。</p></blockquote> <h3 id="loader-hooks-使用步骤"><a href="#loader-hooks-使用步骤" class="header-anchor">#</a> Loader Hooks 使用步骤</h3> <ul><li>自定义loader规则</li> <li>启动的flag要加载loader规则文件
+<ul><li>例如：<code>node --experimental-modules --loader ./custom-loader.mjs ./index.js</code></li></ul></li></ul> <h2 id="koa2-直接使用import-export"><a href="#koa2-直接使用import-export" class="header-anchor">#</a> Koa2 直接使用import/export</h2> <p>看看demo4，<a href="https://github.com/chenshenhai/node-modules-demo/tree/master/demo4" target="_blank" rel="noopener noreferrer">https://github.com/chenshenhai/node-modules-demo/tree/master/demo4<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <ul><li>文件目录</li></ul> <div class="language-js extra-class"><pre class="language-js"><code>├── esm
+│   ├── <span class="token constant">README</span><span class="token punctuation">.</span>md
+│   ├── custom<span class="token operator">-</span>loader<span class="token punctuation">.</span>mjs
+│   ├── index<span class="token punctuation">.</span>js
+│   ├── lib
+│   │   ├── data<span class="token punctuation">.</span>json
+│   │   ├── path<span class="token punctuation">.</span>js
+│   │   └── render<span class="token punctuation">.</span>js
+│   ├── <span class="token keyword">package</span><span class="token punctuation">.</span>json
+│   └── view
+│       ├── index<span class="token punctuation">.</span>html
+│       ├── index<span class="token punctuation">.</span>html
+│       └── todo<span class="token punctuation">.</span>html
+</code></pre></div><p>代码片段太多，不一一贴出来，只显示主文件</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">import</span> Koa <span class="token keyword">from</span> <span class="token string">'koa'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> render <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'./lib/render.js'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> data <span class="token keyword">from</span> <span class="token string">'./lib/data.json'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">let</span> app <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Koa</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">ctx<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> view <span class="token operator">=</span> ctx<span class="token punctuation">.</span>url<span class="token punctuation">.</span><span class="token function">substr</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> content<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> view <span class="token operator">===</span> <span class="token string">''</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        content <span class="token operator">=</span> <span class="token function">render</span><span class="token punctuation">(</span><span class="token string">'index'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span> view <span class="token operator">===</span> <span class="token string">'data'</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        content <span class="token operator">=</span> data<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        content <span class="token operator">=</span> <span class="token function">render</span><span class="token punctuation">(</span>view<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    ctx<span class="token punctuation">.</span>body <span class="token operator">=</span> content<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">=&gt;</span><span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'the modules test server is starting'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><ul><li>执行代码</li></ul> <div class="language- extra-class"><pre class="language-text"><code>node --experimental-modules  --loader ./custom-loader.mjs ./index.js
+</code></pre></div><ul><li>访问
+<ul><li>访问 <a href="http://127.0.0.1:3000/index" target="_blank" rel="noopener noreferrer">http://127.0.0.1:3000/index<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li>访问 <a href="http://127.0.0.1:3000/data" target="_blank" rel="noopener noreferrer">http://127.0.0.1:3000/data<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li>访问 <a href="http://127.0.0.1:3000/todo" target="_blank" rel="noopener noreferrer">http://127.0.0.1:3000/todo<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li></ul></li></ul> <h3 id="自定义loader规则优化"><a href="#自定义loader规则优化" class="header-anchor">#</a> 自定义loader规则优化</h3> <p>从上面官方提供的自定义loader例子看出，只是对<code>*.js</code>文件做<code>import/export</code>做loader兼容，然而我们在实际开发中需要对npm模块，<code>*.json</code>文件也使用<code>import/export</code></p> <h3 id="loader规则优化解析"><a href="#loader规则优化解析" class="header-anchor">#</a> loader规则优化解析</h3> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">import</span> url <span class="token keyword">from</span> <span class="token string">'url'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> path <span class="token keyword">from</span> <span class="token string">'path'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> process <span class="token keyword">from</span> <span class="token string">'process'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> fs <span class="token keyword">from</span> <span class="token string">'fs'</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 从package.json中</span>
+<span class="token comment">// 的dependencies、devDependencies获取项目所需npm模块信息</span>
+<span class="token keyword">const</span> <span class="token constant">ROOT_PATH</span> <span class="token operator">=</span> process<span class="token punctuation">.</span><span class="token function">cwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token constant">PKG_JSON_PATH</span> <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span> <span class="token constant">ROOT_PATH</span><span class="token punctuation">,</span> <span class="token string">'package.json'</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token constant">PKG_JSON_STR</span> <span class="token operator">=</span> fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token constant">PKG_JSON_PATH</span><span class="token punctuation">,</span> <span class="token string">'binary'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token constant">PKG_JSON</span> <span class="token operator">=</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span><span class="token constant">PKG_JSON_STR</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 项目所需npm模块信息</span>
+<span class="token keyword">const</span> allDependencies <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token operator">...</span><span class="token constant">PKG_JSON</span><span class="token punctuation">.</span>dependencies <span class="token operator">||</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span><span class="token constant">PKG_JSON</span><span class="token punctuation">.</span>devDependencies <span class="token operator">||</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">//Node原生模信息</span>
+<span class="token keyword">const</span> builtins <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span>
+  Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span><span class="token function">binding</span><span class="token punctuation">(</span><span class="token string">'natives'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
+    <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^(?!(?:internal|node|v8)\/)</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 文件引用兼容后缀名</span>
+<span class="token keyword">const</span> <span class="token constant">JS_EXTENSIONS</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'.js'</span><span class="token punctuation">,</span> <span class="token string">'.mjs'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token constant">JSON_EXTENSIONS</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'.json'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token parameter">specifier<span class="token punctuation">,</span> parentModuleURL<span class="token punctuation">,</span> defaultResolve</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 判断是否为Node原生模块</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>builtins<span class="token punctuation">.</span><span class="token function">has</span><span class="token punctuation">(</span>specifier<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">url</span><span class="token operator">:</span> specifier<span class="token punctuation">,</span>
+      <span class="token literal-property property">format</span><span class="token operator">:</span> <span class="token string">'builtin'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// 判断是否为npm模块</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> allDependencies <span class="token operator">&amp;&amp;</span> <span class="token keyword">typeof</span> allDependencies<span class="token punctuation">[</span>specifier<span class="token punctuation">]</span> <span class="token operator">===</span> <span class="token string">'string'</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token function">defaultResolve</span><span class="token punctuation">(</span>specifier<span class="token punctuation">,</span> parentModuleURL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// 如果是文件引用，判断是否路径格式正确</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^\.{0,2}[/]</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>specifier<span class="token punctuation">)</span> <span class="token operator">!==</span> <span class="token boolean">true</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>specifier<span class="token punctuation">.</span><span class="token function">startsWith</span><span class="token punctuation">(</span><span class="token string">'file:'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+    <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span>
+      <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">imports must begin with '/', './', or '../'; '</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>specifier<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">' does not</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// 判断是否为*.js、*.mjs、*.json文件</span>
+  <span class="token keyword">const</span> resolved <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">url<span class="token punctuation">.</span>URL</span><span class="token punctuation">(</span>specifier<span class="token punctuation">,</span> parentModuleURL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> ext <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">extname</span><span class="token punctuation">(</span>resolved<span class="token punctuation">.</span>pathname<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token constant">JS_EXTENSIONS</span><span class="token punctuation">.</span><span class="token function">has</span><span class="token punctuation">(</span>ext<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span><span class="token constant">JSON_EXTENSIONS</span><span class="token punctuation">.</span><span class="token function">has</span><span class="token punctuation">(</span>ext<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span>
+      <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Cannot load file with non-JavaScript file extension </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>ext<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">.</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// 如果是*.js、*.mjs文件</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">JS_EXTENSIONS</span><span class="token punctuation">.</span><span class="token function">has</span><span class="token punctuation">(</span>ext<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">url</span><span class="token operator">:</span> resolved<span class="token punctuation">.</span>href<span class="token punctuation">,</span>
+      <span class="token literal-property property">format</span><span class="token operator">:</span> <span class="token string">'esm'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  
+  <span class="token comment">// 如果是*.json文件</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">JSON_EXTENSIONS</span><span class="token punctuation">.</span><span class="token function">has</span><span class="token punctuation">(</span>ext<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">url</span><span class="token operator">:</span> resolved<span class="token punctuation">.</span>href<span class="token punctuation">,</span>
+      <span class="token literal-property property">format</span><span class="token operator">:</span> <span class="token string">'json'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="规则总结"><a href="#规则总结" class="header-anchor">#</a> 规则总结</h3> <p>在自定义loader中，export的resolve规则最核心的代码是</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">return</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">url</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">format</span><span class="token operator">:</span> <span class="token string">''</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>url 是模块名称或者文件URL格式路径</li> <li>format 是模块格式有<code>esm</code>, <code>cjs</code>, <code>json</code>, <code>builtin</code>, <code>addon</code>这四种模块/文件格式.</li></ul> <p>注意：
+目前Node对<code>import/export</code>的支持现在还是<code>Stability: 1 - Experimental</code>阶段，后续的发展还有很多不确定因素，自己练手玩玩还可以，但是在还没去flag使用之前，尽量不要在生产环境中使用。Node 9.x 更详细<code>import/export</code>的使用，可参考 <a href="https://github.com/ChenShenhai/blog/issues/24" target="_blank" rel="noopener noreferrer">https://github.com/ChenShenhai/blog/issues/24<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

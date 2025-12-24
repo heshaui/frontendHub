@@ -1,0 +1,30 @@
+<!-- Section: # 3 实现instanceOf -->
+<div class="section-content" data-section-id="_3-实现instanceof">
+<h2 id="_3-实现instanceof"><a href="#_3-实现instanceof" class="header-anchor">#</a> 3 实现instanceOf</h2>
+<p><strong>思路：</strong></p>
+<ul><li>步骤1：先取得当前类的原型，当前实例对象的原型链</li> <li>​步骤2：一直循环（执行原型链的查找机制）
+<ul><li>取得当前实例对象原型链的原型链（<code>proto = proto.__proto__</code>，沿着原型链一直向上查找）</li> <li>如果 当前实例的原型链<code>__proto__</code>上找到了当前类的原型<code>prototype</code>，则返回 <code>true</code></li> <li>如果 一直找到<code>Object.prototype.__proto__ == null</code>，<code>Object</code>的基类(<code>null</code>)上面都没找到，则返回 <code>false</code></li></ul></li></ul>
+<p><img alt="" src="https://s.poetries.top/uploads/2023/02/5c6bd3977e62de20.png"></p>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 实例.__ptoto__ === 构造函数.prototype</span>
+<span class="token keyword">function</span> <span class="token function">_instanceof</span><span class="token punctuation">(</span><span class="token parameter">instance<span class="token punctuation">,</span> classOrFunc</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 由于instance要检测的是某对象，需要有一个前置判断条件</span>
+    <span class="token comment">//基本数据类型直接返回false</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token keyword">typeof</span> instance <span class="token operator">!==</span> <span class="token string">'object'</span> <span class="token operator">||</span> instance <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">let</span> proto <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">getPrototypeOf</span><span class="token punctuation">(</span>instance<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 等价于 instance.__ptoto__</span>
+    <span class="token keyword">while</span><span class="token punctuation">(</span>proto<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 当proto == null时，说明已经找到了Object的基类null 退出循环</span>
+        <span class="token comment">// 实例的原型等于当前构造函数的原型</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>proto <span class="token operator">==</span> classOrFunc<span class="token punctuation">.</span>prototype<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token comment">// 沿着原型链__ptoto__一层一层向上查</span>
+        proto <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">getPrototypeof</span><span class="token punctuation">(</span>proto<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 等价于 proto.__ptoto__</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">return</span> <span class="token boolean">false</span>
+<span class="token punctuation">}</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'test'</span><span class="token punctuation">,</span> <span class="token function">_instanceof</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">,</span> Array<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// false</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'test'</span><span class="token punctuation">,</span> <span class="token function">_instanceof</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> Array<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'test'</span><span class="token punctuation">,</span> <span class="token function">_instanceof</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">,</span> Array<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// false</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'test'</span><span class="token punctuation">,</span> <span class="token function">_instanceof</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> Object<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+</code></pre></div>
+</div>

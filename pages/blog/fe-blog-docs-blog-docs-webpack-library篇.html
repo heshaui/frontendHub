@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>webpack library篇 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>webpack library篇</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>webpack library篇</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、webpack-numbers案例"><a href="#一、webpack-numbers案例" class="header-anchor">#</a> 一、webpack-numbers案例</h2> <p>这里我也不折腾了, 就以官网提供的案例进行讲解吧.</p> <p>首先让我们明确要做什么事情.</p> <ol><li>本地编写创建一个名为<code>lindaidai-webpack-numbers</code>的项目(也就是library)</li> <li>这个library的功能是导出两个方法, 能实现数字与字符串的互相转换</li> <li>library中用到了lodash这个工具库</li> <li>将library打包发布到NPM上, 其它用户能够通过<code>npm install</code>的方式下载使用</li> <li>外部化lodash, 也就是我们library虽然使用了lodash, 但是并不要将它打包到我们的bundle中</li> <li>用户能通过ES2015模块, CommonJS模块, script脚本引入我们的library并使用它</li></ol> <p>该 library 的使用方式如下：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// ES2015模块引入</span>
+<span class="token keyword">import</span> <span class="token operator">*</span> <span class="token keyword">as</span> webpackNumbers <span class="token keyword">from</span> <span class="token string">'lindaidai-webpack-numbers'</span>
+<span class="token comment">// CommonJS模块引入</span>
+<span class="token keyword">var</span> webpackNumbers <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'lindaidai-webpack-numbers'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// ES2015模块和CommonJS模块都是这样调用的:</span>
+webpackNumbers<span class="token punctuation">.</span><span class="token function">numToWord</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+
+<span class="token comment">// AMD模块引入</span>
+<span class="token function">require</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'lindaidai-webpack-numbers'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">webpackNumbers</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// AMD 模块调用</span>
+  webpackNumbers<span class="token punctuation">.</span><span class="token function">wordToNum</span><span class="token punctuation">(</span><span class="token string">'Two'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>用户还可以通过 script 标签来加载和使用此 library：</p> <div class="language-html extra-class"><pre class="language-html"><code><span class="token doctype"><span class="token punctuation">&lt;!</span><span class="token doctype-tag">doctype</span> <span class="token name">html</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">&gt;</span></span>
+  ...
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://unpkg.com/lindaidai-webpack-numbers<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+    <span class="token comment">// ...</span>
+    <span class="token comment">// 全局变量</span>
+    webpackNumbers<span class="token punctuation">.</span><span class="token function">wordToNum</span><span class="token punctuation">(</span><span class="token string">'Five'</span><span class="token punctuation">)</span>
+    <span class="token comment">// window 对象中的属性</span>
+    window<span class="token punctuation">.</span>webpackNumbers<span class="token punctuation">.</span><span class="token function">wordToNum</span><span class="token punctuation">(</span><span class="token string">'Five'</span><span class="token punctuation">)</span>
+    <span class="token comment">// ...</span>
+  </span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><h3 id="创建library的项目结构"><a href="#创建library的项目结构" class="header-anchor">#</a> 创建library的项目结构</h3> <p>让我们使用webpack快速的构建一个本地的library.</p> <p>由于有了之前webpack的基础, 我相信你构建起来应该也会很快.</p> <div class="language- extra-class"><pre class="language-text"><code>mkdir lindaidai-webpack-numbers &amp;&amp; cd lindaidai-webpack-numbers
+npm init -y
+cnpm i --save-dev webpack webpack-cli lodash
+touch webpack.config.js
+mkdir src &amp;&amp; cd src
+touch index.js
+touch ref.json
+</code></pre></div><p>一顿操作之后, 项目结构变成了这样:</p> <div class="language- extra-class"><pre class="language-text"><code>lindaidai-webpack-numbers
+	|- /node_modules
+	|- /src
+		|- index.js
+		|- ref.json
+	|- package.json
+	|- webpack.config.js
+</code></pre></div><p>之后来简单的编写一下文件中的代码:</p> <p><strong>src/ref.json</strong>:</p> <div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">[</span><span class="token punctuation">{</span>
+        <span class="token property">"num"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+        <span class="token property">"word"</span><span class="token operator">:</span> <span class="token string">"One"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+        <span class="token property">"num"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+        <span class="token property">"word"</span><span class="token operator">:</span> <span class="token string">"Two"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+        <span class="token property">"num"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+        <span class="token property">"word"</span><span class="token operator">:</span> <span class="token string">"Three"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+        <span class="token property">"num"</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+        <span class="token property">"word"</span><span class="token operator">:</span> <span class="token string">"Four"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+        <span class="token property">"num"</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+        <span class="token property">"word"</span><span class="token operator">:</span> <span class="token string">"Five"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+        <span class="token property">"num"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+        <span class="token property">"word"</span><span class="token operator">:</span> <span class="token string">"Zero"</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre></div><p><strong>src/index.js</strong>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> _ <span class="token keyword">from</span> <span class="token string">'lodash'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> numRef <span class="token keyword">from</span> <span class="token string">'./ref.json'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">numToWord</span><span class="token punctuation">(</span><span class="token parameter">num</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> _<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span>numRef<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">accum<span class="token punctuation">,</span> ref</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> num <span class="token operator">===</span> ref<span class="token punctuation">.</span>num <span class="token operator">?</span> ref<span class="token punctuation">.</span>word <span class="token operator">:</span> accum
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">wordToNum</span><span class="token punctuation">(</span><span class="token parameter">word</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> _<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span>numRef<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">accum<span class="token punctuation">,</span> ref</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> ref<span class="token punctuation">.</span>word <span class="token operator">===</span> word <span class="token operator">&amp;&amp;</span> word<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">?</span> ref<span class="token punctuation">.</span>num <span class="token operator">:</span> accum<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p><strong>webpack.config.js</strong>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">entry</span><span class="token operator">:</span> <span class="token string">'./src/index.js'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">output</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">path</span><span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'dist'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">'webpack-numbers.js'</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="配置webpack-config-js"><a href="#配置webpack-config-js" class="header-anchor">#</a> 配置webpack.config.js</h3> <p>编写完成上面👆几个文件之后, 打包之后生成的<code>dist</code>目录就只有一个<code>webpack-numbers.js</code>文件:</p> <div class="language- extra-class"><pre class="language-text"><code>/dist
+	|- webpack.numbers.js
+</code></pre></div><p>但是我们注意到生成的js中包含了lodash:</p> <div class="language-diff extra-class"><pre class="language-diff"><code>lindaidai@LinDaiDaideMacBook-Pro lindaidai-webpack-numbers % npm run build
+
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">&gt;</span><span class="token line"> lindaidai-webpack-numbers@1.0.0 build /Users/lindaidai/codes/webpack/lindaidai-webpack-numbers
+</span><span class="token prefix inserted">&gt;</span><span class="token line"> webpack
+</span></span>
+Hash: e49f78747376a068a282
+Version: webpack 4.41.5
+Time: 1544ms
+Built at: 2020-02-10 6:57:59 PM
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">            Asset      Size  Chunks             Chunk Names
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> webpack-numbers.js  72.4 KiB       0  [emitted]  main
+</span></span></code></pre></div><p>所以导致<code>webpack-number.js</code>非常大.</p> <h4 id="外部化lodash-配置externals"><a href="#外部化lodash-配置externals" class="header-anchor">#</a> 外部化lodash(配置externals)</h4> <p>因此对于这种我们额外引入的module, 我们更倾向于把 <code>lodash</code> 当作 <code>peerDependency</code>。也就是说，用户应该已经将 <code>lodash</code> 安装好.</p> <p>所以，你可以放弃对外部 library 的控制，而是将控制权让给使用 library 的用户。</p> <p>这个功能需要靠<code>externals</code>配置:</p> <p><strong>webpack.config.js</strong>:</p> <div class="language-diff extra-class"><pre class="language-diff"><code>module.exports = {
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> entry: './src/index.js',
+</span><span class="token prefix unchanged"> </span><span class="token line"> output: {
+</span><span class="token prefix unchanged"> </span><span class="token line">   path: path.resolve(__dirname, 'dist'),
+</span><span class="token prefix unchanged"> </span><span class="token line">   filename: 'webpack-numbers.js'
+</span></span><span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line">  }
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">  },
+</span><span class="token prefix inserted">+</span><span class="token line">  externals: {
+</span><span class="token prefix inserted">+</span><span class="token line">  	lodash: {
+</span><span class="token prefix inserted">+</span><span class="token line">  		commonjs: 'lodash',
+</span><span class="token prefix inserted">+</span><span class="token line">  		commonjs2: 'lodash',
+</span><span class="token prefix inserted">+</span><span class="token line">  		amd: 'lodash',
+</span><span class="token prefix inserted">+</span><span class="token line">  		root: '_'
+</span><span class="token prefix inserted">+</span><span class="token line">  	}
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> }
+</span></span>};
+</code></pre></div><blockquote><p>这意味着你的 library 需要一个名为 <code>lodash</code> 的依赖，这个依赖在用户的环境中必须存在且可用。</p></blockquote> <h4 id="暴露library"><a href="#暴露library" class="header-anchor">#</a> 暴露library</h4> <p>因为我们编写的library可能会在不同的执行环境中用到，例如 CommonJS，AMD，Node.js 或者作为一个全局变量.</p> <p>所以为了实现这个功能, 我们首先需要在<code>oupout</code>中添加<code>library</code>属性:</p> <p><strong>webpack.config.js</strong>:</p> <div class="language-diff extra-class"><pre class="language-diff"><code><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> var path = require('path');
+</span></span>
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> module.exports = {
+</span><span class="token prefix unchanged"> </span><span class="token line">   entry: './src/index.js',
+</span><span class="token prefix unchanged"> </span><span class="token line">   output: {
+</span><span class="token prefix unchanged"> </span><span class="token line">     path: path.resolve(__dirname, 'dist'),
+</span><span class="token prefix unchanged"> </span><span class="token line">     filename: 'webpack-numbers.js',
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">     library: 'webpackNumbers'
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   },
+</span><span class="token prefix unchanged"> </span><span class="token line">   externals: {
+</span><span class="token prefix unchanged"> </span><span class="token line">     lodash: {
+</span><span class="token prefix unchanged"> </span><span class="token line">       commonjs: 'lodash',
+</span><span class="token prefix unchanged"> </span><span class="token line">       commonjs2: 'lodash',
+</span><span class="token prefix unchanged"> </span><span class="token line">       amd: 'lodash',
+</span><span class="token prefix unchanged"> </span><span class="token line">       root: '_'
+</span><span class="token prefix unchanged"> </span><span class="token line">     }
+</span><span class="token prefix unchanged"> </span><span class="token line">   }
+</span><span class="token prefix unchanged"> </span><span class="token line"> };
+</span></span></code></pre></div><p>添加了<code>library</code>属性是为了将<code>library</code>在打包之后的<code>bundle</code>文件中暴露一个名为<code>webpackNumbers</code>的全局变量.</p> <p>但是还需要指定我们的<code>library</code>在怎样的环境中使用.</p> <p>这依靠于<code>libraryTarget</code>属性, 它可以控制<code>library</code>如何以不同方式暴露的选项.</p> <p>主要有以下几个值:</p> <ul><li>变量：作为一个全局变量，通过 <code>script</code> 标签来访问（<code>libraryTarget:'var'</code>）。</li> <li>this：通过 <code>this</code> 对象访问（<code>libraryTarget:'this'</code>）。</li> <li>window：通过 <code>window</code> 对象访问，在浏览器中（<code>libraryTarget:'window'</code>）。</li> <li>UMD：在 AMD 或 CommonJS 的 <code>require</code> 之后可访问, 也就是以上几种环境都可以访问（<code>libraryTarget:'umd'</code>）</li></ul> <p><strong>如果设置了 <code>library</code> 但没设置 <code>libraryTarget</code>，则 <code>libraryTarget</code> 默认为 <code>var</code></strong></p> <p>所以在此处我希望在所有的环境中都能使用, 则只要设置<code>libraryTarget: 'umd'</code>:</p> <div class="language-diff extra-class"><pre class="language-diff"><code><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> var path = require('path');
+</span></span>
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> module.exports = {
+</span><span class="token prefix unchanged"> </span><span class="token line">   entry: './src/index.js',
+</span><span class="token prefix unchanged"> </span><span class="token line">   output: {
+</span><span class="token prefix unchanged"> </span><span class="token line">     path: path.resolve(__dirname, 'dist'),
+</span><span class="token prefix unchanged"> </span><span class="token line">     filename: 'webpack-numbers.js',
+</span><span class="token prefix unchanged"> </span><span class="token line">     library: 'webpackNumbers',
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">     libraryTarget: 'umd'
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   },
+</span><span class="token prefix unchanged"> </span><span class="token line">   externals: {
+</span><span class="token prefix unchanged"> </span><span class="token line">     lodash: {
+</span><span class="token prefix unchanged"> </span><span class="token line">       commonjs: 'lodash',
+</span><span class="token prefix unchanged"> </span><span class="token line">       commonjs2: 'lodash',
+</span><span class="token prefix unchanged"> </span><span class="token line">       amd: 'lodash',
+</span><span class="token prefix unchanged"> </span><span class="token line">       root: '_'
+</span><span class="token prefix unchanged"> </span><span class="token line">     }
+</span><span class="token prefix unchanged"> </span><span class="token line">   }
+</span><span class="token prefix unchanged"> </span><span class="token line"> };
+</span></span></code></pre></div><h3 id="发布至npm"><a href="#发布至npm" class="header-anchor">#</a> 发布至NPM</h3> <p>现在我们希望的是将打包之后的<code>dist</code>文件与这整个项目一起发布到NPM上.</p> <p>所以我们需要执行打包命令让<code>library</code>项目目录结构变为:</p> <div class="language- extra-class"><pre class="language-text"><code>lindaidai-webpack-numbers
+	|- /dist
+		|- webpack.numbers.js
+	|- /src
+		|- index.js
+		|- ref.json
+	|- package.json
+	|- webpack.config.js
+</code></pre></div><p>(如果你的项目没有配置打包命令的话需要在package.json中配置一个脚本命令"build": "webpack", 这样你就可以执行<code>npm run build</code>指令进行打包了)</p> <h4 id="登录npm"><a href="#登录npm" class="header-anchor">#</a> 登录npm</h4> <div class="language- extra-class"><pre class="language-text"><code>npm adduser //创建用户(如果你没有npm账号的话)
+or
+npm login //登录用户
+</code></pre></div><p>可以使用:</p> <div class="language- extra-class"><pre class="language-text"><code>npm whoami
+</code></pre></div><p>检测用户是否登录上了npm</p> <h4 id="安装publish"><a href="#安装publish" class="header-anchor">#</a> 安装publish</h4> <p>首先需要安装publish</p> <div class="language- extra-class"><pre class="language-text"><code>npm i -g publish
+</code></pre></div><h4 id="发布library"><a href="#发布library" class="header-anchor">#</a> 发布library</h4> <p>由于我们之前提到了你需要将整个library通过bundle中的<code>webpack.numbers.js</code>暴露出去, 所以你还需要修改package.json中的<code>"main"</code>属性:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  <span class="token operator">...</span>
+  <span class="token string-property property">"main"</span><span class="token operator">:</span> <span class="token string">"dist/webpack-numbers.js"</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>这样整体的package.json需要修改成如下:</p> <div class="language-diff extra-class"><pre class="language-diff"><code>{
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   "name": "lindaidai-webpack-numbers",
+</span><span class="token prefix unchanged"> </span><span class="token line">   "version": "1.0.0",
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">   "description": "This is a LinDaiDai's packages",
+</span><span class="token prefix inserted">+</span><span class="token line">   "main": "dist/webpack-numbers.js",
+</span><span class="token prefix inserted">+</span><span class="token line">   "private": false,
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   "scripts": {
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">        "build": "webpack"
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   },
+</span><span class="token prefix unchanged"> </span><span class="token line">   "keywords": [],
+</span><span class="token prefix unchanged"> </span><span class="token line">   "author": "",
+</span><span class="token prefix unchanged"> </span><span class="token line">   "license": "ISC",
+</span><span class="token prefix unchanged"> </span><span class="token line">   "devDependencies": {
+</span><span class="token prefix unchanged"> </span><span class="token line">       "lodash": "^4.17.15",
+</span><span class="token prefix unchanged"> </span><span class="token line">       "webpack": "^4.41.5",
+</span><span class="token prefix unchanged"> </span><span class="token line">       "webpack-cli": "^3.3.10"
+</span><span class="token prefix unchanged"> </span><span class="token line">   }
+</span></span>}
+</code></pre></div><p>现在你就可以在项目根目录下执行指令来发布library了:</p> <div class="language- extra-class"><pre class="language-text"><code>npm publish
+</code></pre></div><p>成功之后应该会提示:</p> <div class="language- extra-class"><pre class="language-text"><code>+lindaidai-webpack-numbers@1.0.0
+</code></pre></div><p>并且此时你是可以在 <a href="https://unpkg.com/#/" target="_blank" rel="noopener noreferrer">unpkg.com<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 中找到你发布的library的.</p> <p>若是你编写的模块是第一次发布的，则直接使用指令<code>npm publish</code>就可以了
+若是第二次，则需要在<code>package.json</code>中修改一下<code>version</code>，如修改为<code>1.0.1</code>，然后再次执行<code>npm publish</code>就OK了。</p> <p><strong>如果你在发布的时候报了如下的错误, 这是由于包名重复了, 也就是你发布的包在NPM上已经有人用了, 你换个名字就可以了</strong>:</p> <div class="language- extra-class"><pre class="language-text"><code>npm ERR! code E403
+npm ERR! 403 403 Forbidden - PUT https://registry.npmjs.org/mini-vm - You do not have permission to publish "webpack-numbers". Are you logged in as the correct user?
+npm ERR! 403 In most cases, you or one of your dependencies are requestingnpm ERR! 403 a package version that is forbidden by your security policy.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     F:\node\rely\node_cache\_logs\2020-02-07T08_30_57_238Z-debug.log
+</code></pre></div><p><strong>还有以下几点需要你注意的:</strong></p> <ol><li><p>确保自己是登录了npm的</p></li> <li><p>确保自己的npm的邮箱被激活了</p></li> <li><p>命名不能太简单,最后要有自己的标志,太简单可能是别人已经用过的名字你就不能发布成功,也不要有数字</p></li> <li><p>如果是要再次推送同一个项目记得修改该项目版本号。</p></li></ol> <p>具体关于NPM包的发布可以看我之前的一篇文章: <a href="https://www.jianshu.com/p/e668c14ff88f" target="_blank" rel="noopener noreferrer">《NPM-在npm上发布模块》<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h3 id="使用发布的library"><a href="#使用发布的library" class="header-anchor">#</a> 使用发布的library</h3> <p>成功将自己的library发布到NPM上了之后, 让我们来用个案例测试下吧.</p> <p><strong>(案例GitHub地址: <a href="">LinDaiDai/webpack-basic</a>)</strong></p> <p>在项目的根目录下执行命令来安装library:</p> <div class="language- extra-class"><pre class="language-text"><code>npm i --save-dev lindaidai-webpack-numbers
+</code></pre></div><p>接下里在项目中使用它:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// ES6</span>
+<span class="token keyword">import</span> <span class="token operator">*</span> <span class="token keyword">as</span> lindaiWebpackNumbers <span class="token keyword">from</span> <span class="token string">'lindaidai-webpack-numbers'</span>
+<span class="token comment">// CommonJS</span>
+<span class="token comment">// var lindaiWebpackNumbers = require('lindaidai-webpack-numbers')</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>lindaiWebpackNumbers<span class="token punctuation">.</span><span class="token function">numToWord</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// Two</span>
+</code></pre></div><p>引入时命名可以随意, 不一定要是<code>lindaidiWebpackNumbers</code>.</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

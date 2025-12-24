@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>node部署 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>node部署</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>node部署</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、forever"><a href="#一、forever" class="header-anchor">#</a> 一、forever</h2> <blockquote><p><code>forever</code>则可以在<code>cmd</code>或<code>ssh</code>连接断开时,让项目一直运行,而且可以在项目崩溃时自动重启</p></blockquote> <ul><li>安装 <code>npm install -g forever</code></li> <li><code>forever</code>的帮助手册  <code>forever --help</code></li> <li>使用<code>forever</code>启动项目 <code>forever start app.js</code></li> <li>使用<code>forever</code>停止项目 <code>forever stop app.js</code></li> <li>列出所有通过<code>forever</code>管理的项目 <code>forever list</code></li> <li>监视项目中的文件,当文件有变动时重启项目 <code>forever -w start app.js</code></li></ul> <h2 id="二、pm2"><a href="#二、pm2" class="header-anchor">#</a> 二、pm2</h2> <blockquote><p>部署参考 http://blog.poetries.top/2018/11/18/react-ssr-next-deploy/</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>npm install pm2 -g
+</code></pre></div><p>新建一份index.js测试，运行以下命令测试</p> <div class="language- extra-class"><pre class="language-text"><code>pm2 start index.js
+</code></pre></div><p><strong>运行</strong></p> <blockquote><p>你可以执行以下命令来重启和暂停服务</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>pm2 stop     &lt;app_name|id|'all'|json_conf&gt;
+pm2 restart  &lt;app_name|id|'all'|json_conf&gt;
+pm2 delete   &lt;app_name|id|'all'|json_conf&gt;
+</code></pre></div><blockquote><p>比如<code>pm2 stop index.js</code>，暂停上面的<code>index.js</code>服务</p></blockquote> <p><strong>常用命令</strong></p> <ul><li>运行<code>pm2 start app.js</code></li> <li>查看运行状态 <code>pm2 list</code></li> <li>追踪资源运行情况 <code>pm2 monit</code></li> <li>查看日志 <code>pm2 logs</code></li> <li>重启应用 <code>pm2 restart appId</code></li> <li>停止应用  <code>pm2 stop app.js</code></li> <li>开启<code>api</code>访问 <code>pm2 web</code></li></ul> <p><strong>自动重启</strong></p> <p>当文件改动则自动重启服务</p> <div class="language- extra-class"><pre class="language-text"><code>pm2 start app.js --watch
+</code></pre></div><p>这里是监控整个项目的文件，如果只想监听指定文件和目录，建议通过下面配置文件的<code>watch</code>、<code>ignore_watch</code>字段来设置</p> <p><strong>配置文件</strong></p> <p>编写一份<code>ecosystem.json</code>文件，完整配置说明请参考官方文档</p> <div class="language- extra-class"><pre class="language-text"><code>{
+    "name": "test", // 应用名称
+    "script": "./bin/www", // 实际启动脚本
+    "cwd": "./", // 当前工作路径
+    "watch": [ // 监控变化的目录，一旦变化，自动重启
+        "bin",
+        "routers"
+    ],
+    "ignore_watch": [ // 从监控目录中排除
+        "node_modules",
+        "logs",
+        "public"
+    ],
+    "watch_options": {
+        "followSymlinks": false
+    },
+    "max_memory_restart": "100M", //超过最大内存重启
+    "error_file": "./logs/app-err.log", // 错误日志路径
+    "out_file": "./logs/app-out.log", // 普通日志路径
+    "env": {
+        "NODE_ENV": "production" // 环境参数，当前指定为生产环境
+    }
+}
+</code></pre></div><p>配置完后你可以执行以下命令</p> <div class="language-bash extra-class"><pre class="language-bash"><code><span class="token comment"># Start all apps</span>
+pm2 start ecosystem.json
+
+<span class="token comment"># Stop</span>
+pm2 stop ecosystem.json
+
+<span class="token comment"># Restart</span>
+pm2 start ecosystem.json
+<span class="token comment">## Or</span>
+pm2 restart ecosystem.json
+
+<span class="token comment"># Reload</span>
+pm2 reload ecosystem.json
+
+<span class="token comment"># Delete from PM2</span>
+pm2 delete ecosystem.json
+</code></pre></div><p>这里注意的是配置文件改变了之后要先<code>delete</code>再<code>start</code>配置文件才能生效</p> <p><strong>负载均衡</strong></p> <p>命令如下，表示开启三个进程。如果-i 0，则会根据机器当前核数自动开启尽可能多的进程</p> <div class="language- extra-class"><pre class="language-text"><code>pm2 start app.js -i 3      //开启三个进程
+pm2 start app.js -i max //根据机器CPU核数，开启对应数目的进程
+</code></pre></div><p><strong>日志查看</strong></p> <p>除了可以打开日志文件查看日志外，还可以通过pm2 logs来查看实时日志。这点对于线上问题排查非常重要</p> <p>比如某个node服务突然异常重启了，那么可以通过pm2提供的日志工具来查看实时日志，看是不是脚本出错之类导致的异常重启。</p> <div class="language- extra-class"><pre class="language-text"><code>pm2 logs
+</code></pre></div><p><strong>内存使用超过上限自动重启</strong></p> <blockquote><p>如果想要你的应用，在超过使用内存上限后自动重启，那么可以加上<code>--max-memory-restart</code>参数。（有对应的配置项）</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>pm2 start big-array.js --max-memory-restart 20M
+</code></pre></div><p><strong>pm2与forever对比</strong></p> <table><thead><tr><th>Feature</th> <th>Forever</th> <th>PM2</th></tr></thead> <tbody><tr><td>Keep Alive</td> <td>✔</td> <td>✔</td></tr> <tr><td>Coffeescript</td> <td>✔</td> <td></td></tr> <tr><td>Log aggregation</td> <td></td> <td>✔</td></tr> <tr><td>API</td> <td></td> <td>✔</td></tr> <tr><td>Terminal monitoring</td> <td></td> <td>✔</td></tr> <tr><td>Clustering</td> <td></td> <td>✔</td></tr> <tr><td>JSON configuration</td> <td></td> <td>✔</td></tr></tbody></table></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

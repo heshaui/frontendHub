@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gulp学习总结篇 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>gulp学习总结篇</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>gulp学习总结篇</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、gulp-入门简介"><a href="#一、gulp-入门简介" class="header-anchor">#</a> 一、gulp 入门简介</h2> <hr> <p><code>gulp</code> 是基于 <code>node</code> 实现<code>Web</code> 前端自动化开发的工具，利用它能够极大的提高开发效率。</p> <p>在 Web 前端开发工作中有很多“重复工作”，比如压缩<code>CSS/JS</code>文件。而这些工作都是有规律的。找到这些规律，并编写 <code>gulp</code> 配置代码,让 <code>gulp</code> 自动执行这些“重复工作”。</p> <ul><li><p>将规律转换为 <code>gulp</code> 代码</p></li> <li><p>现有目录结构如下：</p></li></ul> <div class="language- extra-class"><pre class="language-text"><code>└── js/
+    └── a.js
+</code></pre></div><h3 id="_1-1-规律"><a href="#_1-1-规律" class="header-anchor">#</a> 1.1 规律</h3> <hr> <ul><li>找到 <code>js/</code>目录下的所有 .<code>js</code> 文件</li> <li>压缩这些 <code>js</code> 文件</li> <li>将压缩后的代码另存在 <code>dist/js/</code> 目录下</li></ul> <h3 id="_1-2-编写-gulp-代码"><a href="#_1-2-编写-gulp-代码" class="header-anchor">#</a> 1.2 编写 <code>gulp</code> 代码</h3> <hr> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 压缩 JavaScript 文件</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'script'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 1. 找到</span>
+    gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span><span class="token string">'js/*.js'</span><span class="token punctuation">)</span>
+    <span class="token comment">// 2. 压缩</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">uglify</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment">// 3. 另存</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/js'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="_1-3-代码执行结果"><a href="#_1-3-代码执行结果" class="header-anchor">#</a> 1.3 代码执行结果</h3> <hr> <p>代码执行后文件结构</p> <div class="language- extra-class"><pre class="language-text"><code>└── js/
+│   └── a.js
+└── dist/
+    └── js/
+        └── a.js
+</code></pre></div><p>a.js 压缩前</p> <div class="language- extra-class"><pre class="language-text"><code>function demo (msg) {
+    alert('--------\r\n' + msg + '\r\n--------')
+}
+
+demo('Hi')
+</code></pre></div><p>a.js 压缩后</p> <div class="language- extra-class"><pre class="language-text"><code>function demo(n){alert("--------\r\n"+n+"\r\n--------")}demo("Hi");
+</code></pre></div><p>此时 <code>dist/js</code> 目录下的 <code>.js</code> 文件都是压缩后的版本。</p> <p>你还可以监控 <code>js/</code> 目录下的 js 文件，当某个文件被修改时，自动压缩修改文件。启动 gulp 后就可以让它帮助你自动构建 Web 项目。</p> <hr> <p><code>gulp</code> 还可以做很多事，例如：</p> <ol><li>压缩<code>CSS</code></li> <li>压缩图片</li> <li>编译<code>Sass/LESS</code></li> <li>编译<code>CoffeeScript</code></li> <li><code>markdown</code>转换为 <code>html</code></li></ol> <h2 id="二、安装-node-和-gulp"><a href="#二、安装-node-和-gulp" class="header-anchor">#</a> 二、安装 Node 和 gulp</h2> <hr> <p><code>gulp</code> 是基于 <code>node</code> 实现的，那么我们就需要先安装 node。</p> <blockquote><p>Node 是一个基于Chrome JavaScript V8引擎建立的一个平台，可以利用它实现 Web服务，做类似PHP的事。</p></blockquote> <p>打开 https://nodejs.org/ 点击绿色的 <strong>INSTALL</strong> 按钮下载安装 node。</p> <h3 id="_2-1-命令行"><a href="#_2-1-命令行" class="header-anchor">#</a> 2.1 命令行</h3> <hr> <p>在 <code>Windows</code> 中可按 <code>&lt;kbd&gt;</code>徽标键<code>&lt;/kbd&gt;</code>（alt键左边）+ <kbd>R</kbd> 打开输入 <code>cmd</code> + <kbd>Enter</kbd> 打开命令行。</p> <h3 id="_2-2-终端-mac"><a href="#_2-2-终端-mac" class="header-anchor">#</a> 2.2 终端(Mac)</h3> <hr> <p>打开 Launchpad（像火箭一样的图标），在屏幕上方搜索框中输入 <code>终端</code> + <kbd>Enter</kbd> 打开终端。</p> <h3 id="_2-3-查看-node-版本号"><a href="#_2-3-查看-node-版本号" class="header-anchor">#</a> 2.3 查看 node 版本号</h3> <hr> <p>在终端/命令行中输入 <code>node -v</code> 检测<code>node</code>是否安装成功，安装成功会显示出<code>node</code> 的版本号。</p> <h3 id="_2-4-跳转目录"><a href="#_2-4-跳转目录" class="header-anchor">#</a> 2.4 跳转目录</h3> <hr> <p>终端/命令行 中可使用 <code>cd 目录名</code> 跳转至指定目录，Mac 中还可以使用 <code>ls</code> 查看当前目录下的文件列表。</p> <h3 id="_2-5-windows"><a href="#_2-5-windows" class="header-anchor">#</a> 2.5 Windows</h3> <hr> <p><code>Windows</code> 下可使用如下命令跳转至指定目录：</p> <div class="language- extra-class"><pre class="language-text"><code>// 跳转至 C 盘根目录
+cd c:\
+// 跳转至当前目录的 demo 文件夹
+cd demo
+// 跳转至上一级
+cd ..
+</code></pre></div><h3 id="_2-6-mac"><a href="#_2-6-mac" class="header-anchor">#</a> 2.6 Mac</h3> <hr> <p><code>Mac</code>中建议只在 <code>Documents</code>目录下进行文件操作。</p> <div class="language- extra-class"><pre class="language-text"><code>// 跳转至文档目录
+cd /Users/你的用户名/Documents/
+// 或第一次打开终端时直接输入
+cd Documents
+// 查看目录下文件列表
+ls
+// 创建文件夹
+mkdir demo
+// 跳转至当前目录下的 demo 文件夹
+cd demo
+// 跳转至上级目录
+cd ..
+</code></pre></div><h3 id="_2-7-退出运行状态"><a href="#_2-7-退出运行状态" class="header-anchor">#</a> 2.7 退出运行状态</h3> <hr> <p>如果你在命令行中启动了一些一直运行的命令，你的命令行会进入“运行”状态，此时你不可以在命令行进行其他操作。可通过 <code>Ctrl + C</code> 停止 gulp。（Mac 中使用 <code>control + C</code>）</p> <p>后面的章节中如果代码中存在 <code>gulp.watch</code> 并在命令行运行了 <code>gulp</code> 则需要使用 <code>Ctrl + C</code> 退出任务。</p> <h3 id="_2-8-npm-模块管理器"><a href="#_2-8-npm-模块管理器" class="header-anchor">#</a> 2.8 npm 模块管理器</h3> <hr> <p>如果你了解 <code>npm</code> 则跳过此章节</p> <p>若你不了解npm 请阅读 <a href="http://javascript.ruanyifeng.com/nodejs/npm.html" target="_blank" rel="noopener noreferrer">npm模块管理器<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h3 id="_2-9-安装-gulp"><a href="#_2-9-安装-gulp" class="header-anchor">#</a> 2.9 安装 <code>gulp</code></h3> <hr> <p><code>npm</code> 是 node`` 的包管理工具，可以利用它安装 <code>gulp</code> 所需的包。（在安装 <code>node</code> 时已经自动安装了 <code>npm</code>）</p> <p>在命令行输入</p> <div class="language- extra-class"><pre class="language-text"><code>npm install -g gulp 
+</code></pre></div><p>若一直没安装成功，请<a href="https://github.com/nimojs/blog/issues/20" target="_blank" rel="noopener noreferrer">使用 cnpm 安装<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>(npm的国内加速镜像)</p> <p>意思是：使用 <code>npm</code> 安装全局性的(<code>-g</code>) gulp 包。</p> <blockquote><p>如果你安装失败，请输入<code>sudo npm install -g gulp</code>使用管理员权限安装。（可能会要求输入密码）</p></blockquote> <p>安装时请注意命令行的提示信息，安装完成后可在命令行输入 <code>gulp -v</code> 以确认安装成功。</p> <p>至此，我们完成了准备工作。接着让 <code>gulp</code>开始帮我们干活吧！</p> <h2 id="三、使用-gulp-压缩-js"><a href="#三、使用-gulp-压缩-js" class="header-anchor">#</a> 三、使用 gulp 压缩 JS</h2> <hr> <p>压缩<code>js</code> 代码可降低 <code>js</code> 文件大小，提高页面打开速度。在不利用 gulp 时我们需要通过各种工具手动完成压缩工作。</p> <p>所有的 <code>gulp</code> 代码编写都可以看做是将规律转化为代码的过程。</p> <ul><li><strong>规律</strong></li></ul> <p>找到 <code>js/</code> 目录下的所有<code>js</code> 文件，压缩它们，将压缩后的文件存放在 <code>dist/js/</code> 目录下。</p> <ul><li><code>gulp</code>  代码</li></ul> <p><code>gulp</code>  的所有配置代码都写在 <code>gulpfile.js</code> 文件。</p> <h3 id="_3-1-新建一个-gulpfile-js-文件"><a href="#_3-1-新建一个-gulpfile-js-文件" class="header-anchor">#</a> 3.1 新建一个 <code>gulpfile.js</code> 文件</h3> <hr> <div class="language- extra-class"><pre class="language-text"><code>chapter2
+└── gulpfile.js
+</code></pre></div><h3 id="_3-2-在-gulpfile-js-中编写代码"><a href="#_3-2-在-gulpfile-js-中编写代码" class="header-anchor">#</a> 3.2 在 <code>gulpfile.js</code> 中编写代码</h3> <hr> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 获取 gulp</span>
+<span class="token keyword">var</span> gulp <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp'</span><span class="token punctuation">)</span>
+</code></pre></div><blockquote><p><code>require()</code> 是 node （CommonJS）中获取模块的语法。</p> <p>在 gulp 中你只需要理解 <code>require()</code> 可以获取模块。</p></blockquote> <hr> <h3 id="_3-3-获取-gulp-uglify-组件"><a href="#_3-3-获取-gulp-uglify-组件" class="header-anchor">#</a> 3.3 获取 <code>gulp-uglify</code> 组件</h3> <hr> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 获取 uglify 模块（用于压缩 JS）</span>
+<span class="token keyword">var</span> uglify <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-uglify'</span><span class="token punctuation">)</span>
+</code></pre></div><hr> <h3 id="_3-4-创建压缩任务"><a href="#_3-4-创建压缩任务" class="header-anchor">#</a> 3.4 创建压缩任务</h3> <hr> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 压缩 js 文件</span>
+<span class="token comment">// 在命令行使用 gulp script 启动此任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'script'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 1. 找到文件</span>
+    gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span><span class="token string">'js/*.js'</span><span class="token punctuation">)</span>
+    <span class="token comment">// 2. 压缩文件</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">uglify</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment">// 3. 另存压缩后的文件</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/js'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><ul><li><code>gulp.task(name, fn)</code> - 定义任务，第一个参数是任务名，第二个参数是任务内容。</li> <li><code>gulp.src(path)</code> - 选择文件，传入参数是文件路径。</li> <li><code>gulp.dest(path)</code> - 输出文件</li> <li><code>gulp.pipe()</code> - 管道，你可以暂时将 pipe 理解为将操作加入执行队列</li></ul> <p>参考：<a href="http://www.gulpjs.com.cn/docs/api/" target="_blank" rel="noopener noreferrer">gulp API文档<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <hr> <h3 id="_3-5-跳转至-gulpfile-js-所在目录"><a href="#_3-5-跳转至-gulpfile-js-所在目录" class="header-anchor">#</a> 3.5 跳转至 <code>gulpfile.js</code> 所在目录</h3> <hr> <p>打开命令行使用 <code>cd</code> 命令跳转至 <code>gulpfile.js</code> 文件所在目录。</p> <p>例如我的 <code>gulpfile.js</code> 文件保存在 <code>C:\gulp-book\demo\chapter2\gulpfile.js</code>。</p> <p>那么就需要在命令行输入</p> <div class="language- extra-class"><pre class="language-text"><code>cd C:\gulp-book\demo\chapter2
+</code></pre></div><blockquote><p>Mac 用户可使用 <code>cd Documents/gulp-book/demo/chapter2/</code> 跳转</p></blockquote> <hr> <h3 id="_3-6-使用命令行运行-script-任务"><a href="#_3-6-使用命令行运行-script-任务" class="header-anchor">#</a> 3.6 使用命令行运行 script 任务</h3> <hr> <p>在控制台输入 <code>gulp 任务名</code> 可运行任务，此处我们输入 <code>gulp script</code> 回车。</p> <p>注意：输入 <code>gulp script</code> 后命令行将会提示错误信息</p> <div class="language- extra-class"><pre class="language-text"><code>// 在命令行输入
+gulp script
+
+Error: Cannot find module 'gulp-uglify'
+    at Function.Module._resolveFilename (module.js:338:15)
+    at Function.Module._load (module.js:280:25)
+</code></pre></div><p><code>Cannot find module 'gulp-uglify'</code> 没有找到 <code>gulp-uglify</code> 模块。</p> <hr> <h3 id="_3-7-安装-gulp-uglify-模块"><a href="#_3-7-安装-gulp-uglify-模块" class="header-anchor">#</a> 3.7 安装 <code>gulp-uglify</code> 模块</h3> <hr> <p>因为我们并没有安装 <code>gulp-uglify</code> 模块到本地，所以找不到此模块。</p> <p>使用 npm 安装 <code>gulp-uglify</code> 到本地</p> <div class="language- extra-class"><pre class="language-text"><code>npm install gulp-uglify
+</code></pre></div><p>安装成功后你会看到如下信息：</p> <div class="language- extra-class"><pre class="language-text"><code>gulp-uglify@1.1.0 node_modules/gulp-uglify
+├── deepmerge@0.2.7
+├── uglify-js@2.4.16 (uglify-to-browserify@1.0.2, async@0.2.10, source-map@0.1.34, optimist@0.3.7)
+├── vinyl-sourcemaps-apply@0.1.4 (source-map@0.1.43)
+├── through2@0.6.3 (xtend@4.0.0, readable-stream@1.0.33)
+└── gulp-util@3.0.4 (array-differ@1.0.0, beeper@1.0.0, array-uniq@1.0.2, object-assign@2.0.0, lodash._reinterpolate@3.0.0, lodash._reescape@3.0.0, lodash._reevaluate@3.0.0, replace-ext@0.0.1, minimist@1.1.1, chalk@1.0.0, lodash.template@3.3.2, vinyl@0.4.6, multipipe@0.1.2, dateformat@1.0.11)
+chapter2 $
+</code></pre></div><p>在你的文件夹中会新增一个 <code>node_modules</code> 文件夹，这里面存放着 npm 安装的模块。</p> <p>目录结构：</p> <div class="language- extra-class"><pre class="language-text"><code>├── gulpfile.js
+└── node_modules
+	└── gulp-uglify
+</code></pre></div><p>接着输入 <code>gulp script</code> 执行任务</p> <div class="language- extra-class"><pre class="language-text"><code>gulp script
+[13:34:57] Using gulpfile ~/Documents/code/gulp-book/demo/chapter2/gulpfile.js
+[13:34:57] Starting 'script'...
+[13:34:57] Finished 'script' after 6.13 ms
+</code></pre></div><hr> <h3 id="_3-8-编写-js-文件"><a href="#_3-8-编写-js-文件" class="header-anchor">#</a> 3.8 编写 js 文件</h3> <hr> <p>我们发现 gulp 没有进行任何压缩操作。因为没有js这个目录，也没有 js 目录下的 <code>.js</code> 后缀文件。</p> <p>创建 <code>a.js</code> 文件，并编写如下内容</p> <div class="language- extra-class"><pre class="language-text"><code>// a.js
+function demo (msg) {
+    alert('--------\r\n' + msg + '\r\n--------')
+}
+
+demo('Hi')
+</code></pre></div><p>目录结构：</p> <div class="language- extra-class"><pre class="language-text"><code>├── gulpfile.js
+├──  js
+│	└── a.js
+└── node_modules
+	└── gulp-uglify
+</code></pre></div><p>接着在命令行输入 <code>gulp script</code> 执行任务</p> <p>gulp 会在命令行当前目录下创建 <code>dist/js/</code> 文件夹，并创建压缩后的 <code>a.js</code> 文件。</p> <p>目录结构：</p> <div class="language- extra-class"><pre class="language-text"><code>├── gulpfile.js
+├──  js
+│	└── a.js
+├──  dist
+│	└── js
+│		└── a.js
+└── node_modules
+	└── gulp-uglify
+</code></pre></div><p><a href="https://github.com/nimojs/gulp-book/blob/master/demo/chapter2/dist/js/a.js" target="_blank" rel="noopener noreferrer">dist/js/a.js<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">demo</span><span class="token punctuation">(</span><span class="token parameter">n</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">"--------\r\n"</span><span class="token operator">+</span>n<span class="token operator">+</span><span class="token string">"\r\n--------"</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token function">demo</span><span class="token punctuation">(</span><span class="token string">"Hi"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><hr> <h3 id="_3-9-检测代码修改自动执行任务"><a href="#_3-9-检测代码修改自动执行任务" class="header-anchor">#</a> 3.9 检测代码修改自动执行任务</h3> <hr> <p><code>js/a.js</code>一旦有修改 就必须重新在命令行输入 <code>gulp script</code> ，这很麻烦。</p> <p>可以使用 <code>gulp.watch(src, fn)</code> 检测指定目录下文件的修改后执行任务。</p> <p>在 <code>gulpfile.js</code> 中编写如下代码：</p> <div class="language- extra-class"><pre class="language-text"><code>// 监听文件修改，当文件被修改则执行 script 任务
+gulp.watch('js/*.js', ['script']);
+</code></pre></div><p>但是没有命令可以运行 <code>gulp.watch()</code>，需要将 <code>gulp.watch()</code> 包含在一个任务中。</p> <div class="language- extra-class"><pre class="language-text"><code>// 在命令行使用 gulp auto 启动此任务
+gulp.task('auto', function () {
+    // 监听文件修改，当文件被修改则执行 script 任务
+    gulp.watch('js/*.js', ['script'])
+})
+</code></pre></div><p>接着在命令行输入 <code>gulp auto</code>，自动监听 <code>js/*.js</code> 文件的修改后压缩js。</p> <div class="language- extra-class"><pre class="language-text"><code>$gulp auto
+[21:09:45] Using gulpfile ~/Documents/code/gulp-book/demo/chapter2/gulpfile.js
+[21:09:45] Starting 'auto'...
+[21:09:45] Finished 'auto' after 9.19 ms
+</code></pre></div><p>此时修改 <code>js/a.js</code> 中的代码并保存。命令行将会出现提示，表示检测到文件修改并压缩文件。</p> <div class="language- extra-class"><pre class="language-text"><code>[21:11:01] Starting 'script'...
+[21:11:01] Finished 'script' after 2.85 ms
+</code></pre></div><p>至此，我们完成了 gulp 压缩 js 文件的自动化代码编写。</p> <p>**注意：**使用 <code>gulp.watch</code> 后你的命令行会进入“运行”状态，此时你不可以在命令行进行其他操作。可通过 <code>Ctrl + C</code> 停止 gulp。</p> <blockquote><p>Mac 下使用 <code>control + C</code> 停止 gulp</p></blockquote> <h3 id="_3-10-使用-gulp-task-default-fn-定义默认任务"><a href="#_3-10-使用-gulp-task-default-fn-定义默认任务" class="header-anchor">#</a> 3.10 使用 gulp.task('default', fn) 定义默认任务</h3> <hr> <p>增加如下代码</p> <div class="language-js extra-class"><pre class="language-js"><code>gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'script'</span><span class="token punctuation">,</span> <span class="token string">'auto'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>此时你可以在命令行直接输入 <code>gulp</code> +回车，运行 <code>script</code> 和 <code>auto</code> 任务。</p> <p>最终代码如下：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 获取 gulp</span>
+<span class="token keyword">var</span> gulp <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 获取 uglify 模块（用于压缩 JS）</span>
+<span class="token keyword">var</span> uglify <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-uglify'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 压缩 js 文件</span>
+<span class="token comment">// 在命令行使用 gulp script 启动此任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'script'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 1. 找到文件</span>
+    gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span><span class="token string">'js/*.js'</span><span class="token punctuation">)</span>
+    <span class="token comment">// 2. 压缩文件</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">uglify</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment">// 3. 另存压缩后的文件</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/js'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 在命令行使用 gulp auto 启动此任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'auto'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 监听文件修改，当文件被修改则执行 script 任务</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'js/*.js'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'script'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+
+<span class="token comment">// 使用 gulp.task('default') 定义默认任务</span>
+<span class="token comment">// 在命令行使用 gulp 启动 script 任务和 auto 任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'script'</span><span class="token punctuation">,</span> <span class="token string">'auto'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><p>去除注释后，你会发现只需要 11 行代码就可以让 gulp 自动监听 js 文件的修改后压缩代码。但是还有还有一些性能问题和缺少容错性，将在后面的章节详细说明。</p> <p>你可以访问 <a href="https://github.com/terinjokes/gulp-uglify" target="_blank" rel="noopener noreferrer">gulp-uglify<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 以查看更多用法。</p> <h2 id="四、使用-gulp-压缩-css"><a href="#四、使用-gulp-压缩-css" class="header-anchor">#</a> 四、使用 gulp 压缩 CSS</h2> <hr> <p>压缩 css 代码可降低 css 文件大小，提高页面打开速度。</p> <p>我们接着将规律转换为 gulp 代码</p> <ul><li><strong>规律</strong></li></ul> <p>找到 <code>css/</code> 目录下的所有 css 文件，压缩它们，将压缩后的文件存放在 <code>dist/css/</code> 目录下。</p> <h3 id="_4-1-安装-gulp-minify-css模块"><a href="#_4-1-安装-gulp-minify-css模块" class="header-anchor">#</a> 4.1 安装 gulp-minify-css模块</h3> <hr> <p>提示：你需要使用命令行的 <code>cd</code> 切换到对应目录后进行安装操作。</p> <p>在命令行输入</p> <div class="language- extra-class"><pre class="language-text"><code>npm install gulp-minify-css
+</code></pre></div><p>安装成功后你会看到如下信息：(安装时间可能会比较长)</p> <div class="language- extra-class"><pre class="language-text"><code>gulp-minify-css@1.0.0 node_modules/gulp-minify-css
+├── object-assign@2.0.0
+├── vinyl-sourcemaps-apply@0.1.4 (source-map@0.1.43)
+├── clean-css@3.1.8 (commander@2.6.0, source-map@0.1.43)
+├── through2@0.6.3 (xtend@4.0.0, readable-stream@1.0.33)
+├── vinyl-bufferstream@1.0.1 (bufferstreams@1.0.1)
+└── gulp-util@3.0.4 (array-differ@1.0.0, beeper@1.0.0, array-uniq@1.0.2, lodash._reescape@3.0.0, lodash._reinterpolate@3.0.0, lodash._reevaluate@3.0.0, replace-ext@0.0.1, minimist@1.1.1, multipipe@0.1.2, vinyl@0.4.6, chalk@1.0.0, lodash.template@3.3.2, dateformat@1.0.11)
+</code></pre></div><h3 id="_4-2-参照-使用-gulp-压缩-js-创建-gulpfile-js-文件编写代码"><a href="#_4-2-参照-使用-gulp-压缩-js-创建-gulpfile-js-文件编写代码" class="header-anchor">#</a> 4.2 参照 [使用 gulp 压缩 JS]创建 <code>gulpfile.js</code> 文件编写代码</h3> <hr> <p>在对应目录创建 <code>gulpfile.js</code> 文件并写入如下内容：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 获取 gulp</span>
+<span class="token keyword">var</span> gulp <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 获取 minify-css 模块（用于压缩 CSS）</span>
+<span class="token keyword">var</span> minifyCSS <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-minify-css'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 压缩 css 文件</span>
+<span class="token comment">// 在命令行使用 gulp css 启动此任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'css'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 1. 找到文件</span>
+    gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span><span class="token string">'css/*.css'</span><span class="token punctuation">)</span>
+    <span class="token comment">// 2. 压缩文件</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">minifyCSS</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment">// 3. 另存为压缩文件</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/css'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 在命令行使用 gulp auto 启动此任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'auto'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 监听文件修改，当文件被修改则执行 css 任务</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'css/*.css'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'css'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 使用 gulp.task('default') 定义默认任务</span>
+<span class="token comment">// 在命令行使用 gulp 启动 css 任务和 auto 任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'css'</span><span class="token punctuation">,</span> <span class="token string">'auto'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><p>你可以访问 <a href="https://github.com/jonathanepollack/gulp-minify-css" target="_blank" rel="noopener noreferrer">gulp-minify-css<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 以查看更多用法。</p> <hr> <h3 id="_4-3-创建-css-文件"><a href="#_4-3-创建-css-文件" class="header-anchor">#</a> 4.3 创建 css 文件</h3> <hr> <p>在 <code>gulpfile.js</code> 对应目录创建 <code>css</code> 文件夹，并在 <code>css/</code> 目录下创建 <code>a.css</code> 文件。</p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token comment">/* a.css */</span>
+<span class="token selector">body a</span><span class="token punctuation">{</span>
+    <span class="token property">color</span><span class="token punctuation">:</span>pink<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><hr> <h3 id="_4-4-运行-gulp-查看效果"><a href="#_4-4-运行-gulp-查看效果" class="header-anchor">#</a> 4.4 运行 gulp 查看效果</h3> <hr> <p>在命令行输入 <code>gulp</code> +回车</p> <p>你将看到命令行出现如下提示</p> <div class="language- extra-class"><pre class="language-text"><code>gulp
+[17:01:19] Using gulpfile ~/Documents/code/gulp-book/demo/chapter3/gulpfile.js
+[17:01:19] Starting 'css'...
+[17:01:19] Finished 'css' after 6.21 ms
+[17:01:19] Starting 'auto'...
+[17:01:19] Finished 'auto' after 5.42 ms
+[17:01:19] Starting 'default'...
+[17:01:19] Finished 'default' after 5.71 μs
+</code></pre></div><p>gulp 会创建 <code>dist/css</code> 目录，并创建 <code>a.css</code> 文件，此文件存放压缩后的 css 代码。
+<a href="https://github.com/nimojs/gulp-book/blob/master/demo/chapter3/dist/css/a.css" target="_blank" rel="noopener noreferrer">dist/css/a.css<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h2 id="五、使用-gulp-压缩图片"><a href="#五、使用-gulp-压缩图片" class="header-anchor">#</a> 五、使用 gulp 压缩图片</h2> <hr> <p>压缩 图片文件可降低文件大小，提高图片加载速度。</p> <p>找到规律转换为 gulp 代码</p> <ul><li><strong>规律</strong></li></ul> <p>找到 <code>images/</code> 目录下的所有文件，压缩它们，将压缩后的文件存放在 <code>dist/images/</code> 目录下。</p> <h3 id="_5-1-安装-gulp-imagemin-模块"><a href="#_5-1-安装-gulp-imagemin-模块" class="header-anchor">#</a> 5.1 安装 gulp-imagemin 模块</h3> <hr> <p>提示：你需要使用命令行的 <code>cd</code> 切换至对应目录再进行安装操作和 gulp 启动操作。</p> <p>在命令行输入</p> <div class="language- extra-class"><pre class="language-text"><code>npm install gulp-imagemin
+</code></pre></div><p>安装成功后你会看到如下信息：(安装时间可能会比较长)</p> <div class="language- extra-class"><pre class="language-text"><code>gulp-imagemin@2.2.1 node_modules/gulp-imagemin
+├── object-assign@2.0.0
+├── pretty-bytes@1.0.3 (get-stdin@4.0.1)
+├── chalk@1.0.0 (escape-string-regexp@1.0.3, ansi-styles@2.0.1, supports-color@1.3.1, has-ansi@1.0.3, strip-ansi@2.0.1)
+├── through2-concurrent@0.3.1 (through2@0.6.3)
+├── gulp-util@3.0.4 (array-differ@1.0.0, beeper@1.0.0, array-uniq@1.0.2, lodash._reevaluate@3.0.0, lodash._reescape@3.0.0, lodash._reinterpolate@3.0.0, replace-ext@0.0.1, minimist@1.1.1, vinyl@0.4.6, through2@0.6.3, multipipe@0.1.2, lodash.template@3.3.2, dateformat@1.0.11)
+└── imagemin@3.1.0 (get-stdin@3.0.2, optional@0.1.3, vinyl@0.4.6, through2@0.6.3, stream-combiner@0.2.1, concat-stream@1.4.7, meow@2.1.0, vinyl-fs@0.3.13, imagemin-svgo@4.1.2, imagemin-optipng@4.2.0, imagemin-jpegtran@4.1.0, imagemin-pngquant@4.0.0, imagemin-gifsicle@4.1.0)
+</code></pre></div><h3 id="_5-2-创建-gulpfile-js-文件编写代码"><a href="#_5-2-创建-gulpfile-js-文件编写代码" class="header-anchor">#</a> 5.2 创建 <code>gulpfile.js</code> 文件编写代码</h3> <hr> <p>在对应目录创建 <code>gulpfile.js</code> 文件并写入如下内容：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 获取 gulp</span>
+<span class="token keyword">var</span> gulp <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 获取 gulp-imagemin 模块</span>
+<span class="token keyword">var</span> imagemin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-imagemin'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 压缩图片任务</span>
+<span class="token comment">// 在命令行输入 gulp images 启动此任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'images'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 1. 找到图片</span>
+    gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span><span class="token string">'images/*.*'</span><span class="token punctuation">)</span>
+    <span class="token comment">// 2. 压缩图片</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">imagemin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+            <span class="token literal-property property">progressive</span><span class="token operator">:</span> <span class="token boolean">true</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment">// 3. 另存图片</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/images'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 在命令行使用 gulp auto 启动此任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'auto'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 监听文件修改，当文件被修改则执行 images 任务</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'images/*.*)'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'images'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 使用 gulp.task('default') 定义默认任务</span>
+<span class="token comment">// 在命令行使用 gulp 启动 images 任务和 auto 任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'images'</span><span class="token punctuation">,</span> <span class="token string">'auto'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><p>你可以访问 <a href="https://github.com/sindresorhus/gulp-imagemin" target="_blank" rel="noopener noreferrer">gulp-imagemin<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 以查看更多用法。</p> <hr> <h3 id="_5-3-在-images-目录下存放图片"><a href="#_5-3-在-images-目录下存放图片" class="header-anchor">#</a> 5.3 在 <code>images/</code> 目录下存放图片</h3> <hr> <p>在 <code>gulpfile.js</code> 对应目录创建 <code>images</code> 文件夹，并在 <code>images/</code> 目录下存放图片。</p> <h3 id="_5-4-运行-gulp-查看效果"><a href="#_5-4-运行-gulp-查看效果" class="header-anchor">#</a> 5.4 运行 gulp 查看效果</h3> <hr> <p>在命令行输入 <code>gulp</code> +回车</p> <p>你将看到命令行出现如下提示</p> <div class="language- extra-class"><pre class="language-text"><code>gulp
+[18:10:42] Using gulpfile ~/Documents/code/gulp-book/demo/chapter4/gulpfile.js
+[18:10:42] Starting 'images'...
+[18:10:42] Finished 'images' after 5.72 ms
+[18:10:42] Starting 'auto'...
+[18:10:42] Finished 'auto' after 6.39 ms
+[18:10:42] Starting 'default'...
+[18:10:42] Finished 'default' after 5.91 μs
+[18:10:42] gulp-imagemin: Minified 3 images (saved 25.83 kB - 5.2%)
+</code></pre></div><h2 id="使用-gulp-编译-less"><a href="#使用-gulp-编译-less" class="header-anchor">#</a> 使用 gulp 编译 LESS</h2> <blockquote><p>Less 是一门 CSS 预处理语言，它扩充了 CSS 语言，增加了诸如变量、混合（mixin）、函数等功能，让 CSS 更易维护。</p></blockquote> <h2 id="安装"><a href="#安装" class="header-anchor">#</a> 安装</h2> <div class="language- extra-class"><pre class="language-text"><code>npm install gulp-less
+</code></pre></div><h2 id="基本用法"><a href="#基本用法" class="header-anchor">#</a> 基本用法</h2> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 获取 gulp</span>
+<span class="token keyword">var</span> gulp <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp'</span><span class="token punctuation">)</span>
+<span class="token comment">// 获取 gulp-less 模块</span>
+<span class="token keyword">var</span> less <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-less'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 编译less</span>
+<span class="token comment">// 在命令行输入 gulp less 启动此任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'less'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 1. 找到 less 文件</span>
+    gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span><span class="token string">'less/**.less'</span><span class="token punctuation">)</span>
+    <span class="token comment">// 2. 编译为css</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">less</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment">// 3. 另存文件</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/css'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 在命令行使用 gulp auto 启动此任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'auto'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 监听文件修改，当文件被修改则执行 less 任务</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'less/**.less'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'less'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 使用 gulp.task('default') 定义默认任务</span>
+<span class="token comment">// 在命令行使用 gulp 启动 less 任务和 auto 任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'less'</span><span class="token punctuation">,</span> <span class="token string">'auto'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><p>你可以访问 <a href="https://github.com/plus3network/gulp-less" target="_blank" rel="noopener noreferrer">gulp-less<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 以查看更多用法。</p> <h2 id="less-代码和编译后的css代码"><a href="#less-代码和编译后的css代码" class="header-anchor">#</a> LESS 代码和编译后的CSS代码</h2> <p><a href="https://github.com/nimojs/gulp-book/tree/master/demo/chapter5/less/a.less" target="_blank" rel="noopener noreferrer">less/a.less<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token selector">.less</span><span class="token punctuation">{</span>
+	<span class="token selector">a</span><span class="token punctuation">{</span>
+        <span class="token property">color</span><span class="token punctuation">:</span>pink<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><a href="https://github.com/nimojs/gulp-book/tree/master/demo/chapter5/less/import.less" target="_blank" rel="noopener noreferrer">less/import.less<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token atrule"><span class="token rule">@import</span> <span class="token string">"a.less"</span><span class="token punctuation">;</span></span>
+<span class="token selector">.import</span><span class="token punctuation">{</span>
+	<span class="token selector">a</span><span class="token punctuation">{</span>
+		<span class="token property">color</span><span class="token punctuation">:</span>red<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><a href="https://github.com/nimojs/gulp-book/tree/master/demo/chapter5/dist/css/a.css" target="_blank" rel="noopener noreferrer">less/a.css<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token selector">.less a</span> <span class="token punctuation">{</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> pink<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><a href="https://github.com/nimojs/gulp-book/tree/master/demo/chapter5/dist/css/import.css" target="_blank" rel="noopener noreferrer">less/import.css<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token selector">.less a</span> <span class="token punctuation">{</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> pink<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">.import a</span><span class="token punctuation">{</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> red<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="六、使用-gulp-编译-sass"><a href="#六、使用-gulp-编译-sass" class="header-anchor">#</a> 六、使用 gulp 编译 Sass</h2> <hr> <blockquote><p>无论是 <code>node-sass</code> 还是 <code>ruby-sass</code> 使用 npm 安装都非常的慢，甚至会装不上。及其不利于团队协作。建议使用 less 作为 css 预处理器。
+如果因为 less 不支持自定义函数选择用 sass 可以使用 <a href="https://github.com/seven-phases-max/less-plugin-functions" target="_blank" rel="noopener noreferrer">less-plugin-functions<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 让 less 支持自定义函数。</p></blockquote> <h3 id="_6-1-gulp-sass"><a href="#_6-1-gulp-sass" class="header-anchor">#</a> 6.1 gulp-sass</h3> <hr> <p>本章使用的是 ruby-sass 如果你不方便安装 ruby 或编译速度慢，建议使用 <a href="https://github.com/dlmanning/gulp-sass" target="_blank" rel="noopener noreferrer">gulp-sass<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <blockquote><p>Sass 是一种 CSS 的开发工具，提供了许多便利的写法，大大节省了开发者的时间，使得 CSS 的开发，变得简单和可维护。</p></blockquote> <p>本章使用 <code>ruby-sass</code> 编译 css,若你没有安装 ruby 和 sass 请移步 <a href="https://github.com/nimojs/blog/issues/14" target="_blank" rel="noopener noreferrer">使用ruby.taobao安装 Sass<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h3 id="_6-2-安装"><a href="#_6-2-安装" class="header-anchor">#</a> 6.2 安装</h3> <hr> <div class="language- extra-class"><pre class="language-text"><code>npm install gulp-ruby-sass
+</code></pre></div><h3 id="_6-3-基本用法"><a href="#_6-3-基本用法" class="header-anchor">#</a> 6.3 基本用法</h3> <hr> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 获取 gulp</span>
+<span class="token keyword">var</span> gulp <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp'</span><span class="token punctuation">)</span>
+<span class="token comment">// 获取 gulp-ruby-sass 模块</span>
+<span class="token keyword">var</span> sass <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-ruby-sass'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 编译sass</span>
+<span class="token comment">// 在命令行输入 gulp sass 启动此任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'sass'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token function">sass</span><span class="token punctuation">(</span><span class="token string">'sass/'</span><span class="token punctuation">)</span> 
+    <span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'error'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">err</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">'Error!'</span><span class="token punctuation">,</span> err<span class="token punctuation">.</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/css'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+
+<span class="token comment">// 在命令行使用 gulp auto 启动此任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'auto'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 监听文件修改，当文件被修改则执行 images 任务</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'sass/**/*.scss'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'sass'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 使用 gulp.task('default') 定义默认任务</span>
+<span class="token comment">// 在命令行使用 gulp 启动 sass 任务和 auto 任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'sass'</span><span class="token punctuation">,</span> <span class="token string">'auto'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><p>Sass 代码和编译后的 CSS 代码</p> <p><a href="https://github.com/nimojs/gulp-book/tree/master/demo/chapter6/sass/a.scss" target="_blank" rel="noopener noreferrer">sass/a.scss<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token selector">.sass</span><span class="token punctuation">{</span>
+	<span class="token selector">a</span><span class="token punctuation">{</span>
+        <span class="token property">color</span><span class="token punctuation">:</span>pink<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><a href="https://github.com/nimojs/gulp-book/tree/master/demo/chapter6/sass/import.scss" target="_blank" rel="noopener noreferrer">sass/import.scss<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token atrule"><span class="token rule">@import</span> <span class="token string">"a.scss"</span><span class="token punctuation">;</span></span>
+<span class="token selector">.import</span><span class="token punctuation">{</span>
+	<span class="token selector">a</span><span class="token punctuation">{</span>
+		<span class="token property">color</span><span class="token punctuation">:</span>red<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><a href="https://github.com/nimojs/gulp-book/tree/master/demo/chapter6/dist/css/a.css" target="_blank" rel="noopener noreferrer">sass/a.css<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token selector">.sass a</span> <span class="token punctuation">{</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> pink<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><a href="https://github.com/nimojs/gulp-book/tree/master/demo/chapter6/dist/css/import.css" target="_blank" rel="noopener noreferrer">sass/import.css<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token selector">.sass a</span> <span class="token punctuation">{</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> pink<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">.import a</span><span class="token punctuation">{</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> red<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="七、使用-gulp-构建一个项目"><a href="#七、使用-gulp-构建一个项目" class="header-anchor">#</a> 七、使用 gulp 构建一个项目</h2> <hr> <p>本章将介绍</p> <ul><li><a href="https://github.com/nimojs/gulp-watch-path" target="_blank" rel="noopener noreferrer">gulp-watch-path<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://github.com/gulpjs/gulp/blob/master/docs/recipes/combining-streams-to-handle-errors.md" target="_blank" rel="noopener noreferrer">stream-combiner2<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://github.com/floridoo/gulp-sourcemaps" target="_blank" rel="noopener noreferrer">gulp-sourcemaps<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://github.com/sindresorhus/gulp-autoprefixer/blob/master/package.json" target="_blank" rel="noopener noreferrer">gulp-autoprefixer<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li></ul> <p>并将之前所有章节的内容组合起来编写一个前端项目所需的 gulp 代码。</p> <p>若你不了解npm 请务必阅读 <a href="http://javascript.ruanyifeng.com/nodejs/npm.html" target="_blank" rel="noopener noreferrer">npm模块管理器<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h3 id="_7-1-package-json"><a href="#_7-1-package-json" class="header-anchor">#</a> 7.1 package.json</h3> <hr> <p>如果你熟悉 npm 则可以利用 <code>package.json</code> 保存所有 <code>npm install --save-dev gulp-xxx</code> 模块依赖和模块版本。</p> <p>在命令行输入</p> <div class="language- extra-class"><pre class="language-text"><code>npm init
+</code></pre></div><p>会依次要求补全项目信息，不清楚的可以直接回车跳过</p> <div class="language- extra-class"><pre class="language-text"><code>name: (gulp-demo) 
+version: (1.0.0) 
+description: 
+entry point: (index.js) 
+test command: 
+...
+...
+Is this ok? (yes) 
+</code></pre></div><p>最终会在当前目录中创建 <code>package.json</code> 文件并生成类似如下代码：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token punctuation">{</span>
+  <span class="token string-property property">"name"</span><span class="token operator">:</span> <span class="token string">"gulp-demo"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"version"</span><span class="token operator">:</span> <span class="token string">"0.0.0"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"description"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"scripts"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token string-property property">"test"</span><span class="token operator">:</span> <span class="token string">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"repository"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token string-property property">"type"</span><span class="token operator">:</span> <span class="token string">"git"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"url"</span><span class="token operator">:</span> <span class="token string">"https://github.com/nimojs/gulp-demo.git"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"keywords"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"gulp"</span><span class="token punctuation">,</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"author"</span><span class="token operator">:</span> <span class="token string">"nimojs &lt;nimo.jser@gmail.com&gt;"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"license"</span><span class="token operator">:</span> <span class="token string">"MIT"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"bugs"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token string-property property">"url"</span><span class="token operator">:</span> <span class="token string">"https://github.com/nimojs/gulp-demo/issues"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"homepage"</span><span class="token operator">:</span> <span class="token string">"https://github.com/nimojs/gulp-demo"</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="_7-2-安装依赖"><a href="#_7-2-安装依赖" class="header-anchor">#</a> 7.2 安装依赖</h3> <hr> <p>安装 gulp 到项目（防止全局 gulp 升级后与此项目 <code>gulpfile.js</code> 代码不兼容）</p> <div class="language- extra-class"><pre class="language-text"><code>npm install gulp --save-dev
+</code></pre></div><p>此时打开 <code>package.json</code> 会发现多了如下代码</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token string-property property">"devDependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+	<span class="token string-property property">"gulp"</span><span class="token operator">:</span> <span class="token string">"^3.8.11"</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>声明此项目的开发依赖 gulp</p> <p>接着安装其他依赖：</p> <blockquote><p>安装模块较多，请耐心等待，若一直安装失败可使用<a href="http://npm.taobao.org/" target="_blank" rel="noopener noreferrer">npm.taobao.org<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>npm install gulp-uglify gulp-watch-path stream-combiner2 gulp-sourcemaps gulp-minify-css gulp-autoprefixer gulp-less gulp-ruby-sass gulp-imagemin gulp-util --save-dev
+</code></pre></div><p>此时，<a href="https://github.com/nimojs/gulp-demo/blob/master/package.json" target="_blank" rel="noopener noreferrer">package.json<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 将会更新</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token string-property property">"devDependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token string-property property">"colors"</span><span class="token operator">:</span> <span class="token string">"^1.0.3"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"gulp"</span><span class="token operator">:</span> <span class="token string">"^3.8.11"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"gulp-autoprefixer"</span><span class="token operator">:</span> <span class="token string">"^2.1.0"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"gulp-imagemin"</span><span class="token operator">:</span> <span class="token string">"^2.2.1"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"gulp-less"</span><span class="token operator">:</span> <span class="token string">"^3.0.2"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"gulp-minify-css"</span><span class="token operator">:</span> <span class="token string">"^1.0.0"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"gulp-ruby-sass"</span><span class="token operator">:</span> <span class="token string">"^1.0.1"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"gulp-sourcemaps"</span><span class="token operator">:</span> <span class="token string">"^1.5.1"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"gulp-uglify"</span><span class="token operator">:</span> <span class="token string">"^1.1.0"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"gulp-watch-path"</span><span class="token operator">:</span> <span class="token string">"^0.0.7"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"stream-combiner2"</span><span class="token operator">:</span> <span class="token string">"^1.0.2"</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>当你将这份 gulpfile.js 配置分享给你的朋友时，就不需要将 <code>node_modules/</code> 发送给他，他只需在命令行输入</p> <div class="language- extra-class"><pre class="language-text"><code>npm install
+</code></pre></div><p>就可以检测 <code>package.json</code> 中的 <code>devDependencies</code> 并安装所有依赖。</p> <h3 id="_7-3-设计目录结构"><a href="#_7-3-设计目录结构" class="header-anchor">#</a> 7.3 设计目录结构</h3> <hr> <p>我们将文件分为2类，一类是源码，一类是编译压缩后的版本。文件夹分别为 <code>src</code> 和 <code>dist</code>。(注意区分 <code>dist</code> 和 ·<code>dest</code> 的区别)</p> <div class="language- extra-class"><pre class="language-text"><code>└── src/
+│
+└── dist/
+</code></pre></div><p><code>dist/</code> 目录下的文件都是根据 <code>src/</code> 下所有源码文件构建而成。</p> <p>在 <code>src/</code> 下创建前端资源对应的的文件夹</p> <div class="language- extra-class"><pre class="language-text"><code>└── src/
+	├── less/    *.less 文件
+	├── sass/    *.scss *.sass 文件
+	├── css/     *.css  文件
+	├── js/      *.js 文件
+	├── fonts/   字体文件
+    └── images/   图片
+└── dist/
+</code></pre></div><h3 id="_7-4-让命令行输出的文字带颜色"><a href="#_7-4-让命令行输出的文字带颜色" class="header-anchor">#</a> 7.4 让命令行输出的文字带颜色</h3> <hr> <p>gulp 自带的输出都带时间和颜色，这样很容易识别。我们利用 <a href="https://github.com/gulpjs/gulp-util" target="_blank" rel="noopener noreferrer">gulp-util<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 实现同样的效果。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> gulp <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp'</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> gutil <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-util'</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'message'</span><span class="token punctuation">)</span>
+    gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>gutil<span class="token punctuation">.</span>colors<span class="token punctuation">.</span><span class="token function">red</span><span class="token punctuation">(</span><span class="token string">'error'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>gutil<span class="token punctuation">.</span>colors<span class="token punctuation">.</span><span class="token function">green</span><span class="token punctuation">(</span><span class="token string">'message:'</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"some"</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>使用 <code>gulp</code> 启动默认任务以测试
+<img src="https://cloud.githubusercontent.com/assets/3949015/7137629/a1def1b8-e2ed-11e4-83e0-5a6adb22de6f.png" alt="gulp-util"></p> <h3 id="_7-5-配置-js-任务"><a href="#_7-5-配置-js-任务" class="header-anchor">#</a> 7.5 配置 JS 任务</h3> <h4 id="_7-5-1-gulp-uglify"><a href="#_7-5-1-gulp-uglify" class="header-anchor">#</a> 7.5.1 gulp-uglify</h4> <p>检测<code>src/js/</code>目录下的 js 文件修改后，压缩 <code>js/</code> 中所有 js 文件并输出到 <code>dist/js/</code> 中</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> uglify <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-uglify'</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'uglifyjs'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span><span class="token string">'src/js/**/*.js'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">uglify</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/js'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'src/js/**/*.js'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'uglifyjs'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p><code>src/js/**/*.js</code> 是 glob 语法。<a href="http://baike.baidu.com/view/4019153.htm" target="_blank" rel="noopener noreferrer">百度百科：glob模式<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 、<a href="https://github.com/isaacs/node-glob" target="_blank" rel="noopener noreferrer">node-glob<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p>在命令行输入 <code>gulp</code> 后会出现如下消息，表示已经启动。</p> <div class="language-ruby extra-class"><pre class="language-ruby"><code><span class="token punctuation">[</span><span class="token number">20</span><span class="token operator">:</span><span class="token number">39</span><span class="token operator">:</span><span class="token number">50</span><span class="token punctuation">]</span> Using gulpfile <span class="token operator">~</span><span class="token operator">/</span>Documents<span class="token operator">/</span>code<span class="token operator">/</span>gulp<span class="token operator">-</span>book<span class="token operator">/</span>demo<span class="token operator">/</span>chapter7<span class="token operator">/</span>gulpfile<span class="token punctuation">.</span>js
+<span class="token punctuation">[</span><span class="token number">20</span><span class="token operator">:</span><span class="token number">39</span><span class="token operator">:</span><span class="token number">50</span><span class="token punctuation">]</span> Starting <span class="token string-literal"><span class="token string">'default'</span></span><span class="token operator">...</span>
+<span class="token punctuation">[</span><span class="token number">20</span><span class="token operator">:</span><span class="token number">39</span><span class="token operator">:</span><span class="token number">50</span><span class="token punctuation">]</span> Finished <span class="token string-literal"><span class="token string">'default'</span></span> after <span class="token number">13</span> ms
+</code></pre></div><p>此时编辑 <a href="https://github.com/nimojs/gulp-demo/blob/master/src/js/log.js" target="_blank" rel="noopener noreferrer">src/js/log.js<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 文件并保存，命令行会出现如下消息，表示检测到 <code>src/js/**/*.js</code> 文件修改后重新编译所有 js。</p> <div class="language-ruby extra-class"><pre class="language-ruby"><code><span class="token punctuation">[</span><span class="token number">20</span><span class="token operator">:</span><span class="token number">39</span><span class="token operator">:</span><span class="token number">52</span><span class="token punctuation">]</span> Starting <span class="token string-literal"><span class="token string">'js'</span></span><span class="token operator">...</span>
+<span class="token punctuation">[</span><span class="token number">20</span><span class="token operator">:</span><span class="token number">39</span><span class="token operator">:</span><span class="token number">52</span><span class="token punctuation">]</span> Finished <span class="token string-literal"><span class="token string">'js'</span></span> after <span class="token number">14</span> ms
+</code></pre></div><h4 id="_7-5-2gulp-watch-path"><a href="#_7-5-2gulp-watch-path" class="header-anchor">#</a> 7.5.2gulp-watch-path</h4> <hr> <p>此配置有个性能问题，当 <code>gulp.watch</code> 检测到  <code>src/js/</code> 目录下的js文件有修改时会将所有文件全部编译。实际上我们只需要重新编译被修改的文件。</p> <p>简单介绍 <code>gulp.watch</code> 第二个参数为 <code>function</code> 时的用法。</p> <div class="language-js extra-class"><pre class="language-js"><code>gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'src/js/**/*.js'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">/*
+	当修改 src/js/log.js 文件时
+    event {
+		// 发生改变的类型，不管是添加，改变或是删除
+        type: 'changed', 
+		// 触发事件的文件路径
+        path: '/Users/nimojs/Documents/code/gulp-book/demo/chapter7/src/js/log.js'
+    }
+    */</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>我们可以利用 <code>event</code> 给到的信息，检测到某个 js 文件被修改时，只编写当前修改的 js 文件。</p> <p>可以利用 <code>gulp-watch-path</code> 配合 <code>event</code> 获取编译路径和输出路径。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> watchPath <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-watch-path'</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'watchjs'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'src/js/**/*.js'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">var</span> paths <span class="token operator">=</span> <span class="token function">watchPath</span><span class="token punctuation">(</span>event<span class="token punctuation">,</span> <span class="token string">'src/'</span><span class="token punctuation">,</span> <span class="token string">'dist/'</span><span class="token punctuation">)</span>
+        <span class="token comment">/*
+        paths
+            { srcPath: 'src/js/log.js',
+              srcDir: 'src/js/',
+              distPath: 'dist/js/log.js',
+              distDir: 'dist/js/',
+              srcFilename: 'log.js',
+              distFilename: 'log.js' }
+        */</span>
+		gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>gutil<span class="token punctuation">.</span>colors<span class="token punctuation">.</span><span class="token function">green</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">' '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+        gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Dist '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>distPath<span class="token punctuation">)</span>
+
+        gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">uglify</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>distDir<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'watchjs'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><p><a href="https://github.com/nimojs/gulp-book/tree/master/demo/chapter7/use-gulp-watch-path.js" target="_blank" rel="noopener noreferrer">use-gulp-watch-path 完整代码<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h4 id="_7-5-3-watchpath-event-search-replace-distext"><a href="#_7-5-3-watchpath-event-search-replace-distext" class="header-anchor">#</a> 7.5.3 watchPath(event, search, replace, distExt)</h4> <hr> <table><thead><tr><th>参数</th> <th>说明</th></tr></thead> <tbody><tr><td>event</td> <td><code>gulp.watch</code> 回调函数的 <code>event</code></td></tr> <tr><td>search</td> <td>需要被替换的起始字符串</td></tr> <tr><td>replace</td> <td>第三个参数是新的的字符串</td></tr> <tr><td>distExt</td> <td>扩展名(非必填)</td></tr></tbody></table> <p>此时编辑 <a href="https://github.com/nimojs/gulp-demo/blob/master/src/js/log.js" target="_blank" rel="noopener noreferrer">src/js/log.js<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 文件并保存，命令行会出现消息，表示检测到 <code>src/js/log.js</code> 文件修改后只重新编译 <code>log.js</code>。</p> <div class="language-ruby extra-class"><pre class="language-ruby"><code><span class="token punctuation">[</span><span class="token number">21</span><span class="token operator">:</span><span class="token number">47</span><span class="token operator">:</span><span class="token number">25</span><span class="token punctuation">]</span> changed src<span class="token operator">/</span>js<span class="token operator">/</span>log<span class="token punctuation">.</span>js
+<span class="token punctuation">[</span><span class="token number">21</span><span class="token operator">:</span><span class="token number">47</span><span class="token operator">:</span><span class="token number">25</span><span class="token punctuation">]</span> Dist dist<span class="token operator">/</span>js<span class="token operator">/</span>log<span class="token punctuation">.</span>js
+</code></pre></div><p>你可以访问 <a href="https://github.com/nimojs/gulp-watch-path" target="_blank" rel="noopener noreferrer">gulp-watch-path<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 了解更多。</p> <h4 id="_7-5-4-stream-combiner2"><a href="#_7-5-4-stream-combiner2" class="header-anchor">#</a> 7.5.4 stream-combiner2</h4> <hr> <p>编辑 <code>log.js</code> 文件时，如果文件中有 js 语法错误时，gulp 会终止运行并报错。</p> <p>当 log.js 缺少 <code>)</code></p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'gulp-book'</span>
+</code></pre></div><p>并保存文件时出现如下错误，但是错误信息不全面。而且还会让 gulp 停止运行。</p> <div class="language- extra-class"><pre class="language-text"><code>events.js:85
+      throw er; // Unhandled 'error' event
+            ^
+Error
+    at new JS_Parse_Error (/Users/nimojs/Documents/code/gulp-book/demo/chapter7/node_modules/gulp-uglify/node_modules/uglify-js/lib/parse.js:189:18)
+...
+...
+js_error (/Users/nimojs/Documents/code/gulp-book/demo/chapter7/node_modules/gulp-
+-book/demo/chapter7/node_modules/gulp-uglify/node_modules/uglify-js/lib/parse.js:1165:20)
+    at maybe_unary (/Users/nimojs/Documents/code/gulp-book/demo/chapter7/node_modules/gulp-uglify/node_modules/uglify-js/lib/parse.js:1328:19)
+
+</code></pre></div><p>应对这种情况，我们可以使用 <a href="https://github.com/gulpjs/gulp/blob/master/docs/recipes/combining-streams-to-handle-errors.md" target="_blank" rel="noopener noreferrer">Combining streams to handle errors<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 文档中推荐的 <a href="https://github.com/substack/stream-combiner2" target="_blank" rel="noopener noreferrer">stream-combiner2<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>  捕获错误信息。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> <span class="token function-variable function">handleError</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">err</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> colors <span class="token operator">=</span> gutil<span class="token punctuation">.</span>colors<span class="token punctuation">;</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span>
+    gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>colors<span class="token punctuation">.</span><span class="token function">red</span><span class="token punctuation">(</span><span class="token string">'Error!'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'fileName: '</span> <span class="token operator">+</span> colors<span class="token punctuation">.</span><span class="token function">red</span><span class="token punctuation">(</span>err<span class="token punctuation">.</span>fileName<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'lineNumber: '</span> <span class="token operator">+</span> colors<span class="token punctuation">.</span><span class="token function">red</span><span class="token punctuation">(</span>err<span class="token punctuation">.</span>lineNumber<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'message: '</span> <span class="token operator">+</span> err<span class="token punctuation">.</span>message<span class="token punctuation">)</span>
+    gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'plugin: '</span> <span class="token operator">+</span> colors<span class="token punctuation">.</span><span class="token function">yellow</span><span class="token punctuation">(</span>err<span class="token punctuation">.</span>plugin<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">var</span> combiner <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'stream-combiner2'</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'watchjs'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'src/js/**/*.js'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">var</span> paths <span class="token operator">=</span> <span class="token function">watchPath</span><span class="token punctuation">(</span>event<span class="token punctuation">,</span> <span class="token string">'src/'</span><span class="token punctuation">,</span> <span class="token string">'dist/'</span><span class="token punctuation">)</span>
+        <span class="token comment">/*
+        paths
+            { srcPath: 'src/js/log.js',
+              srcDir: 'src/js/',
+              distPath: 'dist/js/log.js',
+              distDir: 'dist/js/',
+              srcFilename: 'log.js',
+              distFilename: 'log.js' }
+        */</span>
+        gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>gutil<span class="token punctuation">.</span>colors<span class="token punctuation">.</span><span class="token function">green</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">' '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+        gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Dist '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>distPath<span class="token punctuation">)</span>
+
+        <span class="token keyword">var</span> combined <span class="token operator">=</span> combiner<span class="token punctuation">.</span><span class="token function">obj</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+            gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token function">uglify</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>distDir<span class="token punctuation">)</span>
+        <span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+        combined<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'error'</span><span class="token punctuation">,</span> handleError<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>此时当编译错误的语法时，命令行会出现错误提示。而且不会让 gulp 停止运行。</p> <div class="language- extra-class"><pre class="language-text"><code>changed:src/js/log.js
+dist:dist/js/log.js
+--------------
+Error!
+fileName: /Users/nimojs/Documents/code/gulp-book/demo/chapter7/src/js/log.js
+lineNumber: 7
+message: /Users/nimojs/Documents/code/gulp-book/demo/chapter7/src/js/log.js: Unexpected token eof «undefined», expected punc «,»
+plugin: gulp-uglify
+</code></pre></div><h4 id="_7-5-5-gulp-sourcemaps"><a href="#_7-5-5-gulp-sourcemaps" class="header-anchor">#</a> 7.5.5 gulp-sourcemaps</h4> <hr> <p>JS 压缩前和压缩后比较</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 压缩前</span>
+<span class="token keyword">var</span> <span class="token function-variable function">log</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">msg</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'--------'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'--------'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token function">log</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token literal-property property">a</span><span class="token operator">:</span><span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'gulp-book'</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 压缩后</span>
+<span class="token keyword">var</span> <span class="token function-variable function">log</span><span class="token operator">=</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">o</span><span class="token punctuation">)</span><span class="token punctuation">{</span>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"--------"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>o<span class="token punctuation">)</span><span class="token punctuation">,</span>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"--------"</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">;</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token literal-property property">a</span><span class="token operator">:</span><span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"gulp-book"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>压缩后的代码不存在换行符和空白符，导致出错后很难调试，好在我们可以使用 <a href="http://www.ruanyifeng.com/blog/2013/01/javascript_source_map.html" target="_blank" rel="noopener noreferrer">sourcemap<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 帮助调试</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> sourcemaps <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-sourcemaps'</span><span class="token punctuation">)</span>
+<span class="token comment">// ...</span>
+<span class="token keyword">var</span> combined <span class="token operator">=</span> combiner<span class="token punctuation">.</span><span class="token function">obj</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+    gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    sourcemaps<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token function">uglify</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    sourcemaps<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">'./'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>distDir<span class="token punctuation">)</span>
+<span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token comment">// ...</span>
+</code></pre></div><p>此时 <code>dist/js/</code> 中也会生成对应的 <code>.map</code> 文件，以便使用 Chrome 控制台调试代码 <a href="https://github.com/nimojs/gulp-demo/blob/master/src/js/" target="_blank" rel="noopener noreferrer">在线文件示例：src/js/<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <hr> <p>至此，我们完成了检测文件修改后压缩 JS 的 gulp 任务配置。</p> <p>有时我们也需要一次编译所有 js 文件。可以配置 <code>uglifyjs</code> 任务。</p> <div class="language-js extra-class"><pre class="language-js"><code>gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'uglifyjs'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> combined <span class="token operator">=</span> combiner<span class="token punctuation">.</span><span class="token function">obj</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+        gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span><span class="token string">'src/js/**/*.js'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        sourcemaps<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token function">uglify</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        sourcemaps<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">'./'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/js/'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span>
+    combined<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'error'</span><span class="token punctuation">,</span> handleError<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>在命令行输入 <code>gulp uglifyjs</code> 以压缩 <code>src/js/</code> 下的所有 js 文件。</p> <h3 id="_7-6-配置-css-任务"><a href="#_7-6-配置-css-任务" class="header-anchor">#</a> 7.6 配置 CSS 任务</h3> <hr> <p>有时我们不想使用 LESS 或 SASS而是直接编写 CSS，但我们需要压缩 CSS 以提高页面加载速度。</p> <h4 id="_7-6-1-gulp-minify-css"><a href="#_7-6-1-gulp-minify-css" class="header-anchor">#</a> 7.6.1 gulp-minify-css</h4> <hr> <p>按照本章中压缩 JS 的方式，先编写 <code>watchcss</code> 任务</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> minifycss <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-minify-css'</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'watchcss'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'src/css/**/*.css'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">var</span> paths <span class="token operator">=</span> <span class="token function">watchPath</span><span class="token punctuation">(</span>event<span class="token punctuation">,</span> <span class="token string">'src/'</span><span class="token punctuation">,</span> <span class="token string">'dist/'</span><span class="token punctuation">)</span>
+
+		gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>gutil<span class="token punctuation">.</span>colors<span class="token punctuation">.</span><span class="token function">green</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">' '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+        gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Dist '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>distPath<span class="token punctuation">)</span>
+
+        gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>sourcemaps<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">minifycss</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>sourcemaps<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">'./'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>distDir<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'watchjs'</span><span class="token punctuation">,</span><span class="token string">'watchcss'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><h4 id="_7-6-2-gulp-autoprefixer"><a href="#_7-6-2-gulp-autoprefixer" class="header-anchor">#</a> 7.6.2 gulp-autoprefixer</h4> <p>autoprefixer 解析 CSS 文件并且添加浏览器前缀到CSS规则里。
+通过示例帮助理解</p> <p>autoprefixer 处理前：</p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token selector">.demo</span> <span class="token punctuation">{</span>
+    <span class="token property">display</span><span class="token punctuation">:</span>flex<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>autoprefixer 处理后：</p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token selector">.demo</span> <span class="token punctuation">{</span>
+    <span class="token property">display</span><span class="token punctuation">:</span>-webkit-flex<span class="token punctuation">;</span>
+    <span class="token property">display</span><span class="token punctuation">:</span>-ms-flexbox<span class="token punctuation">;</span>
+    <span class="token property">display</span><span class="token punctuation">:</span>flex<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>你只需要关心编写标准语法的 css，autoprefixer 会自动补全。</p> <p>在 watchcss 任务中加入 autoprefixer:</p> <div class="language-js extra-class"><pre class="language-js"><code>gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'watchcss'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'src/css/**/*.css'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">var</span> paths <span class="token operator">=</span> <span class="token function">watchPath</span><span class="token punctuation">(</span>event<span class="token punctuation">,</span> <span class="token string">'src/'</span><span class="token punctuation">,</span> <span class="token string">'dist/'</span><span class="token punctuation">)</span>
+
+		gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>gutil<span class="token punctuation">.</span>colors<span class="token punctuation">.</span><span class="token function">green</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">' '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+        gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Dist '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>distPath<span class="token punctuation">)</span>
+
+        gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>sourcemaps<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">autoprefixer</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+              <span class="token literal-property property">browsers</span><span class="token operator">:</span> <span class="token string">'last 2 versions'</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">minifycss</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>sourcemaps<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">'./'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>distDir<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>更多 autoprefixer 参数请查看 <a href="https://github.com/sindresorhus/gulp-autoprefixer" target="_blank" rel="noopener noreferrer">gulp-autoprefixer<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p>有时我们也需要一次编译所有 css 文件。可以配置 <code>minifyss</code> 任务。</p> <div class="language-js extra-class"><pre class="language-js"><code>gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'minifycss'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span><span class="token string">'src/css/**/*.css'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>sourcemaps<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">autoprefixer</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+          <span class="token literal-property property">browsers</span><span class="token operator">:</span> <span class="token string">'last 2 versions'</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">minifycss</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>sourcemaps<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">'./'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/css/'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>在命令行输入 <code>gulp minifyss</code> 以压缩 <code>src/css/</code> 下的所有 .css 文件并复制到 <code>dist/css</code> 目录下</p> <h3 id="_7-7-配置-less-任务"><a href="#_7-7-配置-less-任务" class="header-anchor">#</a> 7.7 配置 Less 任务</h3> <hr> <ul><li>参考配置 JavaScript 任务的方式配置 less 任务</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> less <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-less'</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'watchless'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'src/less/**/*.less'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">var</span> paths <span class="token operator">=</span> <span class="token function">watchPath</span><span class="token punctuation">(</span>event<span class="token punctuation">,</span> <span class="token string">'src/less/'</span><span class="token punctuation">,</span> <span class="token string">'dist/css/'</span><span class="token punctuation">)</span>
+
+		gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>gutil<span class="token punctuation">.</span>colors<span class="token punctuation">.</span><span class="token function">green</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">' '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+        gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Dist '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>distPath<span class="token punctuation">)</span>
+        <span class="token keyword">var</span> combined <span class="token operator">=</span> combiner<span class="token punctuation">.</span><span class="token function">obj</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+            gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span><span class="token punctuation">,</span>
+            sourcemaps<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token function">autoprefixer</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+              <span class="token literal-property property">browsers</span><span class="token operator">:</span> <span class="token string">'last 2 versions'</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token function">less</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token function">minifycss</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            sourcemaps<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">'./'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>distDir<span class="token punctuation">)</span>
+        <span class="token punctuation">]</span><span class="token punctuation">)</span>
+        combined<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'error'</span><span class="token punctuation">,</span> handleError<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'lesscss'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> combined <span class="token operator">=</span> combiner<span class="token punctuation">.</span><span class="token function">obj</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+            gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span><span class="token string">'src/less/**/*.less'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            sourcemaps<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token function">autoprefixer</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+              <span class="token literal-property property">browsers</span><span class="token operator">:</span> <span class="token string">'last 2 versions'</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token function">less</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token function">minifycss</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            sourcemaps<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">'./'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/css/'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">]</span><span class="token punctuation">)</span>
+    combined<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'error'</span><span class="token punctuation">,</span> handleError<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'watchjs'</span><span class="token punctuation">,</span> <span class="token string">'watchcss'</span><span class="token punctuation">,</span> <span class="token string">'watchless'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="_7-8-配置-sass-任务"><a href="#_7-8-配置-sass-任务" class="header-anchor">#</a> 7.8 配置 Sass 任务</h3> <hr> <p>参考配置 JavaScript 任务的方式配置 Sass 任务</p> <div class="language-js extra-class"><pre class="language-js"><code>gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'watchsass'</span><span class="token punctuation">,</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'src/sass/**/*'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">var</span> paths <span class="token operator">=</span> <span class="token function">watchPath</span><span class="token punctuation">(</span>event<span class="token punctuation">,</span> <span class="token string">'src/sass/'</span><span class="token punctuation">,</span> <span class="token string">'dist/css/'</span><span class="token punctuation">)</span>
+
+		gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>gutil<span class="token punctuation">.</span>colors<span class="token punctuation">.</span><span class="token function">green</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">' '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+        gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Dist '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>distPath<span class="token punctuation">)</span>
+        <span class="token function">sass</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'error'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">err</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">'Error!'</span><span class="token punctuation">,</span> err<span class="token punctuation">.</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>sourcemaps<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">minifycss</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">autoprefixer</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+              <span class="token literal-property property">browsers</span><span class="token operator">:</span> <span class="token string">'last 2 versions'</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>sourcemaps<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">'./'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>distDir<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'sasscss'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">sass</span><span class="token punctuation">(</span><span class="token string">'src/sass/'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'error'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">err</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">'Error!'</span><span class="token punctuation">,</span> err<span class="token punctuation">.</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>sourcemaps<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">minifycss</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">autoprefixer</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+          <span class="token literal-property property">browsers</span><span class="token operator">:</span> <span class="token string">'last 2 versions'</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>sourcemaps<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">'./'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/css'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'watchjs'</span><span class="token punctuation">,</span> <span class="token string">'watchcss'</span><span class="token punctuation">,</span> <span class="token string">'watchless'</span><span class="token punctuation">,</span> <span class="token string">'watchsass'</span><span class="token punctuation">,</span> <span class="token string">'watchsass'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="_7-9-配置-image-任务"><a href="#_7-9-配置-image-任务" class="header-anchor">#</a> 7.9 配置 image 任务</h3> <hr> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> imagemin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-imagemin'</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'watchimage'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'src/images/**/*'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">var</span> paths <span class="token operator">=</span> <span class="token function">watchPath</span><span class="token punctuation">(</span>event<span class="token punctuation">,</span><span class="token string">'src/'</span><span class="token punctuation">,</span><span class="token string">'dist/'</span><span class="token punctuation">)</span>
+
+		gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>gutil<span class="token punctuation">.</span>colors<span class="token punctuation">.</span><span class="token function">green</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">' '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+        gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Dist '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>distPath<span class="token punctuation">)</span>
+
+        gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">imagemin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+                <span class="token literal-property property">progressive</span><span class="token operator">:</span> <span class="token boolean">true</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>distDir<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'image'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span><span class="token string">'src/images/**/*'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span><span class="token function">imagemin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+            <span class="token literal-property property">progressive</span><span class="token operator">:</span> <span class="token boolean">true</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/images'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="_7-10-配置文件复制任务"><a href="#_7-10-配置文件复制任务" class="header-anchor">#</a> 7.10 配置文件复制任务</h3> <hr> <p>复制 <code>src/fonts/</code> 文件到 <code>dist/</code> 中</p> <div class="language-js extra-class"><pre class="language-js"><code>gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'watchcopy'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token string">'src/fonts/**/*'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">var</span> paths <span class="token operator">=</span> <span class="token function">watchPath</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span>
+
+		gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>gutil<span class="token punctuation">.</span>colors<span class="token punctuation">.</span><span class="token function">green</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">' '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+        gutil<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Dist '</span> <span class="token operator">+</span> paths<span class="token punctuation">.</span>distPath<span class="token punctuation">)</span>
+
+        gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>srcPath<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span>paths<span class="token punctuation">.</span>distDir<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'copy'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    gulp<span class="token punctuation">.</span><span class="token function">src</span><span class="token punctuation">(</span><span class="token string">'src/fonts/**/*'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>gulp<span class="token punctuation">.</span><span class="token function">dest</span><span class="token punctuation">(</span><span class="token string">'dist/fonts/'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'watchjs'</span><span class="token punctuation">,</span> <span class="token string">'watchcss'</span><span class="token punctuation">,</span> <span class="token string">'watchless'</span><span class="token punctuation">,</span> <span class="token string">'watchsass'</span><span class="token punctuation">,</span> <span class="token string">'watchimage'</span><span class="token punctuation">,</span> <span class="token string">'watchcopy'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

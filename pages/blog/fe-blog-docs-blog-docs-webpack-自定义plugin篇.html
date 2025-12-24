@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自定义plugin篇 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>自定义plugin篇</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>自定义plugin篇</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="前期准备"><a href="#前期准备" class="header-anchor">#</a> 前期准备</h2> <h3 id="从使用的角度来看插件"><a href="#从使用的角度来看插件" class="header-anchor">#</a> 从使用的角度来看插件</h3> <p>好了，我已经准备好阅读的这篇文章然后写一个炒鸡牛x的插件了，赶紧的。</p> <p>额，等等，在这之前我们不是得知道需要怎么去做吗？我们总是听到的插件插件的，它到底是个啥啊？</p> <p>对象？函数？类？</p> <p>小伙伴们不妨结合我们已经用过的一些插件来猜猜，比如<code>HtmlWebpackPlugin</code>，我们会这样使用它：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token keyword">new</span> <span class="token class-name">HtmlWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'custom-plugin'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>可以看到，这很明显的就是个构造函数，或者是一个类嘛。我们使用<code>new</code>就可以实例化一个插件的对象。并且，这个函数或者类是可以让我们传递参数进去的。</p> <p>那你脑子里是不是已经脑补出一个轮廓了呢？</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">CustomPlugin</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+
+<span class="token comment">// or</span>
+<span class="token keyword">class</span> <span class="token class-name">CustomPlugin</span> <span class="token punctuation">{</span>
+  <span class="token function">constructor</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="从构建的角度来看插件"><a href="#从构建的角度来看插件" class="header-anchor">#</a> 从构建的角度来看插件</h3> <p>知道了<code>plugin</code>大概的轮廓，让我们从构建的角度来看看它。插件不同于<code>loader</code>一个很大的区别就是，<code>loader</code>它是一个转换器，它只专注于<strong>转换</strong>这一个领域，例如<code>babel-loader</code>能将<code>ES6+</code>的代码转换为<code>ES5</code>或以下，以此来保证兼容性，那么它是运行在打包之前的。</p> <p>而<code>plugin</code>呢？你会发现市场上有各种让人眼花缭乱的插件，它可能运行在打包之前，也可能运行在打包的过程中，或者打包完成之后。总之，<strong>它不局限于打包，资源的加载，还有其它的功能</strong>。所以它是在整个编译周期都起作用。</p> <p>那么如果让我们站在一个编写插件者的角度上来看的话，是不是在编写的时候需要明确两件事情：</p> <ul><li>我要如何拿到完整的<code>webpack</code>环境配置呢？因为我在编写插件的时候肯定是要与<code>webpack</code>的主环境结合起来的</li> <li>我如何告诉<code>webpack</code>我的插件是在什么时候发挥作用呢？在打包之前？还是之后？也就是我们经常听到的钩子。</li></ul> <p>所以这时候我们就得清楚这几个硬知识点：</p> <ul><li><p><code>compiler</code> 对象代表了完整的 webpack 环境配置。这个对象在启动 webpack 时被一次性建立，并配置好所有可操作的设置，包括 options，loader 和 plugin。当在 webpack 环境中应用一个插件时，插件将收到此 compiler 对象的引用。可以使用它来访问 webpack 的主环境。</p></li> <li><p><code>compilation</code> 对象代表了一次资源版本构建。当运行 webpack 开发环境中间件时，每当检测到一个文件变化，就会创建一个新的 compilation，从而生成一组新的编译资源。一个 compilation 对象表现了当前的模块资源、编译生成资源、变化的文件、以及被跟踪依赖的状态信息。compilation 对象也提供了很多关键时机的回调，以供插件做自定义处理时选择使用。</p></li> <li><p>钩子的本质其实就是事件</p></li></ul> <h3 id="案例准备"><a href="#案例准备" class="header-anchor">#</a> 案例准备</h3> <p>老规矩，为了能更好的让我们掌握本章的内容，我们需要本地创建一个案例来进行讲解。</p> <p>创建项目的这个过程我就快速的用指令来实现一下哈：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>mkdir webpack<span class="token operator">-</span>custom<span class="token operator">-</span>plugin <span class="token operator">&amp;&amp;</span> cd webpack<span class="token operator">-</span>custom<span class="token operator">-</span>plugin
+npm init <span class="token operator">-</span>y
+cnpm i webpack webpack<span class="token operator">-</span>cli clean<span class="token operator">-</span>webpack<span class="token operator">-</span>plugin html<span class="token operator">-</span>webpack<span class="token operator">-</span>plugin <span class="token operator">--</span>save<span class="token operator">-</span>dev
+touch webpack<span class="token punctuation">.</span>config<span class="token punctuation">.</span>js
+mkdir src <span class="token operator">&amp;&amp;</span> cd src
+touch index<span class="token punctuation">.</span>js
+</code></pre></div><p>(<code>mkdir</code>：创建一个文件夹；<code>touch</code>：创建一个文件)</p> <p>OK👌，此时项目目录变成了：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code> webpack<span class="token operator">-</span>custom<span class="token operator">-</span>plugin
+    <span class="token operator">|</span><span class="token operator">-</span> <span class="token keyword">package</span><span class="token punctuation">.</span>json
+    <span class="token operator">|</span><span class="token operator">-</span> webpack<span class="token punctuation">.</span>config<span class="token punctuation">.</span>js
+    <span class="token operator">|</span><span class="token operator">-</span> <span class="token operator">/</span>src
+      <span class="token operator">|</span><span class="token operator">-</span> index<span class="token punctuation">.</span>js
+</code></pre></div><p>接着让我们给<code>src/index.js</code>随便加点东西意思一下，省得太空了：</p> <p><em>src/index.js</em></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">createElement</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> element <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">'div'</span><span class="token punctuation">)</span>
+  element<span class="token punctuation">.</span>innerHTML <span class="token operator">=</span> <span class="token string">'孔子曰：中午不睡，下午崩溃!孟子曰：孔子说的对!'</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">return</span> element
+<span class="token punctuation">}</span>
+document<span class="token punctuation">.</span>body<span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre></div><p><code>webpack.config.js</code>也简单的来配置一下吧，这些应该都是基础了，之前有详细说过了哟：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> HtmlWebpackPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'html-webpack-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token punctuation">{</span> CleanWebpackPlugin <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'clean-webpack-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">entry</span><span class="token operator">:</span> <span class="token string">'./src/index.js'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">output</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">'[name].bundle.js'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">path</span><span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'dist'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token keyword">new</span> <span class="token class-name">HtmlWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'custom-plugin'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token keyword">new</span> <span class="token class-name">CleanWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><blockquote><p><code>clean-webpack-plugin</code>插件会在我们每次打包之前自动清理掉旧的<code>dist</code>文件夹</p></blockquote> <p>另外还需要在<code>package.json</code>中配置一条打包指令哈：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+  <span class="token string-property property">"script"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token string-property property">"build"</span><span class="token operator">:</span> <span class="token string">"webpack --mode development"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>这里的<code>"webpack"</code>实际上是<code>"webpack --config webpack.config.js"</code>的缩写，这点在基础篇中也有说到咯。</p> <p><code>--mode development</code>就是指定一下环境为开发环境，因为我们后续可能有需要看到打包之后的代码内容，如果指定了为<code>production</code>的话，那么<code>webpack</code>它会自动开启<code>UglifyJS</code>的也就是会对我们打包成功之后的代码进行压缩输出，那一坨一坨的代码我们就不利于我们查看了。</p> <h2 id="no1-webpack-plugin案例"><a href="#no1-webpack-plugin案例" class="header-anchor">#</a> No1-webpack-plugin案例</h2> <p>好的了，基本工作已经准备完毕了，让我们动手来编写我们的第一个插件吧。</p> <p>这个插件案例主要是为了帮助你了解插件大概的创建流程。</p> <h3 id="传统形式的compiler-plugin"><a href="#传统形式的compiler-plugin" class="header-anchor">#</a> 传统形式的compiler.plugin</h3> <p>从易到难，让我们来实现这么一个简单的功能：</p> <ul><li>当我们在完成打包之后，控制台会输出一个<code>"good boy!"</code></li></ul> <p>在刚刚的案例目录中新建一个<code>plugins</code>文件夹，然后在里面创建上我们的第一个插件: <code>No1-webpack-plugin</code>：</p> <div class="language-diff extra-class"><pre class="language-diff"><code><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">webpack-custom-plugin
+</span><span class="token prefix unchanged"> </span><span class="token line"> |- package.json
+</span><span class="token prefix unchanged"> </span><span class="token line"> |- webpack.config.js
+</span><span class="token prefix unchanged"> </span><span class="token line"> |- /src
+</span><span class="token prefix unchanged"> </span><span class="token line">   |- index.js
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> |- /plugins
+</span><span class="token prefix inserted">+</span><span class="token line">   |-No1-webpack-plugin.js
+</span></span></code></pre></div><p>现在依照前面所说的插件的结构，以及我们的需求，可以写出以下代码：</p> <p><em>plugins/No1-webpack-plugin.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 1. 创建一个构造函数</span>
+<span class="token keyword">function</span> <span class="token function">No1WebpackPlugin</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>options <span class="token operator">=</span> options
+<span class="token punctuation">}</span>
+<span class="token comment">// 2. 重写构造函数原型对象上的 apply 方法</span>
+<span class="token class-name">No1WebpackPlugin</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">apply</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  compiler<span class="token punctuation">.</span><span class="token function">plugin</span><span class="token punctuation">(</span><span class="token string">'done'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span>msg<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token comment">// 3. 将我们的自定义插件导出</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> No1WebpackPlugin<span class="token punctuation">;</span>
+</code></pre></div><p>接着，让我们来看看如何使用它，也就是：</p> <p><em>webpack.config.js</em>:</p> <div class="language-diff extra-class"><pre class="language-diff"><code>const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+<span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> const No1WebpackPlugin = require('./plugins/No1-webpack-plugin');
+</span></span>
+module.exports = {
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> entry: './src/index.js',
+</span><span class="token prefix unchanged"> </span><span class="token line"> output: {
+</span><span class="token prefix unchanged"> </span><span class="token line">   filename: '[name].bundle.js',
+</span><span class="token prefix unchanged"> </span><span class="token line">   path: path.resolve(__dirname, 'dist')
+</span><span class="token prefix unchanged"> </span><span class="token line"> },
+</span><span class="token prefix unchanged"> </span><span class="token line"> plugins: [
+</span><span class="token prefix unchanged"> </span><span class="token line">   new HtmlWebpackPlugin({
+</span><span class="token prefix unchanged"> </span><span class="token line">     title: 'custom-plugin'
+</span><span class="token prefix unchanged"> </span><span class="token line">   }),
+</span><span class="token prefix unchanged"> </span><span class="token line">   new CleanWebpackPlugin(),
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">   new No1WebpackPlugin({ msg: 'good boy!' })
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> ]
+</span></span>}
+</code></pre></div><p>OK👌，代码已经编写完啦，快<code>npm run build</code>一下看看效果吧：</p> <p><img src="https://s.poetries.top/gitee/2020/09/202.png" alt=""></p> <p>可以看到，控制台已经在夸你<code>"good boy!"</code>了😄。</p> <p>那么让我们回到刚刚的那段自定义插件的代码中：</p> <p><em>plugins/No1-webpack-plugin.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 1. 创建一个构造函数</span>
+<span class="token keyword">function</span> <span class="token function">No1WebpackPlugin</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>options <span class="token operator">=</span> options
+<span class="token punctuation">}</span>
+<span class="token comment">// 2. 在构造函数原型对象上定义一个 apply 方法</span>
+<span class="token class-name">No1WebpackPlugin</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">apply</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  compiler<span class="token punctuation">.</span><span class="token function">plugin</span><span class="token punctuation">(</span><span class="token string">'done'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span>msg<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token comment">// 3. 将我们的自定义插件导出</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> No1WebpackPlugin<span class="token punctuation">;</span>
+</code></pre></div><p>注意到这里，我们一共是做了这么三件事情，也就是我在代码中的注释。</p> <p>很显然，为了能拿到<code>webpack.config.js</code>中我们传递的那个参数，也就是<code>{ msg: 'good boy!' }</code>，我们需要在构造函数中定义一个实例对象上的属性<code>options</code>。</p> <p>并且在<code>prototype.apply</code>中呢：</p> <ul><li>我们需要调用<code>compiler.plugin()</code>并传入第一个参数来指定我们的插件是发生在哪个阶段，也就是这里的<code>"done"</code>(一次编译完成之后，即打包完成之后)；</li> <li>在这个阶段我们要做什么事呢？就可以在它的第二个参数回调函数中来写了，请注意这里我们的回调函数是一个箭头函数哦，这也是能够保证里面的<code>this</code>获取到的是我们的实例对象，也就是为了能保证我们拿到<code>options</code>，并成功的打印出<code>msg</code></li></ul> <p>所以，现在你的思维是不是已经很清晰了呢？我们想要编写一个插件，只需要这么几步：</p> <ol><li>明确你的插件是要怎么调用的，需不需要传递参数(对应着<code>webpack.config.js</code>中的配置)；</li> <li>创建一个构造函数，以此来保证用它能创建一个个插件实例；</li> <li>在构造函数原型对象上定义一个 apply 方法，并在其中利用<code>compiler.plugin</code>注册我们的自定义插件。</li></ol> <p>那么除了用构造函数的方式来创建插件，是否也可以用类呢？让我们一起来试试，将刚刚的代码改动一下：</p> <p><em>plugins/No1-webpack-plugin.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// // 1. 创建一个构造函数</span>
+<span class="token comment">// function No1WebpackPlugin (options) {</span>
+<span class="token comment">//   this.options = options</span>
+<span class="token comment">// }</span>
+<span class="token comment">// // 2. 重写构造函数原型对象上的 apply 方法</span>
+<span class="token comment">// No1WebpackPlugin.prototype.apply = function (compiler) {</span>
+<span class="token comment">//   compiler.plugin('done', () =&gt; {</span>
+<span class="token comment">//     console.log(this.options.msg)</span>
+<span class="token comment">//   })</span>
+<span class="token comment">// }</span>
+<span class="token keyword">class</span> <span class="token class-name">No1WebpackPlugin</span> <span class="token punctuation">{</span>
+  <span class="token function">constructor</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>options <span class="token operator">=</span> options
+  <span class="token punctuation">}</span>
+  <span class="token function">apply</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    compiler<span class="token punctuation">.</span><span class="token function">plugin</span><span class="token punctuation">(</span><span class="token string">'done'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span>msg<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token comment">// 3. 将我们的自定义插件导出</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> No1WebpackPlugin<span class="token punctuation">;</span>
+</code></pre></div><p>这时候你执行打包指令效果也是一样的哈。这其实也很好理解，<code>class</code>它不就是咱们构造函数的一个语法糖吗，所以它肯定也可以用来实现一个插件啦。</p> <p>不过不知道小伙伴们注意到了，在我们刚刚输出<code>"good boy!"</code>的上面，还有一段小小的警告：</p> <p><img src="https://s.poetries.top/gitee/2020/09/203.png" alt=""></p> <p>它告诉我们<code>Tabable.plugin</code>这种的调用形式已经被废弃了，请使用新的<code>API</code>，也就是<code>.hooks</code>来替代<code>.plugin</code>这种形式。</p> <p>但并不是说上面的文档就不能看了，我们依然还是可以通过阅读它来了解更多插件相关的知识。</p> <h3 id="推荐使用compiler-hooks"><a href="#推荐使用compiler-hooks" class="header-anchor">#</a> 推荐使用compiler.hooks</h3> <p>既然官方都推荐我们用<code>compiler.hooks</code>了，那我们就遵循呗。不过如果你直接去看<a href="https://www.webpackjs.com/api/plugins/#tapable" target="_blank" rel="noopener noreferrer">Plugin API<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>的话对新手来说好像又有点绕，里面的<code>Tapable</code>、<code>compiler</code>、<code>compile</code>、<code>compilation</code>它们直接到底是存在怎样的关系呢？</p> <p>没关系都会依次的进行讲解。</p> <p>现在让我们将<code>No1-webpack-plugin</code>使用<code>compiler.hooks</code>改造一下吧：</p> <p><em>plugins/No1-webpack-plugin.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 第一版</span>
+<span class="token comment">// function No1WebpackPlugin (options) {</span>
+<span class="token comment">//   this.options = options</span>
+<span class="token comment">// }</span>
+<span class="token comment">// No1WebpackPlugin.prototype.apply = function (compiler) {</span>
+<span class="token comment">//   compiler.plugin('done', () =&gt; {</span>
+<span class="token comment">//     console.log(this.options.msg)</span>
+<span class="token comment">//   })</span>
+<span class="token comment">// }</span>
+<span class="token comment">// 第二版</span>
+<span class="token comment">// class No1WebpackPlugin {</span>
+<span class="token comment">//   constructor (options) {</span>
+<span class="token comment">//     this.options = options</span>
+<span class="token comment">//   }</span>
+<span class="token comment">//   apply (compiler) {</span>
+      <span class="token comment">// compiler.plugin('done', () =&gt; {</span>
+      <span class="token comment">//   console.log(this.options.msg)</span>
+      <span class="token comment">// })</span>
+<span class="token comment">//   }</span>
+<span class="token comment">// }</span>
+<span class="token comment">// 第三版</span>
+<span class="token keyword">function</span> <span class="token function">No1WebpackPlugin</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>options <span class="token operator">=</span> options
+<span class="token punctuation">}</span>
+<span class="token class-name">No1WebpackPlugin</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">apply</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>done<span class="token punctuation">.</span><span class="token function">tap</span><span class="token punctuation">(</span><span class="token string">'No1'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span>msg<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> No1WebpackPlugin<span class="token punctuation">;</span>
+</code></pre></div><p>可以看到，第三版中，关键点就是在于：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>done<span class="token punctuation">.</span><span class="token function">tap</span><span class="token punctuation">(</span><span class="token string">'No1'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span>msg<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>它替换了我们之前的：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>compiler<span class="token punctuation">.</span><span class="token function">plugin</span><span class="token punctuation">(</span><span class="token string">'done'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span>msg<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>让我们来拆分一下<code>compiler.hooks.done.tap('No1', () =&gt; {})</code>：</p> <ul><li><code>compiler</code>：一个扩展至<code>Tapable</code>的对象</li> <li><code>compiler.hooks</code>：<code>compiler</code>对象上的一个属性，允许我们使用不同的钩子函数</li> <li><code>.done</code>：<code>hooks</code>中常用的一种钩子，表示在一次编译完成后执行，它有一个回调参数<code>stats</code>(暂时没用上)</li> <li><code>.tap</code>：表示可以注册同步的钩子和异步的钩子，而在此处因为<code>done</code>属于异步<code>AsyncSeriesHook</code>类型的钩子，所以这里表示的是注册<code>done</code>异步钩子。</li> <li><code>.tap('No1')</code>：<code>tap()</code>的第一个参数<code>'No1'</code>，其实<code>tap()</code>这个方法它的第一个参数是可以允许接收一个<strong>字符串</strong>或者一个<strong>Tap</strong>类的对象的，不过在此处我们不深究，你先随便传一个字符串就行了，我把它理解为这次调用钩子的方法名。</li></ul> <p>所以让我们连起来理解这段代码的意思就是：</p> <ol><li>在程序执行<code>new No1WebpackPlugin()</code>的时候，会初始化一个插件实例且调用其原型对象上的<code>apply</code>方法</li> <li>该方法会告诉<code>webpack</code>当你在一次编译完成之后，得执行一下我的箭头函数里的内容，也就是打印出<code>msg</code></li></ol> <p>现在我们虽然会写一个简单的插件了，但是对于上面的一些对象、属性啥的好像还不是很懂耶。想要一口气吃完一头大象🐘是有点难的哦(而且那样也是犯法的)，所以接下来让我们来大概了解一下这些<code>Tapable</code>、<code>compiler</code>等等的东西是做什么的😊。</p> <h2 id="tapable"><a href="#tapable" class="header-anchor">#</a> Tapable</h2> <p>首先是<code>Tapable</code>这个东西，我看了一下网上有很多对它的描述：</p> <ol><li>tapable 这个小型 library 是 webpack 的一个核心工具</li> <li>Webpack 的 Tapable 事件流机制保证了插件的有序性，使得整个系统扩展性良好</li> <li>Tapable 为 webpack 提供了统一的插件接口（钩子）类型定义，它是 webpack 的核心功能库、</li></ol> <p>当然这些说法肯定都是对的哈，所以总结一下：</p> <ul><li>简单来说Tapable就是webpack用来创建钩子的库，为webpack提供了插件接口的支柱。</li></ul> <p>其实如果你去看了它<a href="https://github.com/webpack/tapable" target="_blank" rel="noopener noreferrer">Git上的文档<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>的话，它就是暴露了9个<code>Hooks</code>类，以及3种方法(<code>tap、tapAsync、tapPromise</code>)，可用于为插件创建钩子。</p> <p><img src="https://s.poetries.top/gitee/2020/09/205.png" alt=""></p> <p>9种<code>Hooks</code>类与3种方法之间的关系：</p> <ul><li><code>Hooks</code>类表示的是你的钩子是哪一种类型的，比如我们上面用到的<code>done</code>，它就属于<code>AsyncSeriesHook</code>这个类</li> <li><code>tap、tapAsync、tapPromise</code>这三个方法是用于注入不同类型的自定义构建行为，因为我们的钩子可能有同步的钩子，也可能有异步的钩子，而我们在注入钩子的时候就得选对这三种方法了。</li></ul> <p>对于<code>Hooks</code>类你大可不必全都记下，一般来说你只需要知道我们要用的每种钩子它们实际上是有类型区分的，而区分它们的就是<code>Hooks</code>类。</p> <p>如果你想要清楚它们之前的区别的话，这里也有找到一个解释的比较清楚的总结：</p> <p><code>Sync*</code></p> <ul><li>SyncHook --&gt; 同步串行钩子，不关心返回值</li> <li>SyncBailHook  --&gt; 同步串行钩子，如果返回值不为null 则跳过之后的函数</li> <li>SyncLoopHook --&gt; 同步循环，如果返回值为true 则继续执行，返回值为false则跳出循环</li> <li>SyncWaterfallHook --&gt; 同步串行，上一个函数返回值会传给下一个监听函数</li></ul> <p><code>Async*</code></p> <ul><li>AsyncParallel*：异步并发
+<ul><li>AsyncParallelBailHook --&gt;  异步并发，只要监听函数的返回值不为 null，就会忽略后面的监听函数执行，直接跳跃到callAsync等触发函数绑定的回调函数，然后执行这个被绑定的回调函数</li> <li>AsyncParallelHook --&gt; 异步并发，不关心返回值</li></ul></li> <li>AsyncSeries*：异步串行
+<ul><li>AsyncSeriesHook --&gt; 异步串行，不关心callback()的参数</li> <li>AsyncSeriesBailHook --&gt; 异步串行，callback()的参数不为null，就会忽略后续的函数，直接执行callAsync函数绑定的回调函数</li> <li>AsyncSeriesWaterfallHook --&gt; 异步串行，上一个函数的callback(err, data)的第二个参数会传给下一个监听函数</li></ul></li></ul> <p>(总结来源：<a href="https://juejin.im/post/5e6e2b326fb9a07cb24ab84c" target="_blank" rel="noopener noreferrer">XiaoLu-写一个简单webpack plugin所引发的思考<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>)</p> <p>而对于这三种方法，我们必须得知道它们分别是做什么用的：</p> <ul><li><code>tap</code>：可以注册同步钩子也可以注册异步钩子</li> <li><code>tapAsync</code>：回调方式注册异步钩子</li> <li><code>tapPromise</code>：<code>Promise</code>方式注册异步钩子</li></ul> <p><img src="https://s.poetries.top/gitee/2020/09/206.png" alt=""></p> <p>就比如，我现在想要注册一个<code>compile</code>的钩子，根据官方文档，我发现它是<code>SyncHook</code>类型的钩子，那么我们就只能使用<code>tap</code>来注册它。如果你试图用<code>tapAsync</code>的话，打包的话你就会发现控制台已经报错了，比如这样：</p> <p><img src="https://s.poetries.top/gitee/2020/09/207.png" alt=""></p> <p>（额，不过我在使用<code>compiler.hooks.done.tapAsync()</code>的时候，查阅文档上它也是<code>SyncHook</code>类，但是却可以用<code>tapAsync</code>方法注册，这边也有点没搞明白是为什么，有知道的小伙伴还希望可以评论区留言呀😄）</p> <h2 id="compiler-compile-compilation"><a href="#compiler-compile-compilation" class="header-anchor">#</a> compiler?compile?compilation?</h2> <p>接下来就得说一说插件中几个重要的东西了，也就是这一小节的标题里的这三个东西。</p> <p>首先让我们在官方的文档上找寻一下它们的足迹：</p> <p><img src="https://s.poetries.top/gitee/2020/09/208.png" alt=""></p> <p>可以看到，这几个属性都长的好像啊，而且更过分的是，<code>compilation</code>竟然还有两个同名的，你这是给👴整真假美猴王呢？</p> <p>那么这边就对这几个属性做一下说明。</p> <p>首先对于文档左侧菜单上的<code>compiler</code>钩子和<code>compilation</code>钩子(也就是第一个和第四个)我们在之后称它们为<code>Compiler</code>和<code>Compilation</code>好了，也是为了和<code>compile</code>做区分，其实我认为你可以把<code>"compiler钩子"</code>理解为<code>"compiler的钩子"</code>，这样会更好一些。</p> <ul><li><code>Compiler</code>：是一个对象，该对象代表了<strong>完整的<code>webpack</code>环境配置</strong>。整个<code>webpack</code>在构建的时候，会先<strong>初始化参数</strong>也就是从配置文件(<code>webpack.config.js</code>)和<code>Shell</code>语句(<code>"build": "webpack --mode development"</code>)中去读取与合并参数，之后<strong>开始编译</strong>，也就是将最终得到的参数初始化这个<code>Compiler</code>对象，然后再会加载所有配置的插件，执行该对象的<code>run()</code>方法开始执行编译。因此我们可以理解为它是<code>webpack</code>的支柱引擎。</li> <li><code>Compilation</code>：也是一个对象，不过它表示的是<strong>某一个模块</strong>的资源、编译生成的资源、变化的文件等等，因为我们知道我们在使用<code>webpack</code>进行构建的时候可能是会生成很多不同的模块的，而它的颗粒度就是在每一个模块上。</li></ul> <p>所以你现在可以看到它俩的区别了，一个是代表了整个构建的过程，一个是代表构建过程中的某个模块。</p> <p>还有很重要的一点，它们两都是扩展至我们上面👆提到的<code>Tapable</code>类，这也就是为什么它两都能有这么多生命周期钩子的原因。</p> <p>再来看看两个小写的<code>compile和compilation</code>，这两个其实就是<code>Compiler</code>对象下的两个钩子了，也就是我们可以通过这样的方式来调用它们：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token class-name">No1WebpackPlugin</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">apply</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>compile<span class="token punctuation">.</span><span class="token function">tap</span><span class="token punctuation">(</span><span class="token string">'No1'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span>msg<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>compilation<span class="token punctuation">.</span><span class="token function">tap</span><span class="token punctuation">(</span><span class="token string">'No1'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span>msg<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>区别在于：</p> <ul><li><code>compile</code>：一个新的编译(compilation)创建之后，钩入(hook into) compiler。</li> <li><code>compilation</code>：编译(compilation)创建之后，执行插件</li></ul> <h2 id="no2-webpack-plugin案例"><a href="#no2-webpack-plugin案例" class="header-anchor">#</a> No2-webpack-plugin案例</h2> <p>这个插件案例主要是为了帮你理解<code>Compiler、Compilation、compile、compilation</code>四者之间的关系。</p> <h3 id="compile和compilation"><a href="#compile和compilation" class="header-anchor">#</a> compile和compilation</h3> <p>还是在上面👆那个项目中，让我们在<code>plugins</code>文件夹下再新增一个插件，叫做<code>No2-webpack-plugin</code>：</p> <p><em>plugins/No2-webpack-plugin.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">No2WebpackPlugin</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>options <span class="token operator">=</span> options
+<span class="token punctuation">}</span>
+<span class="token class-name">No2WebpackPlugin</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">apply</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>compile<span class="token punctuation">.</span><span class="token function">tap</span><span class="token punctuation">(</span><span class="token string">'No2'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'compile'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>compilation<span class="token punctuation">.</span><span class="token function">tap</span><span class="token punctuation">(</span><span class="token string">'No2'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'compilation'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> No2WebpackPlugin<span class="token punctuation">;</span>
+</code></pre></div><p>在这个插件中，我分别调用了<code>compile</code>和<code>compilation</code>两个钩子函数，等会让我们看看会发生什么事情。</p> <p>同时，把<code>webpack.config.js</code>中的<code>No1</code>插件替换成<code>No2</code>插件：</p> <p><em>webpack.config.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> HtmlWebpackPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'html-webpack-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token punctuation">{</span> CleanWebpackPlugin <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'clean-webpack-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// const No1WebpackPlugin = require('./plugins/No1-webpack-plugin');</span>
+<span class="token keyword">const</span> No2WebpackPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./plugins/No2-webpack-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">entry</span><span class="token operator">:</span> <span class="token string">'./src/index.js'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">output</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">'[name].bundle.js'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">path</span><span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'dist'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token keyword">new</span> <span class="token class-name">HtmlWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'custom-plugin'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token keyword">new</span> <span class="token class-name">CleanWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token comment">// new No1WebpackPlugin({ msg: 'good boy!' })</span>
+    <span class="token keyword">new</span> <span class="token class-name">No2WebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">msg</span><span class="token operator">:</span> <span class="token string">'bad boy!'</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>现在项目的目录结构是这样的：</p> <div class="language-diff extra-class"><pre class="language-diff"><code><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">webpack-custom-plugin
+</span><span class="token prefix unchanged"> </span><span class="token line"> |- package.json
+</span><span class="token prefix unchanged"> </span><span class="token line"> |- webpack.config.js
+</span><span class="token prefix unchanged"> </span><span class="token line"> |- /src
+</span><span class="token prefix unchanged"> </span><span class="token line">   |- index.js
+</span><span class="token prefix unchanged"> </span><span class="token line"> |- /plugins
+</span><span class="token prefix unchanged"> </span><span class="token line">   |-No1-webpack-plugin.js
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">   |-No2-webpack-plugin.js
+</span></span></code></pre></div><p>OK👌，来执行<code>npm run build</code>看看：</p> <p><img src="https://s.poetries.top/gitee/2020/09/209.png" alt=""></p> <p>哈哈哈😄，是不是给了你点什么启发呢？</p> <p>我们最终生成的<code>dist</code>文件夹下会有两个文件，那么<code>compilation</code>这个钩子就被调用了两次，而<code>compile</code>钩子就只被调用了一次。</p> <p>有小伙伴可能就要问了，我们这里的<code>src</code>下明明就只有一个<code>index.js</code>文件啊，为什么最终的<code>dist</code>下会有两个文件呢？</p> <ul><li><code>main.bundle.js</code></li> <li><code>index.html</code></li></ul> <p>别忘了，在这个项目中我们可是使用了<code>html-webpack-plugin</code>这个插件的，它会帮我自动创建一个<code>html</code>文件。</p> <p>为了验证这个<code>compilation</code>是跟着文件的数量走的，我们暂时先把<code>new HtmlWebpackPlugin</code>给去掉看看：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// const HtmlWebpackPlugin = require('html-webpack-plugin');</span>
+<span class="token keyword">const</span> <span class="token punctuation">{</span> CleanWebpackPlugin <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'clean-webpack-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// const No1WebpackPlugin = require('./plugins/No1-webpack-plugin');</span>
+<span class="token keyword">const</span> No2WebpackPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./plugins/No2-webpack-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">entry</span><span class="token operator">:</span> <span class="token string">'./src/index.js'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">output</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">'[name].bundle.js'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">path</span><span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'dist'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token comment">// new HtmlWebpackPlugin({</span>
+    <span class="token comment">//   title: 'custom-plugin'</span>
+    <span class="token comment">// }),</span>
+    <span class="token keyword">new</span> <span class="token class-name">CleanWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token comment">// new No1WebpackPlugin({ msg: 'good boy!' })</span>
+    <span class="token keyword">new</span> <span class="token class-name">No2WebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">msg</span><span class="token operator">:</span> <span class="token string">'bad boy!'</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>试试效果？</p> <p><img src="https://s.poetries.top/gitee/2020/09/210.png" alt=""></p> <p>这时候，<code>compilation</code>就只执行一次了，而且<code>dist</code>中也没有再生成<code>html</code>文件了。</p> <p>(当然，我这里只是为了演示哈，在确定完了之后，我又把<code>html-webpack-plugin</code>给启用了)</p> <h3 id="compiler和compilation"><a href="#compiler和compilation" class="header-anchor">#</a> Compiler和Compilation</h3> <p>想必上面两个钩子函数的区别大家应该都搞懂了吧，接下来就让我们看看<code>Compiler</code>和<code>Compilation</code>这两个对象的区别。</p> <p>通过查看官方文档，我们发现，刚刚用到的<code>compiler.hooks.compilation</code>这个钩子，是能够接收一个参数的：</p> <p><img src="https://s.poetries.top/gitee/2020/09/211.png" alt=""></p> <p>貌似这个形参的名字就是叫做<code>compilation</code>，它和<code>Compilation</code>对象是不是有什么联系呢？或者说，它就是一个<code>Compilation</code>？。</p> <p>OK👌，我就假设它是吧，接下来我去查看了一下<code>compilation钩子</code>，哇，这钩子的数量是有点多哈，随便挑个顺眼的来玩玩？额，翻到最下面，有个<code>chunkAsset</code>，要不就它吧：</p> <p><img src="https://s.poetries.top/gitee/2020/09/212.png" alt=""></p> <p>可以看到这个钩子函数是有两个参数的：</p> <ul><li><code>chunk</code>：表示的应该就是当前的模块吧</li> <li><code>filename</code>：模块的名称</li></ul> <p>接着让我们来改写一下<code>No2-webpack-plugin</code>插件：</p> <p><em>src/No2-webpack-plugin.js</em>:</p> <div class="language-diff extra-class"><pre class="language-diff"><code>function No2WebpackPlugin (options) {
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> this.options = options
+</span></span>}
+No2WebpackPlugin.prototype.apply = function (compiler) {
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> compiler.hooks.compile.tap('No2', (compilation) =&gt; {
+</span><span class="token prefix unchanged"> </span><span class="token line">   console.log('compile')
+</span><span class="token prefix unchanged"> </span><span class="token line"> })
+</span><span class="token prefix unchanged"> </span><span class="token line"> compiler.hooks.compilation.tap('No2', (compilation) =&gt; {
+</span><span class="token prefix unchanged"> </span><span class="token line">   console.log('compilation')
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">   compilation.hooks.chunkAsset.tap('No2', (chunk, filename) =&gt; {
+</span><span class="token prefix inserted">+</span><span class="token line">     console.log(chunk)
+</span><span class="token prefix inserted">+</span><span class="token line">     console.log(filename)
+</span><span class="token prefix inserted">+</span><span class="token line">   })
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> })
+</span></span>}
+module.exports = No2WebpackPlugin;
+</code></pre></div><p>我们做了这么几件事：</p> <ul><li>在<code>Compiler</code>的<code>compilation</code>钩子函数中，获取到<code>Compilation</code>对象</li> <li>之后对每一个<code>Compilation</code>对象调用它的<code>chunkAsset</code>钩子</li> <li>根据文档我们发现<code>chunkAsset</code>钩子是一个<code>SyncHook</code>类型的钩子，所以只能用<code>tap</code>去调用</li></ul> <p>如果和我们猜测的一样，每个<code>Compilation</code>对象都对应着一个输出资源的话，那么当我们执行<code>npm run build</code>之后，控制台肯定会打印出两个<code>chunk</code>以及两个<code>filename</code>。</p> <p>一个是<code>index.html</code>，一个是<code>main.bundle.js</code>。</p> <p>OK👌，来瞅瞅。</p> <p>现在看看你的控制台是不是打印出了一大长串呢？这里简写一下输出结果：</p> <div class="language- extra-class"><pre class="language-text"><code>'compile'
+'compilation'
+'compilation'
+Chunk {
+  id: 'HtmlWebpackPlugin_0',
+  ...
+}
+'__child-HtmlWebpackPlugin_0'
+Chunk {
+  id: 'main',
+  ...
+}
+'main.bundle.js'
+</code></pre></div><p>可以看到，确实是有两个<code>Chunk</code>对象，还有两个文件名称。</p> <p>只不过<code>index.html</code>不是按照我们预期的输出为<code>"index.html"</code>，而是输出为了<code>__child-HtmlWebpackPlugin_0</code>，这点猜测是<code>html-webpack-plugin</code>插件本身做了一些处理吧。</p> <h3 id="compiler和compilation对象的内容"><a href="#compiler和compilation对象的内容" class="header-anchor">#</a> Compiler和Compilation对象的内容</h3> <p>如果大家把这两个对象打印在控制台上的话会发现有一大长串，这边找到了一份比较全面的对象属性的清单，大家可以看一下：</p> <p>(图片与总结来源：<a href="https://juejin.im/post/5d70b3e551882546ce277687#heading-3" target="_blank" rel="noopener noreferrer">编写一个自己的webpack插件plugin<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>)</p> <p><strong>Compiler 对象包含了 Webpack 环境所有的的配置信息</strong>，包含 <code>options</code>，<code>hook</code>，<code>loaders</code>，<code>plugins</code> 这些信息，这个对象在 <code>Webpack</code> 启动时候被实例化，它是<strong>全局唯一</strong>的，可以简单地把它理解为 <code>Webpack</code> 实例；<code>Compiler</code>中包含的东西如下所示：</p> <p><img src="https://s.poetries.top/gitee/2020/09/213.png" alt=""></p> <p><strong>Compilation 对象包含了当前的模块资源、编译生成资源、变化的文件等</strong>。当 <code>Webpack</code> 以开发模式运行时，每当检测到一个文件变化，一次新的 <code>Compilation</code> 将被创建。<code>Compilation</code> 对象也提供了很多事件回调供插件做扩展。通过 <code>Compilation</code> 也能读取到 <code>Compiler</code> 对象。</p> <p><img src="https://s.poetries.top/gitee/2020/09/214.png" alt=""></p> <p>好了，看到这里我相信你已经掌握了一个<code>webpack</code>插件的基本开发方式了。这个东西咋说呢，只有自己去多试试，多玩玩上手才能快，下面也会为大家演示一些稍微复杂一些的插件的开发案例。可以跟着一起来玩玩呀。</p> <h2 id="filelist-md案例"><a href="#filelist-md案例" class="header-anchor">#</a> fileList.md案例</h2> <p>唔...看了网上挺多这个<code>fileList.md</code>案例的，要不咱也给整一个？</p> <h3 id="明确需求"><a href="#明确需求" class="header-anchor">#</a> 明确需求</h3> <p>它的功能点其实很简单：</p> <ul><li>在每次<code>webpack</code>打包之后，自动产生一个打包文件清单，实际上就是一个<code>markdown</code>文件，上面记录了打包之后的文件夹<code>dist</code>里所有的文件的一些信息。</li></ul> <p>大家在接收到这个需求的时候，可以先想想要如何去实现：</p> <ul><li>首先要确定我们的插件是不是需要传递参数进去</li> <li>确定我们的插件是要在那个钩子函数中执行</li> <li>我们如何创建一个<code>markdown</code>文件并塞到<code>dist</code>里</li> <li><code>markdown</code>文件内的内容是长什么样的</li></ul> <p>针对第一点，我认为我们可以传递一个最终生成的文件名进去，例如这样调用：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token keyword">new</span> <span class="token class-name">FileListPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">'fileList.md'</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>第二点，因为是在打包完成之前，所以我们可以去<a href="https://www.webpackjs.com/api/compiler-hooks/#emit" target="_blank" rel="noopener noreferrer">compiler 钩子<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>来查查有没有什么可以用的。</p> <p>咦～这个叫做<code>emit</code>的好像挺符合的：</p> <ul><li>类型： <code>AsyncSeriesHook</code></li> <li>触发的事件：生成资源到 <code>output</code> 目录之前。</li> <li>参数：<code>compilation</code></li></ul> <p>第三点的话，难道要弄个<code>node</code>的<code>fs</code>？再创建个文件之类的？唔...不用搞的那么复杂，等会让我们看个简单点的方式。</p> <p>第四点，我们就简单点，例如写入这样的内容就可以了：</p> <div class="language-markdown extra-class"><pre class="language-markdown"><code><span class="token title important"><span class="token punctuation">#</span> 一共有2个文件</span>
+
+<span class="token list punctuation">-</span> main.bundle.js
+<span class="token list punctuation">-</span> index.html
+
+</code></pre></div><h3 id="代码分析"><a href="#代码分析" class="header-anchor">#</a> 代码分析</h3> <p>由于功能也并不算很复杂，这里就直接上代码了，然后再来一步一步解析。</p> <p>还是基于刚刚的案例，让我们继续在<code>plugins</code>文件夹下创建一个新的插件：</p> <p><em>plugins/File-list-plugin.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">FileListPlugin</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>options <span class="token operator">=</span> options <span class="token operator">||</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>filename <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span>filename <span class="token operator">||</span> <span class="token string">'fileList.md'</span>
+<span class="token punctuation">}</span>
+
+<span class="token class-name">FileListPlugin</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">apply</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 1.</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>emit<span class="token punctuation">.</span><span class="token function">tapAsync</span><span class="token punctuation">(</span><span class="token string">'FileListPlugin'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">compilation<span class="token punctuation">,</span> cb</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 2.</span>
+    <span class="token keyword">const</span> fileListName <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>filename<span class="token punctuation">;</span>
+    <span class="token comment">// 3.</span>
+    <span class="token keyword">let</span> len <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>compilation<span class="token punctuation">.</span>assets<span class="token punctuation">)</span><span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+    <span class="token comment">// 4.</span>
+    <span class="token keyword">let</span> content <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"># 一共有</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>len<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">个文件\n\n</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+    <span class="token comment">// 5.</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> filename <span class="token keyword">in</span> compilation<span class="token punctuation">.</span>assets<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      content <span class="token operator">+=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">- </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>filename<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">\n</span><span class="token template-punctuation string">`</span></span>
+    <span class="token punctuation">}</span>
+    <span class="token comment">// 6.</span>
+    compilation<span class="token punctuation">.</span>assets<span class="token punctuation">[</span>fileListName<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 7.</span>
+      <span class="token function-variable function">source</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> content<span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token comment">// 8.</span>
+      <span class="token function-variable function">size</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> content<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment">// 9.</span>
+    <span class="token function">cb</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> FileListPlugin<span class="token punctuation">;</span>
+</code></pre></div><p>代码分析：</p> <ol><li>通过<code>compiler.hooks.emit.tapAsync()</code>来触发生成资源到<code>output</code>目录之前的钩子，且回调函数会有两个参数，一个是<code>compilation</code>，一个是<code>cb</code>回调函数</li> <li>要生成的<code>markdown</code>文件的名称</li> <li>通过<code>compilation.assets</code>获取到所有待生成的文件，这里是获取它的长度</li> <li>定义<code>markdown</code>文件的内容，也就是先定义一个一级标题，<code>\n</code>表示的是换行符</li> <li>将每一项文件的名称写入<code>markdown</code>文件内</li> <li>给我们即将生成的<code>dist</code>文件夹里添加一个新的资源，资源的名称就是<code>fileListName</code>变量</li> <li>写入资源的内容</li> <li>指定新资源的大小，用于<code>webpack</code>展示</li> <li>由于我们使用的是<code>tapAsync</code>异步调用，所以必须执行一个回调函数<code>cb</code>，否则打包后就只会创建一个空的<code>dist</code>文件夹。</li></ol> <p>好滴，大功告成，让我们赶紧来试试这个新插件吧，修改<code>webpack.config.js</code>的配置：</p> <p><em>webpack.config.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> HtmlWebpackPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'html-webpack-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token punctuation">{</span> CleanWebpackPlugin <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'clean-webpack-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// const No1WebpackPlugin = require('./plugins/No1-webpack-plugin');</span>
+<span class="token comment">// const No2WebpackPlugin = require('./plugins/No2-webpack-plugin');</span>
+<span class="token keyword">const</span> FileListPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./plugins/File-list-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">entry</span><span class="token operator">:</span> <span class="token string">'./src/index.js'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">output</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">'[name].bundle.js'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">path</span><span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'dist'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token keyword">new</span> <span class="token class-name">HtmlWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'custom-plugin'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token keyword">new</span> <span class="token class-name">CleanWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token comment">// new No1WebpackPlugin({ msg: 'good boy!' })</span>
+    <span class="token comment">// new No2WebpackPlugin({ msg: 'bad boy!' })</span>
+    <span class="token keyword">new</span>  <span class="token class-name">FileListPlugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>来执行一下<code>npm run build</code>看看吧：</p> <p><img src="https://s.poetries.top/gitee/2020/09/215.png" alt=""></p> <h3 id="使用tappromise重写"><a href="#使用tappromise重写" class="header-anchor">#</a> 使用tapPromise重写</h3> <p>可以看到，上面👆的案例我们是使用<code>tapAsync</code>来调用钩子函数，这个<code>tapPromise</code>好像还没有玩过，唔...我们看看它是怎样用的。</p> <p>现在让我们来改下需求，刚刚我们好像看不太出来是异步执行的。现在我们改为<code>1s</code>后才输出资源。</p> <p>重写一下刚刚的插件：</p> <p><em>plugins/File-list-plugin.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">FileListPlugin</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>options <span class="token operator">=</span> options <span class="token operator">||</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>filename <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span>filename <span class="token operator">||</span> <span class="token string">'fileList.md'</span>
+<span class="token punctuation">}</span>
+
+<span class="token class-name">FileListPlugin</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">apply</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 第二种 Promise</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>emit<span class="token punctuation">.</span><span class="token function">tapPromise</span><span class="token punctuation">(</span><span class="token string">'FileListPlugin'</span><span class="token punctuation">,</span> <span class="token parameter">compilation</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token parameter">resolve</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> fileListName <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>filename<span class="token punctuation">;</span>
+      <span class="token keyword">let</span> len <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>compilation<span class="token punctuation">.</span>assets<span class="token punctuation">)</span><span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+      <span class="token keyword">let</span> content <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"># 一共有</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>len<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">个文件\n\n</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+      <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> filename <span class="token keyword">in</span> compilation<span class="token punctuation">.</span>assets<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        content <span class="token operator">+=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">- </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>filename<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">\n</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+      compilation<span class="token punctuation">.</span>assets<span class="token punctuation">[</span>fileListName<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+        <span class="token function-variable function">source</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">return</span> content<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token function-variable function">size</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">return</span> content<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> FileListPlugin<span class="token punctuation">;</span>
+</code></pre></div><p>可以看到它与第一种<code>tapAsync</code>写法的区别了：</p> <ul><li>回调函数中只需要一个参数<code>compilation</code>，不需要再调用一下<code>cb()</code></li> <li>返回的是一个<code>Promise</code>，这个<code>Promise</code>在<code>1s</code>后才<code>resolve()</code>。</li></ul> <p>大家可以自己写写看看效果，应该是和我们预期的一样的。</p> <p>另外，<code>tapPromise</code>还允许我们使用<code>async/await</code>的方式，比如这样：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">FileListPlugin</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>options <span class="token operator">=</span> options <span class="token operator">||</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>filename <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span>filename <span class="token operator">||</span> <span class="token string">'fileList.md'</span>
+<span class="token punctuation">}</span>
+
+<span class="token class-name">FileListPlugin</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">apply</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 第三种 await/async</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>emit<span class="token punctuation">.</span><span class="token function">tapPromise</span><span class="token punctuation">(</span><span class="token string">'FileListPlugin'</span><span class="token punctuation">,</span> <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token parameter">compilation</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">await</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token parameter">resolve</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token keyword">const</span> fileListName <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>filename<span class="token punctuation">;</span>
+    <span class="token keyword">let</span> len <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>compilation<span class="token punctuation">.</span>assets<span class="token punctuation">)</span><span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+    <span class="token keyword">let</span> content <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"># 一共有</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>len<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">个文件\n\n</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> filename <span class="token keyword">in</span> compilation<span class="token punctuation">.</span>assets<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      content <span class="token operator">+=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">- </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>filename<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">\n</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    compilation<span class="token punctuation">.</span>assets<span class="token punctuation">[</span>fileListName<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+      <span class="token function-variable function">source</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> content<span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token function-variable function">size</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> content<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> FileListPlugin<span class="token punctuation">;</span>
+</code></pre></div><h2 id="watch-plugin案例"><a href="#watch-plugin案例" class="header-anchor">#</a> Watch-plugin案例</h2> <h3 id="明确需求-2"><a href="#明确需求-2" class="header-anchor">#</a> 明确需求</h3> <p>话不多说，让我们接着来看一个监听的案例。需求如下：</p> <ul><li>当项目在开启观察者<code>watch</code>模式的时候，监听每一次资源的改动</li> <li>当每次资源变动了，将改动资源的个数以及改动资源的列表输出到控制台中</li> <li>监听结束之后，在控制台输出<code>"本次监听停止了哟～"</code></li></ul> <p>那么首先为了满足第一个条件，我们得设计一条<code>watch</code>的指令，以保证使用<code>npm run watch</code>命令之后，会看到编译过程，但是不会退出命令行，而是实时监控文件。这也很简单，加一条脚本命令就可以了。</p> <p><em>package.json</em>:</p> <div class="language-json extra-class"><pre class="language-json"><code><span class="token punctuation">{</span>
+  <span class="token property">"script"</span><span class="token operator">:</span> <span class="token string">"webpack --watch --mode development"</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>然后想一想我们的插件该如何设计，这时候就要知道我们需要调用哪个钩子函数了。</p> <p>去官网上看一看，这个<code>watchRun</code>就很符合呀：</p> <ul><li>类型：<code>AsyncSeriesHook</code></li> <li>触发的事件：监听模式下，一个新的编译(compilation)触发之后，执行一个插件，但是是在实际编译开始之前。</li> <li>参数：<code>compiler</code></li></ul> <p>针对第三点，监听结束之后，<code>watchClose</code>就可以了：</p> <ul><li>类型：<code>SyncHook</code></li> <li>触发的事件：监听模式停止。</li> <li>参数：无</li></ul> <h3 id="代码分析-2"><a href="#代码分析-2" class="header-anchor">#</a> 代码分析</h3> <p>好的👌，让我们开干吧。在此项目的<code>plugins</code>文件夹下再新建一个叫做<code>Watch-plugin</code>的插件。</p> <p>先搭一下插件的架子吧：</p> <p><em>plugins/Watch-plugin.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">WatcherPlugin</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>options <span class="token operator">=</span> options <span class="token operator">||</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token class-name">WatcherPlugin</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">apply</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>watchRun<span class="token punctuation">.</span><span class="token function">tapAsync</span><span class="token punctuation">(</span><span class="token string">'WatcherPlugin'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">compiler<span class="token punctuation">,</span> cb</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'我可是时刻监听着的 🚀🚀🚀'</span><span class="token punctuation">)</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>compiler<span class="token punctuation">)</span>
+    <span class="token function">cb</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>watchClose<span class="token punctuation">.</span><span class="token function">tap</span><span class="token punctuation">(</span><span class="token string">'WatcherPlugin'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'本次监听停止了哟～👋👋👋'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> WatcherPlugin<span class="token punctuation">;</span>
+</code></pre></div><p>(额，这个火箭🚀是用Mac自带的输入法打出来的，其它输入法应该也有吧)</p> <p>通过上面几个案例的讲解，这段代码大家应该都没有什么疑问了吧。</p> <p>那么现在的问题就是如何知道哪些文件改变了。其实我们在研究一个新东西的时候，如果没啥思路，不如就在已有的条件上先找一下，比如这里我们就只知道一个<code>compiler</code>，那么我们就可以查找一下它里面的属性，看看有什么是我们能用的吗。</p> <p>也就是上面的这张图：</p> <p><img src="https://s.poetries.top/gitee/2020/09/216.png" alt=""></p> <p>可以看到，有一个叫做<code>watchFileSystem</code>的属性应该就是我们想要的监听文件的属性了，打印出来看看？</p> <p>好滴👌，那就先让我启动这个插件吧，也就是改一下<code>webpack.config.js</code>那里的配置，由于上面几个案例都已经演示过了这里就不再累赘，直接跳过讲解这一步了。</p> <p>直接让我们来<code>npm run watch</code>一下吧，控制台已经输出了它，可是由于我们是需要监听文件的改变，所以虽然控制台输出了<code>watchFileSystem</code>，但是这一次是初始化时打印的，也就是说我们需要改动一下本地的一个资源然后保存再来看看效果。</p> <p>例如，我随便改动一下<code>src/index.js</code>中的内容然后保存。这时候就触发了监听事件了，让我们来看一下打印的结果：</p> <p><img src="https://s.poetries.top/gitee/2020/09/217.png" alt=""></p> <p>可以看到<code>watchFileSystem</code>中确实有一个<code>watch</code>属性，而且里面有一个<code>fileWatchers</code>的列表，还有一个<code>mtimes</code>对象。这两个属性引起了我的注意。貌似<code>mtimes</code>对象就是我们想要的了。</p> <p>它是一个键值对，键名为改动的文件的路径，值为时间。</p> <p>那么我们就可以直接来获取它了：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">WatcherPlugin</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>options <span class="token operator">=</span> options <span class="token operator">||</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token class-name">WatcherPlugin</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">apply</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>watchRun<span class="token punctuation">.</span><span class="token function">tapAsync</span><span class="token punctuation">(</span><span class="token string">'WatcherPlugin'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">compiler<span class="token punctuation">,</span> cb</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'我可是时刻监听着的 🚀🚀🚀'</span><span class="token punctuation">)</span>
+    <span class="token keyword">let</span> mtimes <span class="token operator">=</span> compiler<span class="token punctuation">.</span>watchFileSystem<span class="token punctuation">.</span>watcher<span class="token punctuation">.</span>mtimes<span class="token punctuation">;</span>
+    <span class="token keyword">let</span> mtimesKeys <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>mtimes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mtimesKeys<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">本次一共改动了</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>mtimesKeys<span class="token punctuation">.</span>length<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">个文件,目录为:</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>mtimesKeys<span class="token punctuation">)</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'------------分割线-------------'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">cb</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>watchClose<span class="token punctuation">.</span><span class="token function">tap</span><span class="token punctuation">(</span><span class="token string">'WatcherPlugin'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'本次监听停止了哟～👋👋👋'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> WatcherPlugin<span class="token punctuation">;</span>
+</code></pre></div><p>好滴，接着：</p> <ul><li>保存文件</li> <li>重新执行<code>npm run watch</code></li> <li>第一次打印看不出效果，接着让我们改动一下<code>src/index.js</code>，随便加个注释</li> <li>再保存<code>src/index.js</code>文件，打印结果如下：</li></ul> <p><img src="https://s.poetries.top/gitee/2020/09/218.png" alt=""></p> <p>好滴👌，这样就实现了一个简单的文件监听功能。不过使用<code>mtimes</code>只能获取到简单的文件的路径和修改时间。如果要获取更加详细的信息可以使用<code>compiler.watchFileSystem.watcher.fileWatchers</code>，但是我试了一下这里面的数组是会把<code>node_modules</code>里的改变也算上的，例如这样：</p> <p><img src="https://s.poetries.top/gitee/2020/09/219.png" alt=""></p> <p>所以如果针对于这道题的话，我们可以写一个正则小小的判断一下，去除<code>node_modules</code>文件夹里的改变，代码如下：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">WatcherPlugin</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>options <span class="token operator">=</span> options <span class="token operator">||</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token class-name">WatcherPlugin</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">apply</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>watchRun<span class="token punctuation">.</span><span class="token function">tapAsync</span><span class="token punctuation">(</span><span class="token string">'WatcherPlugin'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">compiler<span class="token punctuation">,</span> cb</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'我可是时刻监听着的 🚀🚀🚀'</span><span class="token punctuation">)</span>
+    <span class="token comment">// let mtimes = compiler.watchFileSystem.watcher.mtimes;</span>
+    <span class="token comment">// let mtimesKeys = Object.keys(mtimes);</span>
+    <span class="token comment">// if (mtimesKeys.length &gt; 0) {</span>
+    <span class="token comment">//   console.log(`本次一共改动了${mtimesKeys.length}个文件,目录为:`)</span>
+    <span class="token comment">//   console.log(mtimesKeys)</span>
+    <span class="token comment">//   console.log('------------分割线-------------')</span>
+    <span class="token comment">// }</span>
+    <span class="token keyword">const</span> fileWatchers <span class="token operator">=</span> compiler<span class="token punctuation">.</span>watchFileSystem<span class="token punctuation">.</span>watcher<span class="token punctuation">.</span>fileWatchers<span class="token punctuation">;</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>fileWatchers<span class="token punctuation">)</span>
+    <span class="token keyword">let</span> paths <span class="token operator">=</span> fileWatchers<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token parameter">watcher</span> <span class="token operator">=&gt;</span> watcher<span class="token punctuation">.</span>path<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">path</span> <span class="token operator">=&gt;</span> <span class="token operator">!</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(node_modules)</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>path<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>paths<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">本次一共改动了</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>paths<span class="token punctuation">.</span>length<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">个文件,目录为:</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>paths<span class="token punctuation">)</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'------------分割线-------------'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">cb</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>watchClose<span class="token punctuation">.</span><span class="token function">tap</span><span class="token punctuation">(</span><span class="token string">'WatcherPlugin'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'本次监听停止了哟～👋👋👋'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> WatcherPlugin<span class="token punctuation">;</span>
+</code></pre></div><p>另外在读<a href="https://webpack.wuhaolin.cn/5%E5%8E%9F%E7%90%86/5-4%E7%BC%96%E5%86%99Plugin.html" target="_blank" rel="noopener noreferrer"> 《深入浅出Webpack》<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>的时候，里面也有提到：</p> <p>默认情况下 Webpack 只会监视入口和其依赖的模块是否发生变化，在有些情况下项目可能需要引入新的文件，例如引入一个 HTML 文件。 由于 JavaScript 文件不会去导入 HTML 文件，Webpack 就不会监听 HTML 文件的变化，编辑 HTML 文件时就不会重新触发新的 Compilation。 为了监听 HTML 文件的变化，我们需要把 HTML 文件加入到依赖列表中，为此可以使用如下代码：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>compiler<span class="token punctuation">.</span><span class="token function">plugin</span><span class="token punctuation">(</span><span class="token string">'after-compile'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">compilation<span class="token punctuation">,</span> callback</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 把 HTML 文件添加到文件依赖列表，好让 Webpack 去监听 HTML 模块文件，在 HTML 模版文件发生变化时重新启动一次编译</span>
+    compilation<span class="token punctuation">.</span>fileDependencies<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>filePath<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">callback</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>感兴趣的小伙伴可以自己去实验一下，这里就不做演示了。</p> <h2 id="decide-html-plugin案例"><a href="#decide-html-plugin案例" class="header-anchor">#</a> Decide-html-plugin案例</h2> <p>再来看个案例，这个插件是用来检测我们有没有使用<code>html-webpack-plugin</code>插件的。</p> <p>还记得我们前面说的<code>Compiler</code>对象中，包含了 Webpack 环境所有的的配置信息，包含 <code>options</code>，<code>hook</code>，<code>loaders</code>，<code>plugins</code> 这些信息。</p> <p>那么这样我就可以通过<code>plugins</code>来判断是否使用了<code>html-webpack-plugin</code>了。</p> <p>由于功能不复杂，这就直接上代码了：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">DecideHtmlPlugin</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+
+<span class="token class-name">DecideHtmlPlugin</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">apply</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>afterPlugins<span class="token punctuation">.</span><span class="token function">tap</span><span class="token punctuation">(</span><span class="token string">'DecideHtmlPlugin'</span><span class="token punctuation">,</span> <span class="token parameter">compiler</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> plugins <span class="token operator">=</span> compiler<span class="token punctuation">.</span>options<span class="token punctuation">.</span>plugins<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> hasHtmlPlugin <span class="token operator">=</span> plugins<span class="token punctuation">.</span><span class="token function">some</span><span class="token punctuation">(</span><span class="token parameter">plugin</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> plugin<span class="token punctuation">.</span><span class="token class-name">__proto__</span><span class="token punctuation">.</span>constructor<span class="token punctuation">.</span>name <span class="token operator">===</span> <span class="token string">'HtmlWebpackPlugin'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>hasHtmlPlugin<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'使用了html-webpack-plugin'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> DecideHtmlPlugin
+</code></pre></div><p>有需要注意的点⚠️：</p> <ul><li><code>afterPlugins</code>：设置完初始插件之后，执行插件。</li> <li><code>plugins</code>拿到的会是一个插件列表，包括我们的自定义插件<code>DecideHtmlPlugin</code>也会在里面</li> <li><code>some()</code>是<code>Array.prototype</code>上的方法，用于判断某个数组是否有符合条件的项，只要有一项满足就返回<code>true</code>，否则返回<code>false</code></li></ul> <p>配置一下<code>webpack.config.js</code>，来看看效果是可以的：</p> <p><img src="https://s.poetries.top/gitee/2020/09/220.png" alt=""></p> <h2 id="clean-plugin案例"><a href="#clean-plugin案例" class="header-anchor">#</a> Clean-plugin案例</h2> <p>还记得上面👆的项目我们用到的那个<code>clean-webpack-plugin</code>，现在我们自己来实现一个简易版的<code>clean-webpack-plugin</code>吧，名称就叫<code>Clean-plugin</code>。</p> <h3 id="明确需求-3"><a href="#明确需求-3" class="header-anchor">#</a> 明确需求</h3> <p>一样的，首先还是明确一下我们的需求：</p> <p>我们需要设计这么一个插件，在每次重新编译之后，都会自动清理掉上一次残余的<code>dist</code>文件夹中的内容，不过需要满足以下需求：</p> <ul><li>插件的<code>options</code>中有一个属性为<code>exclude</code>，为一个数组，用来定义不需要清除的文件列表</li> <li>每次打包如果文件有修改则会生成新的文件且文件的指纹也会变(文件名以<code>hash</code>命名)</li> <li>生成了新的文件，则需要把以前的文件给清理掉。</li></ul> <p>例如我第一次打包之后，生成的<code>dist</code>目录结构是这样的：</p> <div class="language- extra-class"><pre class="language-text"><code>/dist
+  |- main.f89e7ffee29ee9dbf0de.js
+  |- main.f97284d8479b13c49723.css
+</code></pre></div><p>然后我修改了一下<code>js</code>文件并重新编译，新的目录结构应该是这样的：</p> <div class="language- extra-class"><pre class="language-text"><code>/dist
+  |- main.e0c6be8f72d73a68f73a.js
+  |- main.f97284d8479b13c49723.css
+</code></pre></div><p>可以看到，如果我们是用<code>chunkhash</code>给输出文件命名的话，只改变<code>js</code>文件，则<code>js</code>文件的文件名会发生变化，而不会影响<code>css</code>文件。</p> <p>此时，我们就需要将旧的<code>js</code>文件给替换成新的，也就是只删除<code>main.f89e7ffee29ee9dbf0de.js</code>文件。</p> <p>而如果我们在配置插件的时候加了<code>exclude</code>属性的话，则不需要把这个属性中的文件给删除。例如如果我是这样配置的话：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token keyword">new</span> <span class="token class-name">CleanPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">exclude</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"main.f89e7ffee29ee9dbf0de.js"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>那么这时候就算你修改了<code>js</code>文件，结果虽然会生成新的<code>js</code>文件，但是也不会把旧的给删除，而是共存：</p> <div class="language- extra-class"><pre class="language-text"><code>/dist
+  |- main.f89e7ffee29ee9dbf0de.js
+  |- main.e0c6be8f72d73a68f73a.js
+  |- main.f97284d8479b13c49723.css
+</code></pre></div><h3 id="代码分析-3"><a href="#代码分析-3" class="header-anchor">#</a> 代码分析</h3> <p>所以针对于上面这个需求，我们先给自己几个灵魂拷问：</p> <ol><li>此插件在哪个钩子函数中执行</li> <li>如何获取旧的<code>dist</code>文件夹中的所有文件</li> <li>如何获取新生成的所有文件，以及<code>options.exclude</code>中的文件名称，并合并为一个无重复项的数组</li> <li>如何将旧的所有文件和新的所有文件做一个对比得出需要删除的文件列表</li> <li>如何删除被废弃的文件</li></ol> <p>(在这个过程中我们肯定会碰到很多自己不知道的知识点，请不要慌，大家都是有这么一个不会到会的过程)</p> <p><strong>问题一</strong></p> <p>在哪个钩子函数中执行，我觉得可以在<code>"done"</code>中，因为我们其中的一个目的就是既能拿到旧的文件夹内容，又能拿到新的。而在这个阶段，表示已经编译完成了，所以是可以拿到最新的资源了。</p> <p><strong>问题二</strong></p> <p>获取旧的<code>dist</code>文件夹内的内容。还记得我们的<code>dist</code>文件夹是怎么来的吗？它是在我们<code>webpack.config.js</code>这个文件中配置的<code>output</code>项：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">output</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">path</span><span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'dist'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>所以很轻松的我们可以通过<code>compiler.options.output.path</code>就拿到这个旧的输出路径了，然后我们需要去读取这个路径文件夹下的所有文件，也就是遍历<code>dist</code>文件夹。</p> <p>这边我们需要用到一个叫<code>recursive-readdir-sync</code>的东西，稍后我们需要安装它，它的作用就是<strong>以递归方式同步读取目录路径的内容</strong>。(github地址为：<a href="https://github.com/battlejj/recursive-readdir-sync" target="_blank" rel="noopener noreferrer">https://github.com/battlejj/recursive-readdir-sync<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>)</p> <p><strong>问题三</strong></p> <p>获取新生成的所有文件，也就是所有的资源。这点得看<code>"done"</code>回调函数中的参数<code>stats</code>了。如果你把这个参数打印出来看的话会发现它包括了<code>webpack</code>中的很多配置，包括<code>options</code>包括<code>assets</code>等等。而这里我们就是需要获取打包完之后的所有最新资源也就是<code>assets</code>属性。</p> <p>你以为直接<code>stats.assets</code>获取就完了吗？如果你试图这样去做的话，就会报错了。在<code>webpack</code>中它鼓励你用<code>stats.toJson().assets</code>的方式来获取。这也不是很清楚原因，大家可以看一下这里：</p> <p><a href="https://www.codota.com/code/javascript/functions/webpack/Stats/toJson" target="_blank" rel="noopener noreferrer">https://www.codota.com/code/javascript/functions/webpack/Stats/toJson<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p>然后至于<code>options.exclude</code>中的文件名称，这个在插件的构造函数中定义一个<code>options</code>属性就可以拿到了。</p> <p>合并无重复项我们可以使用<code>lodash.union</code>方法，<a href="https://www.lodashjs.com/docs/latest" target="_blank" rel="noopener noreferrer">lodash<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>它是一个高性能的 JavaScript 实用工具库，里面提供了许多的方法来使我们更方便的操作数组、对象、字符串等。而这里的<code>union</code>方法就是能把多个数组合并成一个无重复项的数组，例如🌰：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>_<span class="token punctuation">.</span><span class="token function">union</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// =&gt; [2, 1]</span>
+</code></pre></div><p>至于为什么要把这两个数组组合起来呢？那也是为了保证<code>exclude</code>中定义的文件在后面比较的过程中不会被删除。</p> <p><strong>问题四</strong></p> <p>将新旧文件列表做对比，得出最终需要删除的文件列表。</p> <p>唔...其实最难的点应该就是在这里了。因为这里并不是简单的文件名称字符串匹配，它需要涉及到路径问题。</p> <p>例如，我们前面说到可以通过<code>compiler.options.output.path</code>拿到文件的输出路径，也就是<code>dist</code>的绝对路径，我们命名为<code>outputPath</code>，它可能是长这样的：</p> <div class="language- extra-class"><pre class="language-text"><code>/Users/lindaidai/codes/webpack/webpack-example/webpack-custom-plugin/dist
+</code></pre></div><p>而后我们会用一个叫<code>recursive-readdir-sync</code>的东西去处理这个绝对路径，获取里面的所有文件：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">recursiveReadSync</span><span class="token punctuation">(</span>outputPath<span class="token punctuation">)</span>
+</code></pre></div><p>这里得到的会是各个文件：</p> <div class="language- extra-class"><pre class="language-text"><code>[
+  file /Users/lindaidai/codes/webpack/webpack-example/webpack-custom-plugin/dist/main.f89e7ffee29ee9dbf0de.js,
+  file /Users/lindaidai/codes/webpack/webpack-example/webpack-custom-plugin/dist/css/main.124248e814cc2eeb1fd4.css
+]
+</code></pre></div><p>以上得到的列表就是旧的<code>dist</code>文件夹中的所有文件列表。</p> <p>而后，我们需要得到新生成的文件的列表，也就是<code>stats.toJson().assets.map(file =&gt; file.name)</code>和<code>exclude</code>合并后的那个文件列表，我们称为<code>newAssets</code>。但是这里需要注意的就是<code>newAssets</code>中的是各个新生成的文件的名称，也就是这样：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">[</span>
+  <span class="token string">"main.e0c6be8f72d73a68f73a.js"</span><span class="token punctuation">,</span>
+  <span class="token string">"main.124248e814cc2eeb1fd4.css"</span>
+<span class="token punctuation">]</span>
+</code></pre></div><p>所以我们需要做一些额外的路径转换的处理，再来进行比较。</p> <p>而如果在路径前缀相同的情况下，我们只需要把<code>recursiveReadSync(outputPath)</code>处理之后的结果做一层过滤，排除掉<code>newAssets</code>里的内容，那么留下来的就是需要删除的文件，也就是<code>unmatchFiles</code>这个数组。</p> <p>有点绕？让我们来写下伪代码：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> unmatchFiles <span class="token operator">=</span> <span class="token function">recursiveReadSync</span><span class="token punctuation">(</span>outputPath<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">file</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 这里与 newAssets 做对比</span>
+  <span class="token comment">// 过滤掉存在 newAssets 中的文件</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// unmatchFiles 就是为我们需要清理的所有文件</span>
+</code></pre></div><p>在这个匹配的过程中，我们会需要用到一个<code>minimatch</code>的工具库，它很适合用来做这种文件路径的匹配。</p> <p>github地址可以看这里：<a href="https://github.com/isaacs/minimatch" target="_blank" rel="noopener noreferrer">https://github.com/isaacs/minimatch<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <p><strong>问题五</strong></p> <p>在上一步中我们会得到需要删除的文件列表，这时候只需要调用一下<code>fs</code>模块中的<code>unlinkSync</code>方法就可以删除了。</p> <p>例如：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 删除未匹配文件</span>
+unmatchFiles<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>fs<span class="token punctuation">.</span>unlinkSync<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="案例准备-2"><a href="#案例准备-2" class="header-anchor">#</a> 案例准备</h3> <p>好滴，分析了这么多，是时候动手来写一写了，还是基于之前的那个案例。让我们先来安装一下上面提到的一些模块或者工具：</p> <div class="language- extra-class"><pre class="language-text"><code>cnpm i --save-dev recursive-readdir-sync minimatch lodash.union
+</code></pre></div><p>唔。然后为了能看到之后修改文件有没有删除掉旧的文件这个效果，我们可以来写一些<code>css</code>的样式，然后用<code>MiniCssExtractPlugin</code>这个插件去提取出<code>css</code>代码，这样打包之后就可以放到一个单独的<code>css</code>文件中了。</p> <p>关于这个插件，不清楚的小伙伴你就理解它为下面这个场景：</p> <p>我的<code>src</code>下有一个<code>index.js</code>和一个<code>style.css</code>，如果在<code>index.js</code>中引用了<code>style.css</code>的话：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> <span class="token string">'./style.css'</span><span class="token punctuation">;</span>
+</code></pre></div><p>最终的<code>css</code>代码是会被打包进<code>js</code>文件中的，<code>webpack</code>并不会那么智能的把它拆成一个单独的<code>css</code>文件。</p> <p>所以这时候就可以用<code>MiniCssExtractPlugin</code>这个插件来单独的提前<code>css</code>。(不过这个插件的主要作用还是为了提取公共的<code>css</code>代码哈，在这里我们只是为了将<code>css</code>提取出来)</p> <p>好滴，首先让我们来安装它，顺便安装一下另两个<code>loader</code>：</p> <div class="language- extra-class"><pre class="language-text"><code>cnpm i --save-dev style-loader css-loader mini-css-extract-plugin
+</code></pre></div><p>然后在<code>src</code>目录下新建一个<code>style.css</code>文件，并写点样式：</p> <p><em>src/style.css</em>:</p> <div class="language-css extra-class"><pre class="language-css"><code><span class="token selector">.color_red</span> <span class="token punctuation">{</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> red<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">.color_blue</span> <span class="token punctuation">{</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> blue<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>接着快速来配置一下<code>webpack.config.js</code>:</p> <p>(这里面有用到一个<code>CleanPlugin</code>的插件，它是我们接下来要创建的文件)</p> <p><em>webpack.config.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> HtmlWebpackPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'html-webpack-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> CleanPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./plugins/Clean-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> MiniCssExtractPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'mini-css-extract-plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">entry</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token string">'./src/index.js'</span><span class="token punctuation">,</span>
+    <span class="token string">'./src/style.css'</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">output</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">'[name].[contenthash].js'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">path</span><span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'dist'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token keyword">new</span> <span class="token class-name">HtmlWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'custom-plugin'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token keyword">new</span> <span class="token class-name">CleanPlugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token keyword">new</span> <span class="token class-name">MiniCssExtractPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">'css/[name].[contenthash].css'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">module</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span>
+        <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.css$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+        <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span>MiniCssExtractPlugin<span class="token punctuation">.</span>loader<span class="token punctuation">,</span> <span class="token string">'css-loader'</span><span class="token punctuation">]</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>这里有一点前面也提到了，就是关于<code>output.filename</code>的命名和<code>MiniCssExtractPlugin</code>中生成<code>css</code>文件的命名，我们采用<code>contenthash</code>的方式，这样的话，如果我们只改变了<code>js</code>文件的话，那么重新打包之后，就只有<code>js</code>文件的<code>hash</code>会被重新生成，而<code>css</code>不会。这也是为了之后看到效果。</p> <h3 id="coding"><a href="#coding" class="header-anchor">#</a> coding</h3> <p>最后，在<code>plugins</code>文件夹下创建我们的<code>Clean-plugin.js</code>吧：</p> <p><em>plugins/Clean-plugin.js</em>:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> recursiveReadSync <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"recursive-readdir-sync"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> minimatch <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"minimatch"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"path"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"fs"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> union <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"lodash.union"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">function</span> <span class="token function">CleanPlugin</span> <span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>options <span class="token operator">=</span> options<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment">// 匹配文件</span>
+<span class="token keyword">function</span> <span class="token function">getUnmatchFiles</span><span class="token punctuation">(</span><span class="token parameter">fromPath<span class="token punctuation">,</span> exclude <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> unmatchFiles <span class="token operator">=</span> <span class="token function">recursiveReadSync</span><span class="token punctuation">(</span>fromPath<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">file</span> <span class="token operator">=&gt;</span>
+    exclude<span class="token punctuation">.</span><span class="token function">every</span><span class="token punctuation">(</span>
+      <span class="token parameter">excluded</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token operator">!</span><span class="token function">minimatch</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">relative</span><span class="token punctuation">(</span>fromPath<span class="token punctuation">,</span> file<span class="token punctuation">)</span><span class="token punctuation">,</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>excluded<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+          <span class="token literal-property property">dot</span><span class="token operator">:</span> <span class="token boolean">true</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> unmatchFiles<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token class-name">CleanPlugin</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">apply</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> outputPath <span class="token operator">=</span> compiler<span class="token punctuation">.</span>options<span class="token punctuation">.</span>output<span class="token punctuation">.</span>path<span class="token punctuation">;</span>
+  compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>done<span class="token punctuation">.</span><span class="token function">tap</span><span class="token punctuation">(</span><span class="token string">'CleanPlugin'</span><span class="token punctuation">,</span> <span class="token parameter">stats</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>compiler<span class="token punctuation">.</span>outputFileSystem<span class="token punctuation">.</span>constructor<span class="token punctuation">.</span>name <span class="token operator">!==</span> <span class="token string">"NodeOutputFileSystem"</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">const</span> assets <span class="token operator">=</span> stats<span class="token punctuation">.</span><span class="token function">toJson</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>assets<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token parameter">asset</span> <span class="token operator">=&gt;</span> asset<span class="token punctuation">.</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// 多数组合并并且去重</span>
+    <span class="token keyword">const</span> newAssets <span class="token operator">=</span> <span class="token function">union</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span>exclude<span class="token punctuation">,</span> assets<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// 获取未匹配文件</span>
+    <span class="token keyword">const</span> unmatchFiles <span class="token operator">=</span> <span class="token function">getUnmatchFiles</span><span class="token punctuation">(</span>outputPath<span class="token punctuation">,</span> newAssets<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// 删除未匹配文件</span>
+    unmatchFiles<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>fs<span class="token punctuation">.</span>unlinkSync<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> CleanPlugin<span class="token punctuation">;</span>
+</code></pre></div><p>比较难的技术难点在「代码分析」中都已经说明了，这里主要说下：</p> <p><code>path.relative()</code>：</p> <p><code>path.relative()</code> 方法根据当前工作目录返回 <code>from</code> 到 <code>to</code> 的相对路径。 如果 <code>from</code> 和 <code>to</code> 各自解析到相同的路径（分别调用 <code>path.resolve()</code> 之后），则返回零长度的字符串。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>path<span class="token punctuation">.</span><span class="token function">relative</span><span class="token punctuation">(</span><span class="token string">'/data/orandea/test/aaa'</span><span class="token punctuation">,</span> <span class="token string">'/data/orandea/impl/bbb'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 返回: '../../impl/bbb'</span>
+</code></pre></div><h3 id="试试效果"><a href="#试试效果" class="header-anchor">#</a> 试试效果</h3> <p>先来看看我们现在的目录结构：</p> <p><img src="https://s.poetries.top/gitee/2020/09/221.png" alt=""></p> <p>首先执行一遍<code>npm run build</code>，生成如下内容：</p> <p><img src="https://s.poetries.top/gitee/2020/09/223.png" alt=""></p> <p>然后修改一下<code>src/index.js</code>中的内容，例如添加一行代码，之后再重新执行<code>npm run build</code>：</p> <p><img src="https://s.poetries.top/gitee/2020/09/224.png" alt=""></p> <p>可以看到，只有改变的<code>index.js</code>被重新删除替换了，而<code>css</code>文件没有。</p> <p>再来验证一下<code>options.exclude</code>，在<code>webpack.config.js</code>中添加一个插件的参数，就用上一次生成的<code>js</code>的名称吧：</p> <div class="language-js extra-class"><pre class="language-js"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token keyword">new</span> <span class="token class-name">CleanPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">exclude</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token string">"main.e0c6be8f72d73a68f73a.js"</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>再去修改一下<code>index.js</code>的内容，例如加两个注释，然后执行<code>npm run build</code>，会发现这次旧的<code>js</code>文件并不会被删除，而是会在原来的基础上添加一个新的<code>js</code>文件。这也证明了我们的<code>exclude</code>属性是可用的：</p> <p><img src="https://s.poetries.top/gitee/2020/09/225.png" alt=""></p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

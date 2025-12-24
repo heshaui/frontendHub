@@ -1,0 +1,50 @@
+<!-- Section: # 5 实现call方法 -->
+<div class="section-content" data-section-id="_5-实现call方法">
+<h2 id="_5-实现call方法"><a href="#_5-实现call方法" class="header-anchor">#</a> 5 实现call方法</h2>
+<p><strong>call做了什么:</strong></p>
+<ul><li>将函数设为对象的属性</li> <li>执行和删除这个函数</li> <li>指定<code>this</code>到函数并传入给定参数执行函数</li> <li>如果不传入参数，默认指向 <code>window</code></li></ul>
+<p><strong>分析：如何在函数执行时绑定this</strong></p>
+<ul><li>如<code>var obj = {x:100,fn() { this.x }}</code></li> <li>执行<code>obj.fn()</code> ,此时<code>fn</code>内部的<code>this</code>就指向了<code>obj</code></li> <li>可借此来实现函数绑定<code>this</code></li></ul>
+<blockquote><p>原生<code>call</code>、<code>apply</code>传入的<code>this</code>如果是值类型，会被<code>new Object</code>（如<code>fn.call('abc')</code>）</p></blockquote>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">//实现call方法</span>
+
+<span class="token comment">// 相当于在obj上调用fn方法，this指向obj </span>
+<span class="token comment">// var obj = {fn: function(){console.log(this)}}</span>
+<span class="token comment">// obj.fn() fn内部的this指向obj</span>
+<span class="token comment">// call就是模拟了这个过程</span>
+<span class="token comment">// context 相当于obj</span>
+
+<span class="token class-name">Function</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">myCall</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">context <span class="token operator">=</span> window<span class="token punctuation">,</span> <span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> context <span class="token operator">!==</span> <span class="token string">'object'</span><span class="token punctuation">)</span> context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Object</span><span class="token punctuation">(</span>context<span class="token punctuation">)</span> <span class="token comment">// 值类型，变为对象</span>
+
+  <span class="token comment">// args 传递过来的参数</span>
+  <span class="token comment">// this 表示调用call的函数fn</span>
+  <span class="token comment">// context 是call传入的this</span>
+
+  <span class="token comment">// 在context上加一个唯一值，不会出现属性名称的覆盖</span>
+  <span class="token keyword">let</span> fnKey <span class="token operator">=</span> <span class="token function">Symbol</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token comment">// 相等于 obj[fnKey] = fn </span>
+  context<span class="token punctuation">[</span>fnKey<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span> <span class="token comment">// this 就是当前的函数</span>
+  
+  <span class="token comment">// 绑定了this</span>
+  <span class="token keyword">let</span> result <span class="token operator">=</span> context<span class="token punctuation">[</span>fnKey<span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">// 相当于 obj.fn()执行 fn内部this指向context(obj)</span>
+
+  <span class="token comment">// 清理掉 fn ，防止污染（即清掉obj上的fnKey属性）</span>
+  <span class="token keyword">delete</span> context<span class="token punctuation">[</span>fnKey<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// 返回结果 </span>
+  <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div>
+<div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">//用法：f.call(this,arg1)</span>
+
+<span class="token keyword">function</span> <span class="token function">f</span><span class="token punctuation">(</span><span class="token parameter">a<span class="token punctuation">,</span>b</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+ console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>a<span class="token operator">+</span>b<span class="token punctuation">)</span>
+ console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>name<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">let</span> obj<span class="token operator">=</span><span class="token punctuation">{</span>
+ <span class="token literal-property property">name</span><span class="token operator">:</span><span class="token number">1</span>
+<span class="token punctuation">}</span>
+f<span class="token punctuation">.</span><span class="token function">myCall</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">)</span> <span class="token comment">// 不传obj，this指向window</span>
+</code></pre></div>
+</div>

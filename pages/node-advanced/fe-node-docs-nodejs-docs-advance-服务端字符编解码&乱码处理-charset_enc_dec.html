@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务端字符编解码&乱码处理 charset_enc_dec - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>服务端字符编解码&乱码处理 charset_enc_dec</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>服务端字符编解码&乱码处理 charset_enc_dec</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="写在前面"><a href="#写在前面" class="header-anchor">#</a> 写在前面</h2> <p>在web服务端开发中，字符的编解码几乎每天都要打交道。编解码一旦处理不当，就会出现令人头疼的乱码问题。</p> <p>不少从事node服务端开发的同学，由于对字符编码码相关知识了解不足，遇到问题时，经常会一筹莫展，花大量的时间在排查、解决问题。</p> <p>文本先对字符编解码的基础知识进行简单介绍，然后举例说明如何在node中进行编解码，最后是服务端的代码案例。</p> <h2 id="关于字符编解码"><a href="#关于字符编解码" class="header-anchor">#</a> 关于字符编解码</h2> <p>在网络通信的过程中，传输的都是二进制的比特位，不管发送的内容是文本还是图片，采用的语言是中文还是英文。</p> <p>举个例子，客户端向服务端发送"你好"。</p> <blockquote><p>客户端 --- 你好 ---&gt; 服务端</p></blockquote> <p>这中间包含了两个关键步骤，分别对应的是编码、解码。</p> <ol><li>客户端：将"你好"这个字符串，编码成计算机网络需要的二进制比特位。</li> <li>服务端：将接收到的二进制比特位，解码成"你好"这个字符串。</li></ol> <p>总结一下：</p> <ol><li>编码：将需要传送的数据，转成对应的二进制比特位。</li> <li>解码：将二进制比特位，转成原始的数据。</li></ol> <p>上面有些重要的技术细节没有提到，答案在下一小节。</p> <ul><li>客户端怎么知道"你好"这个字符对应的比特位是多少？</li> <li>服务端收到二进制比特位之后，怎么知道对应的字符串是什么？</li></ul> <h2 id="关于字符集和字符编码"><a href="#关于字符集和字符编码" class="header-anchor">#</a> 关于字符集和字符编码</h2> <p>上面提到字符、二进制的转换问题。既然两者可以互相转换，也就是说存在明确的转换规则，可以实现<strong>字符&lt;-&gt;二进制</strong>的相互转换。</p> <p>这里提到的转换规则，其实就是我们经常听到的字符集&amp;字符编码。</p> <p><strong>字符集</strong>是一系列字符（文字、标点符号等）的集合。字符集有很多，常见的有ASCII、Unicode、GBK等。不同字符集主要的区别在于包含字符个数的不同。</p> <p>了解了字符集的概念后，接下来介绍下字符编码。</p> <p>字符集告诉我们支持哪些字符，但具体字符怎么编码，是由<strong>字符编码</strong>决定的。比如Unicode字符集，支持的字符编码有UTF8(常用)、UTF16、UTF32。</p> <p>概括一下：</p> <ul><li>字符集：字符的集合，不同字符集包含的字符数不同。</li> <li>字符编码：字符集中字符的实际编码方式。</li> <li>一个字符集可能有多种字符编码方式。</li></ul> <p>可以把字符编码看成一个映射表，客户端、服务端就是根据这个映射表，来实现字符跟二进制的编解码转换。</p> <p>举个例子，"你"这个字符，在UTF8编码中，占据三个字节<code>0xe4 0xbd 0xa0</code>，而在GBK编码中，占据两个字节<code>0xc4 0xe3</code>。</p> <h2 id="字符编解码例子"><a href="#字符编解码例子" class="header-anchor">#</a> 字符编解码例子</h2> <p>上面已经提到了字符编解码所需的基础知识。下面我们看一个简单的例子，这里借助了<code>icon-lite</code>这个库来帮助我们实现编解码的操作。</p> <p>可以看到，在字符编码时，我们采用了<code>gbk</code>。在解码时，如果同样采用<code>gbk</code>，可以得到原始的字符。而当我们解码时采用<code>utf8</code>时，则出现了乱码。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> iconv <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'iconv-lite'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> oriText <span class="token operator">=</span> <span class="token string">'你'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> encodedBuff <span class="token operator">=</span> iconv<span class="token punctuation">.</span><span class="token function">encode</span><span class="token punctuation">(</span>oriText<span class="token punctuation">,</span> <span class="token string">'gbk'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>encodedBuff<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// &lt;Buffer c4 e3&gt;</span>
+
+<span class="token keyword">var</span> decodedText <span class="token operator">=</span> iconv<span class="token punctuation">.</span><span class="token function">decode</span><span class="token punctuation">(</span>encodedBuff<span class="token punctuation">,</span> <span class="token string">'gbk'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>decodedText<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 你</span>
+
+<span class="token keyword">var</span> wrongText <span class="token operator">=</span> iconv<span class="token punctuation">.</span><span class="token function">decode</span><span class="token punctuation">(</span>encodedBuff<span class="token punctuation">,</span> <span class="token string">'utf8'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>wrongText<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// ��</span>
+</code></pre></div><h2 id="实际例子-服务端编解码"><a href="#实际例子-服务端编解码" class="header-anchor">#</a> 实际例子：服务端编解码</h2> <p>通常我们需要处理编解码的场景有文件读写、网络请求处理。这里距网络请求的例子，介绍如何在服务端进行编解码。</p> <p>假设我们运行着如下http服务，监听来自客户端的请求。客户端传输数据时采用了<code>gbk</code>编码，而服务端默认采用的是<code>utf8</code>编码。</p> <p>如果此时采用默认的<code>utf8</code>对请求进行解码，就会出现乱码，因此需要特殊处理。</p> <p>服务端代码如下（为简化代码，这里跳过了请求方法、请求编码的判断）</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> http <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'http'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> iconv <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'iconv-lite'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 假设客户端采用post方法，编码为gbk</span>
+<span class="token keyword">var</span> server <span class="token operator">=</span> http<span class="token punctuation">.</span><span class="token function">createServer</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> chunks <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    
+    req<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'data'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">chunk</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        chunks<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>chunk<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    req<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'end'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        chunks <span class="token operator">=</span> Buffer<span class="token punctuation">.</span><span class="token function">concat</span><span class="token punctuation">(</span>chunks<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// 对二进制进行解码</span>
+        <span class="token keyword">var</span> body <span class="token operator">=</span> iconv<span class="token punctuation">.</span><span class="token function">decode</span><span class="token punctuation">(</span>chunks<span class="token punctuation">,</span> <span class="token string">'gbk'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        res<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token string">'HELLO FROM SERVER'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+server<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>对应的客户端代码如下：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> http <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'http'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> iconv <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'iconv-lite'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> charset <span class="token operator">=</span> <span class="token string">'gbk'</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 对字符"你"进行编码</span>
+<span class="token keyword">var</span> reqBuff <span class="token operator">=</span> iconv<span class="token punctuation">.</span><span class="token function">encode</span><span class="token punctuation">(</span><span class="token string">'你'</span><span class="token punctuation">,</span> charset<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> options <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">hostname</span><span class="token operator">:</span> <span class="token string">'127.0.0.1'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">port</span><span class="token operator">:</span> <span class="token string">'3000'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">path</span><span class="token operator">:</span> <span class="token string">'/'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">method</span><span class="token operator">:</span> <span class="token string">'POST'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">headers</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token string-property property">'Content-Type'</span><span class="token operator">:</span> <span class="token string">'text/plain'</span><span class="token punctuation">,</span>
+        <span class="token string-property property">'Content-Encoding'</span><span class="token operator">:</span> <span class="token string">'identity'</span><span class="token punctuation">,</span>
+        <span class="token string-property property">'Charset'</span><span class="token operator">:</span> charset <span class="token comment">// 设置请求字符集编码</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> client <span class="token operator">=</span> http<span class="token punctuation">.</span><span class="token function">request</span><span class="token punctuation">(</span>options<span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">res</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    res<span class="token punctuation">.</span><span class="token function">pipe</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>stdout<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+client<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span>reqBuff<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="相关链接"><a href="#相关链接" class="header-anchor">#</a> 相关链接</h2> <p>iconv-lite
+https://github.com/ashtuchkin/iconv-lite</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

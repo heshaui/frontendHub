@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前后端分离之数据Mock - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>前后端分离之数据Mock</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>前后端分离之数据Mock</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="一、学前预热"><a href="#一、学前预热" class="header-anchor">#</a> 一、学前预热</h2> <blockquote><p>为了做到前后端并行开发，数据<code>mock</code>就成为环境搭建的重要一环</p></blockquote> <h3 id="_1-1-web应用前后端分离"><a href="#_1-1-web应用前后端分离" class="header-anchor">#</a> 1.1 Web应用前后端分离</h3> <ul><li>后台向前台提供<code>API</code>接口,只负责数据的提供和计算，而完全不处理展现</li> <li>前台通过<code>Http(Ajax)</code>请求获取数据,　在浏览器端动态构建界面显示数据</li></ul> <h3 id="_1-2-利用node-express提供模拟数据"><a href="#_1-2-利用node-express提供模拟数据" class="header-anchor">#</a> 1.2 利用Node+express提供模拟数据</h3> <ul><li>优点：可以在浏览器端访问</li> <li>缺点：如果是打包发布就无法访问模拟数据, 只能是测试时使用</li></ul> <blockquote><p>修改build/dev-server.js</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">//加载json数据</span>
+<span class="token keyword">var</span> apiData <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'../src/mock/data.json'</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> home <span class="token operator">=</span> apiData<span class="token punctuation">.</span>home<span class="token punctuation">;</span>
+
+<span class="token comment">//得到路由器</span>
+<span class="token keyword">var</span> apiRouter <span class="token operator">=</span> express<span class="token punctuation">.</span><span class="token function">Router</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">//注册路由</span>
+apiRouter<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'/home'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    res<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">code</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>   <span class="token comment">//0代表正确数据</span>
+      <span class="token literal-property property">data</span><span class="token operator">:</span> seller
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token comment">//启用路由</span>
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token string">'/api'</span><span class="token punctuation">,</span> apiRouter<span class="token punctuation">)</span>
+
+<span class="token comment">//访问http://localhost:8080/api/home</span>
+</code></pre></div><h3 id="_1-3-利用mockjs提供模拟数据"><a href="#_1-3-利用mockjs提供模拟数据" class="header-anchor">#</a> 1.3 利用mockjs提供模拟数据</h3> <blockquote><p>Mockjs: 用来拦截ajax请求, 生成随机数据返回</p></blockquote> <ul><li>优点：不可以在浏览器端访问</li> <li>缺点：打包发布运行模拟接口也是可以用的</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> Mock <span class="token keyword">from</span> <span class="token string">'mockjs'</span>  
+<span class="token keyword">import</span> apiData <span class="token keyword">from</span> <span class="token string">'./data.json'</span>
+
+Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token string">'/api2/seller'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">code</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token literal-property property">data</span><span class="token operator">:</span>apiData<span class="token punctuation">.</span>seller<span class="token punctuation">}</span><span class="token punctuation">)</span>
+Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token string">'/api2/goods'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">code</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token literal-property property">data</span><span class="token operator">:</span>apiData<span class="token punctuation">.</span>goods<span class="token punctuation">}</span><span class="token punctuation">)</span>
+Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token string">'/api2/ratings'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token literal-property property">code</span><span class="token operator">:</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token literal-property property">data</span><span class="token operator">:</span>apiData<span class="token punctuation">.</span>ratings<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="_1-4-使用postman工具测试接口"><a href="#_1-4-使用postman工具测试接口" class="header-anchor">#</a> 1.4 使用postman工具测试接口</h3> <ul><li><code>postman</code>是用来测试<code>API</code>接口的<code>chrome</code>插件</li> <li><code>postman</code>也是一个活接口文档</li></ul> <h3 id="_1-5-ajax请求mock数据接口"><a href="#_1-5-ajax请求mock数据接口" class="header-anchor">#</a> 1.5 ajax请求mock数据接口</h3> <ul><li><code>vue-resource</code>是用于<code>ajax</code>请求的<code>vue</code>插件</li> <li><code>axios</code>是浏览器/服务器端通用的<code>ajax</code>请求库</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">//使用示例</span>
+
+<span class="token keyword">import</span> VueResource <span class="token keyword">from</span> <span class="token string">'vue-resource'</span> 
+Vue<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>VueResource<span class="token punctuation">)</span>
+
+<span class="token comment">//组件对象多了$http属性, 使用它发送ajax请求</span>
+<span class="token keyword">this</span><span class="token punctuation">.</span>$http<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'/api2/seller'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">response</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>response<span class="token punctuation">.</span>body<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">response</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'失败了'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">import</span> axios <span class="token keyword">from</span> <span class="token string">'axios'</span>  
+axios<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'/api2/seller'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">response</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>response<span class="token punctuation">.</span>body<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">response</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'失败了'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><h2 id="二、数据mock思路"><a href="#二、数据mock思路" class="header-anchor">#</a> 二、数据mock思路</h2> <ul><li>在<code>client</code>端处数据<code>mock</code></li> <li>在<code>server</code>端<code>mock</code></li></ul> <blockquote><ul><li>第一种方式拦截了请求的发出，直接返回<code>mock</code>的数据，而第二种方式请求则真实地发出，只是在<code>server</code>端进行<code>route</code>拦截</li> <li>前后端分离的方式，就是在传统开发模式中加了一个<code>node</code>层，这样数据<code>mock</code>完全可以在<code>node server</code>端完成，基本思路如下</li></ul></blockquote> <p><img src="https://s.poetries.top/uploads/2022/05/57153f8db75aadd8.png" alt=""></p> <h3 id="_2-1-mock思路说明"><a href="#_2-1-mock思路说明" class="header-anchor">#</a> 2.1 mock思路说明</h3> <ul><li>只有线下开发模式，才会需要进行数据<code>mock</code></li> <li>根据请求的<code>url</code>，拼接形成一个<code>file path</code></li> <li>为了避免<code>node</code>缓存，删除<code>require.cache(path)</code></li> <li>读取<code>require(path)</code> ，如果该文件不存在或读取失败，则跳转到失败路由。这样简单的数据<code>mock</code>就实现了</li></ul> <h3 id="_2-2-代码描述"><a href="#_2-2-代码描述" class="header-anchor">#</a> 2.2 代码描述</h3> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 伪代码</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">===</span> <span class="token string">'development'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  router<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span><span class="token string">'/api/*'</span><span class="token punctuation">,</span> mockapi<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+ 
+<span class="token keyword">function</span> <span class="token function">mockapi</span><span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res<span class="token punctuation">,</span> opts</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> basePath <span class="token operator">=</span> url<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span>url<span class="token punctuation">)</span><span class="token punctuation">.</span>pathname<span class="token punctuation">;</span>
+         
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        <span class="token keyword">var</span> findPath <span class="token operator">=</span> require<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>prefixPath <span class="token operator">+</span> basePath <span class="token operator">+</span> <span class="token string">'.js'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">delete</span> require<span class="token punctuation">.</span>cache<span class="token punctuation">[</span>findPath<span class="token punctuation">]</span>
+        <span class="token keyword">var</span> result <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span>findPath<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token function">next</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> result <span class="token operator">===</span> <span class="token string">'function'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token function">result</span><span class="token punctuation">(</span>req<span class="token punctuation">,</span> res<span class="token punctuation">,</span> opts<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> result<span class="token punctuation">.</span>status <span class="token operator">===</span> <span class="token string">'undefined'</span> <span class="token operator">||</span> <span class="token keyword">typeof</span> result<span class="token punctuation">.</span>body <span class="token operator">===</span> <span class="token string">'undefined'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">next</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span><span class="token string">'status 或 body 不存在'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    res<span class="token punctuation">.</span><span class="token function">writeHead</span><span class="token punctuation">(</span>result<span class="token punctuation">.</span>status<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+        <span class="token string-property property">'Content-Type'</span><span class="token operator">:</span> <span class="token string">'application/json;charset=UTF-8'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+     
+    res<span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>result<span class="token punctuation">.</span>body<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    res<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">cb</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="三、mock-js使用详解"><a href="#三、mock-js使用详解" class="header-anchor">#</a> 三、Mock.js使用详解</h2> <h3 id="_3-1-mock-js实现的功能"><a href="#_3-1-mock-js实现的功能" class="header-anchor">#</a> 3.1 Mock.js实现的功能</h3> <ul><li>让前端攻城师独立于后端进行开发</li> <li>通过随机数据，模拟各种场景</li> <li>不需要修改既有代码，就可以拦截 <code>Ajax</code> 请求，返回模拟的响应数据</li> <li>支持生成随机的文本、数字、布尔值、日期、邮箱、链接、图片、颜色等。</li></ul> <h3 id="_3-2-mock安装"><a href="#_3-2-mock安装" class="header-anchor">#</a> 3.2 Mock安装</h3> <h4 id="_3-2-1-node下使用"><a href="#_3-2-1-node下使用" class="header-anchor">#</a> 3.2.1 Node下使用</h4> <div class="language-javascript extra-class"><pre class="language-javascript"><code># 安装
+npm install mockjs
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 使用 Mock</span>
+<span class="token keyword">var</span> Mock <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'mockjs'</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> data <span class="token operator">=</span> Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token comment">// 属性 list 的值是一个数组，其中含有 1 到 10 个元素</span>
+    <span class="token string-property property">'list|1-10'</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+        <span class="token comment">// 属性 id 是一个自增数，起始值为 1，每次增 1</span>
+        <span class="token string-property property">'id|+1'</span><span class="token operator">:</span> <span class="token number">1</span>
+    <span class="token punctuation">}</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token comment">// 输出结果</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre></div><h4 id="_3-2-2-requirejs-amd"><a href="#_3-2-2-requirejs-amd" class="header-anchor">#</a> 3.2.2 RequireJS (AMD)</h4> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 配置 Mock 路径</span>
+require<span class="token punctuation">.</span><span class="token function">config</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">paths</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">mock</span><span class="token operator">:</span> <span class="token string">'http://mockjs.com/dist/mock'</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token comment">// 加载 Mock</span>
+<span class="token function">require</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'mock'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">Mock</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment">// 使用 Mock</span>
+    <span class="token keyword">var</span> data <span class="token operator">=</span> Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        <span class="token string-property property">'list|1-10'</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+            <span class="token string-property property">'id|+1'</span><span class="token operator">:</span> <span class="token number">1</span>
+        <span class="token punctuation">}</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token comment">// 输出结果</span>
+    document<span class="token punctuation">.</span>body<span class="token punctuation">.</span>innerHTML <span class="token operator">+=</span>
+        <span class="token string">'&lt;pre&gt;'</span> <span class="token operator">+</span>
+        <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span> <span class="token operator">+</span>
+        <span class="token string">'&lt;/pre&gt;'</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><h3 id="_3-3-使用语法"><a href="#_3-3-使用语法" class="header-anchor">#</a> 3.3 使用语法</h3> <ul><li><code>Mock.js</code> 的语法规范包括两部分
+<ul><li>数据模板定义规范</li> <li>数据占位符定义规范</li></ul></li></ul> <h4 id="_3-3-1-数据模板定义规范"><a href="#_3-3-1-数据模板定义规范" class="header-anchor">#</a> 3.3.1 数据模板定义规范</h4> <ul><li>数据模板中的每个属性由 3 部分构成：属性名、生成规则、属性值</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 属性名   name</span>
+<span class="token comment">// 生成规则 rule</span>
+<span class="token comment">// 属性值   value</span>
+<span class="token string-property property">'name|rule'</span><span class="token operator">:</span> value
+</code></pre></div><ul><li><p>属性名 和 生成规则 之间用竖线 <code>|</code> 分隔</p></li> <li><p>生成规则 是可选的</p></li> <li><p>生成规则 有 7 种格式</p> <ul><li><code>'name|min-max': value</code></li> <li><code>'name|count': value</code></li> <li><code>'name|min-max.dmin-dmax': value</code></li> <li><code>'name|min-max.dcount': value</code></li> <li><code>'name|count.dmin-dmax': value</code></li> <li><code>'name|count.dcount': value</code></li> <li><code>'name|+step': value</code></li></ul></li> <li><p>生成规则 的 含义 需要依赖 属性值的类型 才能确定</p></li> <li><p>属性值 中可以含有 <code>@</code>占位符</p></li> <li><p>属性值 还指定了最终值的初始值和类型</p></li></ul> <h4 id="_3-3-2-生成规则和示例"><a href="#_3-3-2-生成规则和示例" class="header-anchor">#</a> 3.3.2 生成规则和示例</h4> <ul><li><p>属性值是字符串 <code>String</code></p> <ul><li><code>'name|min-max': string</code> <ul><li>通过重复 <code>string</code>生成一个字符串，重复次数大于等于<code>min</code>，小于等于 <code>max</code></li></ul></li> <li><code>'name|count': string</code> <ul><li>通过重复 <code>string</code>生成一个字符串，重复次数等于 <code>count</code>。</li></ul></li></ul></li> <li><p>属性值是数字<code>Number</code></p> <ul><li><code>'name|+1': number</code> <ul><li>属性值自动加 <code>1</code>，初始值为 <code>number</code></li></ul></li> <li><code>'name|min-max': number</code> <ul><li>生成一个大于等于 <code>min</code>、小于等于 <code>max</code>的整数，属性值 <code>number</code> 只是用来确定类型</li></ul></li> <li><code>'name|min-max.dmin-dmax': number</code> <ul><li>生成一个浮点数，整数部分大于等于<code>min</code>、小于等于 <code>max</code>，小数部分保留 <code>dmin</code> 到 <code>dmax</code> 位</li></ul></li></ul></li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token string-property property">'number1|1-100.1-10'</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'number2|123.1-10'</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'number3|123.3'</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'number4|123.10'</span><span class="token operator">:</span> <span class="token number">1.123</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token comment">// =&gt;</span>
+<span class="token punctuation">{</span>
+    <span class="token string-property property">"number1"</span><span class="token operator">:</span> <span class="token number">12.92</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"number2"</span><span class="token operator">:</span> <span class="token number">123.51</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"number3"</span><span class="token operator">:</span> <span class="token number">123.777</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"number4"</span><span class="token operator">:</span> <span class="token number">123.1231091814</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li><p>属性值是布尔型 <code>Boolean</code></p> <ul><li><code>'name|1': boolean</code> <ul><li>随机生成一个布尔值，值为 <code>true</code> 的概率是 <code>1/2</code>，值为 <code>false</code> 的概率同样是 <code>1/2</code></li></ul></li> <li><code>'name|min-max': value</code> <ul><li>随机生成一个布尔值，值为 <code>value</code> 的概率是<code>min / (min + max)</code>，值为 <code>!value</code>的概率是 <code>max / (min + max)</code>\</li></ul></li></ul></li> <li><p>属性值是对象 <code>Object</code></p> <ul><li><code>'name|count': object</code> <ul><li>从属性值 <code>object</code>中随机选取 <code>count</code>个属性</li></ul></li> <li><code>'name|min-max': object</code> <ul><li>从属性值 <code>object</code>中随机选取 <code>min</code> 到 <code>max</code> 个属性</li></ul></li></ul></li> <li><p>属性值是数组 <code>Array</code></p> <ul><li><code>'name|1': array</code> <ul><li>从属性值 <code>array</code> 中随机选取 <code>1</code>个元素，作为最终值</li></ul></li> <li><code>'name|+1': array</code> <ul><li>从属性值 <code>array</code>中顺序选取 <code>1</code> 个元素，作为最终值</li></ul></li> <li><code>'name|min-max': array</code> <ul><li>通过重复属性值<code>array</code> 生成一个新数组，重复次数大于等于 <code>min</code>，小于等于 <code>max</code></li></ul></li> <li><code>'name|count': array</code> <ul><li>通过重复属性值 <code>array</code>生成一个新数组，重复次数为 <code>count</code></li></ul></li></ul></li> <li><p>属性值是函数 <code>Function</code></p> <ul><li><code>'name': function</code> <ul><li>执行函数 <code>function</code>，取其返回值作为最终的属性值，函数的上下文为属性 <code>'name'</code> 所在的对象</li></ul></li></ul></li> <li><p>属性值是正则表达式 <code>RegExp</code></p> <ul><li><code>'name': regexp</code> <ul><li>根据正则表达式 <code>regexp</code> 反向生成可以匹配它的字符串。用于生成自定义格式的字符串</li></ul></li></ul></li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token string-property property">'regexp1'</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[a-z][A-Z][0-9]</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+    <span class="token string-property property">'regexp2'</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\w\W\s\S\d\D</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+    <span class="token string-property property">'regexp3'</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\d{5,10}</span><span class="token regex-delimiter">/</span></span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token comment">// =&gt;</span>
+<span class="token punctuation">{</span>
+    <span class="token string-property property">"regexp1"</span><span class="token operator">:</span> <span class="token string">"pJ7"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"regexp2"</span><span class="token operator">:</span> <span class="token string">"F)\fp1G"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"regexp3"</span><span class="token operator">:</span> <span class="token string">"561659409"</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="_3-3-3-数据占位符定义规范"><a href="#_3-3-3-数据占位符定义规范" class="header-anchor">#</a> 3.3.3 数据占位符定义规范</h4> <blockquote><p>占位符,只是在属性值字符串中占个位置，并不出现在最终的属性值中</p></blockquote> <ul><li>占位符 的格式为</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>@占位符
+@<span class="token function">占位符</span><span class="token punctuation">(</span>参数 <span class="token punctuation">[</span><span class="token punctuation">,</span> 参数<span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre></div><ul><li>用 <code>@</code>来标识其后的字符串是 占位符</li> <li>占位符 引用的是 <code>Mock.Random</code> 中的方法</li> <li>通过 <code>Mock.Random.extend()</code> 来扩展自定义占位符</li> <li>占位符 也可以引用 数据模板 中的属性</li> <li>占位符 会优先引用 数据模板 中的属性</li> <li>占位符 支持 相对路径 和 绝对路径</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">first</span><span class="token operator">:</span> <span class="token string">'@FIRST'</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">middle</span><span class="token operator">:</span> <span class="token string">'@FIRST'</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">last</span><span class="token operator">:</span> <span class="token string">'@LAST'</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">full</span><span class="token operator">:</span> <span class="token string">'@first @middle @last'</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token comment">// =&gt;</span>
+<span class="token punctuation">{</span>
+    <span class="token string-property property">"name"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token string-property property">"first"</span><span class="token operator">:</span> <span class="token string">"Charles"</span><span class="token punctuation">,</span>
+        <span class="token string-property property">"middle"</span><span class="token operator">:</span> <span class="token string">"Brenda"</span><span class="token punctuation">,</span>
+        <span class="token string-property property">"last"</span><span class="token operator">:</span> <span class="token string">"Lopez"</span><span class="token punctuation">,</span>
+        <span class="token string-property property">"full"</span><span class="token operator">:</span> <span class="token string">"Charles Brenda Lopez"</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="_3-4-mock-mock"><a href="#_3-4-mock-mock" class="header-anchor">#</a> 3.4 Mock.mock()</h3> <h4 id="_3-4-1-mock-mock-template"><a href="#_3-4-1-mock-mock-template" class="header-anchor">#</a> 3.4.1 Mock.mock( template )</h4> <ul><li>根据数据模板生成模拟数据</li></ul> <div class="language-html extra-class"><pre class="language-html"><code><span class="token comment">&lt;!-- （必选）加载 Mock --&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://mockjs.com/dist/mock.js<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// Mock.mock( template )</span>
+<span class="token keyword">var</span> template <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token string-property property">'title'</span><span class="token operator">:</span> <span class="token string">'Syntax Demo'</span><span class="token punctuation">,</span>
+
+    <span class="token string-property property">'string1|1-10'</span><span class="token operator">:</span> <span class="token string">'★'</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'string2|3'</span><span class="token operator">:</span> <span class="token string">'value'</span><span class="token punctuation">,</span>
+
+    <span class="token string-property property">'number1|+1'</span><span class="token operator">:</span> <span class="token number">100</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'number2|1-100'</span><span class="token operator">:</span> <span class="token number">100</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'number3|1-100.1-10'</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'number4|123.1-10'</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'number5|123.3'</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'number6|123.10'</span><span class="token operator">:</span> <span class="token number">1.123</span><span class="token punctuation">,</span>
+
+    <span class="token string-property property">'boolean1|1'</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'boolean2|1-2'</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+
+    <span class="token string-property property">'object1|2-4'</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token string-property property">'110000'</span><span class="token operator">:</span> <span class="token string">'北京市'</span><span class="token punctuation">,</span>
+        <span class="token string-property property">'120000'</span><span class="token operator">:</span> <span class="token string">'天津市'</span><span class="token punctuation">,</span>
+        <span class="token string-property property">'130000'</span><span class="token operator">:</span> <span class="token string">'河北省'</span><span class="token punctuation">,</span>
+        <span class="token string-property property">'140000'</span><span class="token operator">:</span> <span class="token string">'山西省'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'object2|2'</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token string-property property">'310000'</span><span class="token operator">:</span> <span class="token string">'上海市'</span><span class="token punctuation">,</span>
+        <span class="token string-property property">'320000'</span><span class="token operator">:</span> <span class="token string">'江苏省'</span><span class="token punctuation">,</span>
+        <span class="token string-property property">'330000'</span><span class="token operator">:</span> <span class="token string">'浙江省'</span><span class="token punctuation">,</span>
+        <span class="token string-property property">'340000'</span><span class="token operator">:</span> <span class="token string">'安徽省'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+    <span class="token string-property property">'array1|1'</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'AMD'</span><span class="token punctuation">,</span> <span class="token string">'CMD'</span><span class="token punctuation">,</span> <span class="token string">'KMD'</span><span class="token punctuation">,</span> <span class="token string">'UMD'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'array2|1-10'</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'Mock.js'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'array3|3'</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'Mock.js'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+
+    <span class="token string-property property">'function'</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>title
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">var</span> data <span class="token operator">=</span> Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span>template<span class="token punctuation">)</span>
+
+<span class="token function">$</span><span class="token punctuation">(</span><span class="token string">'&lt;pre&gt;'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">text</span><span class="token punctuation">(</span><span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">appendTo</span><span class="token punctuation">(</span><span class="token string">'body'</span><span class="token punctuation">)</span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">//res</span>
+<span class="token punctuation">{</span>
+    <span class="token string-property property">"title"</span><span class="token operator">:</span> <span class="token string">"Syntax Demo"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"string1"</span><span class="token operator">:</span> <span class="token string">"★★★"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"string2"</span><span class="token operator">:</span> <span class="token string">"valuevaluevalue"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"number1"</span><span class="token operator">:</span> <span class="token number">100</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"number2"</span><span class="token operator">:</span> <span class="token number">48</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"number3"</span><span class="token operator">:</span> <span class="token number">99.05</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"number4"</span><span class="token operator">:</span> <span class="token number">123.6</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"number5"</span><span class="token operator">:</span> <span class="token number">123.516</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"number6"</span><span class="token operator">:</span> <span class="token number">123.1236370317</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"boolean1"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"boolean2"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"object1"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token string-property property">"120000"</span><span class="token operator">:</span> <span class="token string">"天津市"</span><span class="token punctuation">,</span>
+        <span class="token string-property property">"130000"</span><span class="token operator">:</span> <span class="token string">"河北省"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"object2"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token string-property property">"320000"</span><span class="token operator">:</span> <span class="token string">"江苏省"</span><span class="token punctuation">,</span>
+        <span class="token string-property property">"330000"</span><span class="token operator">:</span> <span class="token string">"浙江省"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"array1"</span><span class="token operator">:</span> <span class="token string">"KMD"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"array2"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token string">"Mock.js"</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"array3"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token string">"Mock.js"</span><span class="token punctuation">,</span>
+        <span class="token string">"Mock.js"</span><span class="token punctuation">,</span>
+        <span class="token string">"Mock.js"</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"function"</span><span class="token operator">:</span> <span class="token string">"Syntax Demo"</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="_3-4-2-mock-mock-rurl-template"><a href="#_3-4-2-mock-mock-rurl-template" class="header-anchor">#</a> 3.4.2 Mock.mock( rurl, template )</h4> <ul><li>记录数据模板。当拦截到匹配 <code>rurl</code> 的 <code>Ajax</code> 请求时，将根据数据模板 <code>template</code>生成模拟数据，并作为响应数据返回</li></ul> <div class="language-html extra-class"><pre class="language-html"><code><span class="token comment">&lt;!-- （必选）加载 Mock --&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://mockjs.com/dist/mock.js<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// Mock.mock(rurl, template)</span>
+Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.json</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    <span class="token string-property property">'list|1-10'</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+        <span class="token string-property property">'id|+1'</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+        <span class="token string-property property">'email'</span><span class="token operator">:</span> <span class="token string">'@EMAIL'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+$<span class="token punctuation">.</span><span class="token function">ajax</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">url</span><span class="token operator">:</span> <span class="token string">'1.json'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">dataType</span><span class="token operator">:</span> <span class="token string">'json'</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">data<span class="token punctuation">,</span> status<span class="token punctuation">,</span> jqXHR</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token function">$</span><span class="token punctuation">(</span><span class="token string">'&lt;pre&gt;'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">text</span><span class="token punctuation">(</span><span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">appendTo</span><span class="token punctuation">(</span><span class="token string">'body'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+    <span class="token string-property property">"list"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+            <span class="token string-property property">"id"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+            <span class="token string-property property">"email"</span><span class="token operator">:</span> <span class="token string">"k.sejuwxvego@xcwc.中国互联.公司"</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">{</span>
+            <span class="token string-property property">"id"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+            <span class="token string-property property">"email"</span><span class="token operator">:</span> <span class="token string">"f.hjns@rhivyrvhpb.ve"</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">{</span>
+            <span class="token string-property property">"id"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+            <span class="token string-property property">"email"</span><span class="token operator">:</span> <span class="token string">"g.bdwuuhm@czoybmyp.ms"</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">{</span>
+            <span class="token string-property property">"id"</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+            <span class="token string-property property">"email"</span><span class="token operator">:</span> <span class="token string">"n.tkgs@javvkxz.bf"</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="_3-4-3-mock-mock-rurl-function-options"><a href="#_3-4-3-mock-mock-rurl-function-options" class="header-anchor">#</a> 3.4.3 Mock.mock( rurl, function( options ) )</h4> <ul><li>记录用于生成响应数据的函数。当拦截到匹配 <code>rurl</code> 的 <code>Ajax</code> 请求时，函数 <code>function(options)</code>将被执行，并把执行结果作为响应数据返回</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// Mock.mock(rurl, function(options))</span>
+Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.json</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> options
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+$<span class="token punctuation">.</span><span class="token function">ajax</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">url</span><span class="token operator">:</span> <span class="token string">'hello.json'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">dataType</span><span class="token operator">:</span> <span class="token string">'json'</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">data<span class="token punctuation">,</span> status<span class="token punctuation">,</span> jqXHR</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">$</span><span class="token punctuation">(</span><span class="token string">'&lt;pre&gt;'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">text</span><span class="token punctuation">(</span><span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">appendTo</span><span class="token punctuation">(</span><span class="token string">'body'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+$<span class="token punctuation">.</span><span class="token function">ajax</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">url</span><span class="token operator">:</span> <span class="token string">'hello.json'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">dataType</span><span class="token operator">:</span> <span class="token string">'json'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">data</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">foo</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">bar</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">faz</span><span class="token operator">:</span> <span class="token number">3</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">data<span class="token punctuation">,</span> status<span class="token punctuation">,</span> jqXHR</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">$</span><span class="token punctuation">(</span><span class="token string">'&lt;pre&gt;'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">text</span><span class="token punctuation">(</span><span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">appendTo</span><span class="token punctuation">(</span><span class="token string">'body'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+$<span class="token punctuation">.</span><span class="token function">ajax</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">url</span><span class="token operator">:</span> <span class="token string">'hello.json'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'post'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">dataType</span><span class="token operator">:</span> <span class="token string">'json'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">data</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">foo</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">bar</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">faz</span><span class="token operator">:</span> <span class="token number">3</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">data<span class="token punctuation">,</span> status<span class="token punctuation">,</span> jqXHR</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">$</span><span class="token punctuation">(</span><span class="token string">'&lt;pre&gt;'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">text</span><span class="token punctuation">(</span><span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">appendTo</span><span class="token punctuation">(</span><span class="token string">'body'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token punctuation">{</span>
+    <span class="token string-property property">"url"</span><span class="token operator">:</span> <span class="token string">"hello.json?foo=1&amp;bar=2&amp;faz=3"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"type"</span><span class="token operator">:</span> <span class="token string">"GET"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"body"</span><span class="token operator">:</span> <span class="token keyword">null</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">{</span>
+    <span class="token string-property property">"url"</span><span class="token operator">:</span> <span class="token string">"hello.json"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"type"</span><span class="token operator">:</span> <span class="token string">"GET"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"body"</span><span class="token operator">:</span> <span class="token keyword">null</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">{</span>
+    <span class="token string-property property">"url"</span><span class="token operator">:</span> <span class="token string">"hello.json"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"type"</span><span class="token operator">:</span> <span class="token string">"POST"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"body"</span><span class="token operator">:</span> <span class="token string">"foo=1&amp;bar=2&amp;faz=3"</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="_3-4-4-mock-setup"><a href="#_3-4-4-mock-setup" class="header-anchor">#</a> 3.4.4 Mock.setup()</h4> <ul><li><code>Mock.setup( settings )</code> <ul><li>配置拦截 <code>Ajax</code> 请求时的行为。支持的配置项有：<code>timeout</code></li></ul></li></ul> <blockquote><p>指定被拦截的 <code>Ajax</code> 请求的响应时间，单位是毫秒。值可以是正整数，例如 <code>400</code>，表示 <code>400</code> 毫秒 后才会返回响应内容；也可以是横杠 <code>'-'</code> 风格的字符串，例如 <code>'200-600'</code>，表示响应时间介于 <code>200</code> 和 <code>600</code> 毫秒之间。默认值是<code>'10-100'</code></p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code>Mock<span class="token punctuation">.</span><span class="token function">setup</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">timeout</span><span class="token operator">:</span> <span class="token number">400</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+Mock<span class="token punctuation">.</span><span class="token function">setup</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">timeout</span><span class="token operator">:</span> <span class="token string">'200-600'</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><ul><li>目前，接口 <code>Mock.setup( settings )</code>仅用于配置 <code>Ajax</code> 请求</li></ul> <h4 id="_3-4-5-mock-random"><a href="#_3-4-5-mock-random" class="header-anchor">#</a> 3.4.5 Mock.Random</h4> <ul><li><code>Mock.Random</code> 是一个工具类，用于生成各种随机数据</li> <li><code>Mock.Random</code>的方法在数据模板中称为『占位符』，书写格式为 <code>@</code>占位符(参数 [, 参数])</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> Random <span class="token operator">=</span> Mock<span class="token punctuation">.</span>Random
+Random<span class="token punctuation">.</span><span class="token function">email</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment">// =&gt; "n.clark@miller.io"</span>
+Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token string">'@email'</span><span class="token punctuation">)</span>
+<span class="token comment">// =&gt; "y.lee@lewis.org"</span>
+Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span> <span class="token punctuation">{</span> <span class="token literal-property property">email</span><span class="token operator">:</span> <span class="token string">'@email'</span> <span class="token punctuation">}</span> <span class="token punctuation">)</span>
+<span class="token comment">// =&gt; { email: "v.lewis@hall.gov" }</span>
+</code></pre></div><h2 id="四、简单构建一套mock-server"><a href="#四、简单构建一套mock-server" class="header-anchor">#</a> 四、简单构建一套mock-server</h2> <blockquote><p>为了更好的分工合作，让前端能在不依赖后端环境的情况下进行开发，其中一种手段就是为前端开发者提供一个 web 容器，这个本地环境就是 mock-server</p></blockquote> <p><strong>一个比较好的 mock-server 该有的能力</strong></p> <ul><li>与线上环境一致的接口地址，每次构建前端代码时不需要修改调用接口的代码</li> <li>所改即所得，具有热更新的能力，每次增加修改 <code>mock</code> 接口时不需要重启 <code>mock</code> 服务，更不用重启前端构建服务</li> <li>能配合 <code>Webpack</code></li> <li><code>mock</code> 数据可以由工具生成不需要自己手动写</li> <li>能模拟 <code>POST</code>、<code>GET</code> 请求</li></ul> <p><strong>搭建主要思路</strong></p> <blockquote><p>以 <code>json-server</code> 作为 <code>mock</code> 服务器， <code>mock.js</code> 生成<code>mock</code> 数据，利用 <code>gulp + nodemon + browser-sync</code> 监听<code>mock</code>文件的改动重启 <code>node</code> 服务，刷新浏览器，以此达到一种相对完美的 <code>mock-server</code>要求</p></blockquote> <h3 id="_4-1-json-server-搭配-mock-js"><a href="#_4-1-json-server-搭配-mock-js" class="header-anchor">#</a> 4.1 json-server 搭配 mock.js</h3> <ul><li>这里以<code>Webpack</code> 的前端工程为例</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>cnpm install json<span class="token operator">-</span>server mockjs <span class="token operator">--</span>save
+</code></pre></div><ul><li>在项目根目录新建 <code>mock</code>文件夹，新建 <code>mock/db.js</code> 作为 <code>mock</code> 数据源，<code>mock/server.js</code>作为 <code>mock</code> 服务，<code>mock/routes.js</code>重写路由表</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> Mock <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'mockjs'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">getComment</span><span class="token operator">:</span> Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token string-property property">"error"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"message"</span><span class="token operator">:</span> <span class="token string">"success"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"result|40"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+      <span class="token string-property property">"author"</span><span class="token operator">:</span> <span class="token string">"@name"</span><span class="token punctuation">,</span>
+      <span class="token string-property property">"comment"</span><span class="token operator">:</span> <span class="token string">"@cparagraph"</span><span class="token punctuation">,</span>
+      <span class="token string-property property">"date"</span><span class="token operator">:</span> <span class="token string">"@datetime"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">addComment</span><span class="token operator">:</span> Mock<span class="token punctuation">.</span><span class="token function">mock</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token string-property property">"error"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"message"</span><span class="token operator">:</span> <span class="token string">"success"</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"result"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><ul><li>这里我们利用 <code>mock.js</code> 生成 <code>mock</code> 数据，可以尽可能的还原真实数据，还可以减少数据构造的复杂度</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// routes.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token string-property property">"/comment/get.action"</span><span class="token operator">:</span> <span class="token string">"/getComment"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"/comment/add.action"</span><span class="token operator">:</span> <span class="token string">"/addComment"</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// server.js</span>
+<span class="token keyword">const</span> jsonServer <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'json-server'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> db <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./db.js'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> routes <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./routes.js'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> port <span class="token operator">=</span> <span class="token number">3000</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> server <span class="token operator">=</span> jsonServer<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> router <span class="token operator">=</span> jsonServer<span class="token punctuation">.</span><span class="token function">router</span><span class="token punctuation">(</span>db<span class="token punctuation">)</span>
+<span class="token keyword">const</span> middlewares <span class="token operator">=</span> jsonServer<span class="token punctuation">.</span><span class="token function">defaults</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> rewriter <span class="token operator">=</span> jsonServer<span class="token punctuation">.</span><span class="token function">rewriter</span><span class="token punctuation">(</span>routes<span class="token punctuation">)</span>
+
+server<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>middlewares<span class="token punctuation">)</span>
+<span class="token comment">// 将 POST 请求转为 GET</span>
+server<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">request<span class="token punctuation">,</span> res<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  request<span class="token punctuation">.</span>method <span class="token operator">=</span> <span class="token string">'GET'</span><span class="token punctuation">;</span>
+  <span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+server<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>rewriter<span class="token punctuation">)</span> <span class="token comment">// 注意：rewriter 的设置一定要在 router 设置之前</span>
+server<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>router<span class="token punctuation">)</span>
+
+server<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span>port<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'open mock server at localhost:'</span> <span class="token operator">+</span> port<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><ul><li>启动服务</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code>$ node mock<span class="token operator">/</span>server<span class="token punctuation">.</span>js
+</code></pre></div><ul><li>打开 <code>http://localhost:3000/comment/get.action</code>即可查看到我们想要的数据</li></ul> <p><img src="https://s.poetries.top/uploads/2022/05/970a371380180edd.png" alt=""></p> <blockquote><p>是不是这样就算搭建完了我们的 <code>mock-server</code> ？不，并没有。我们可以尝试修改一下 <code>db.js</code> 的文件内容，刷新浏览器发现 <code>mock</code> 数据并没有像我们想象的那样修改。那也就是说每次当我们需要添加 /修改 <code>mock</code> 数据使都需要重启一次 <code>mock</code> 服务</p></blockquote> <h3 id="_4-2-端口代理"><a href="#_4-2-端口代理" class="header-anchor">#</a> 4.2 端口代理</h3> <blockquote><p>通过 <code>Webpack</code> 配置 <code>proxy</code> 代理</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  
+  <span class="token literal-property property">devServer</span><span class="token operator">:</span> <span class="token punctuation">{</span>  
+    <span class="token comment">//其实很简单的，只要配置这个参数就可以了  </span>
+    <span class="token literal-property property">proxy</span><span class="token operator">:</span> <span class="token punctuation">{</span>  
+      <span class="token string-property property">'/api/'</span><span class="token operator">:</span> <span class="token punctuation">{</span>  
+        <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'http://localhost:3000'</span><span class="token punctuation">,</span>
+  	    <span class="token literal-property property">changeOrigin</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">pathRewrite</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token string-property property">'^/api'</span><span class="token operator">:</span> <span class="token string">''</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span> 
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>接着在代码里进行 <code>ajax</code>请求就可以写成，这里以 <code>axios</code> 为例子</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">getComments</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  axios<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'api/comment/get.action'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">res</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>data<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="_4-3-文件改动自动刷新"><a href="#_4-3-文件改动自动刷新" class="header-anchor">#</a> 4.3 文件改动自动刷新</h3> <blockquote><p>我们希望更改 <code>mock</code>文件能和 <code>webpack</code> 热更新一样，所改即所得。这里我使用了 <code>nodemon</code>，利用 <code>gulp</code> 建立自动执行的任务。</p></blockquote> <div class="language-javascript extra-class"><pre class="language-javascript"><code>cnpm install gulp gulp<span class="token operator">-</span>nodemon browser<span class="token operator">-</span>sync <span class="token operator">--</span>save
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// gulpfile.js 的代码如下</span>
+onst path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> gulp <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> nodemon <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'gulp-nodemon'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> browserSync <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'browser-sync'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> server <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'mock'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// browser-sync 配置，配置里启动 nodemon 任务</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'browser-sync'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'nodemon'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  browserSync<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">proxy</span><span class="token operator">:</span> <span class="token string">"http://localhost:8080"</span><span class="token punctuation">,</span> <span class="token comment">// 这里的端口和 webpack 的端口一致</span>
+    <span class="token literal-property property">port</span><span class="token operator">:</span> <span class="token number">8081</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// browser-sync 监听文件</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'mock'</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'browser-sync'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  gulp<span class="token punctuation">.</span><span class="token function">watch</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'./mock/db.js'</span><span class="token punctuation">,</span> <span class="token string">'./mock/**'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token string">'bs-delay'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 延时刷新</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'bs-delay'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    browserSync<span class="token punctuation">.</span><span class="token function">reload</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 服务器重启</span>
+gulp<span class="token punctuation">.</span><span class="token function">task</span><span class="token punctuation">(</span><span class="token string">'nodemon'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">cb</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 设个变量来防止重复重启</span>
+  <span class="token keyword">var</span> started <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  <span class="token keyword">var</span> stream <span class="token operator">=</span> <span class="token function">nodemon</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">script</span><span class="token operator">:</span> <span class="token string">'./mock/server.js'</span><span class="token punctuation">,</span>
+    <span class="token comment">// 监听文件的后缀</span>
+    <span class="token literal-property property">ext</span><span class="token operator">:</span> <span class="token string">"js"</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">env</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token string-property property">'NODE_ENV'</span><span class="token operator">:</span> <span class="token string">'development'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token comment">// 监听的路径</span>
+    <span class="token literal-property property">watch</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      server
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  stream<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'start'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>started<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">cb</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      started <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'crash'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">'application has crashed!\n'</span><span class="token punctuation">)</span>
+    stream<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">'restart'</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><ul><li>这样以后我们在构建我们 <code>Webpack</code> 工程时只需要先执行 <code>npm run dev</code></li> <li>之后新建 <code>terminal</code> 执行 <code>gulp mock</code></li> <li>就可以搭建一个随改随变的 <code>mock-server</code> 环境</li></ul> <p><strong>完整的代码详情</strong> https://github.com/poetries/mock-server</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

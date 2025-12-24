@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组合函数 - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>组合函数</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>组合函数</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h1 id="组合函数"><a href="#组合函数" class="header-anchor">#</a> 组合函数</h1> <p>到了第四章了，函数式编程的魅力似乎越来越大。</p> <p>对于函数式编程者，他们会将每个函数都当成是一个“部件”，在需要时通过组装不同的“部件”，来拼凑出一个自己想要的“模型”。</p> <p>专业点的角度来说，就是我们能够定义某种组合方式，来让它们成为一种新的组合函数，程序中不同的部分都可以使用这个函数。这种将函数一起使用的过程叫做组合。</p> <p>再介绍组合函数的概念之前，我们就已经使用过组合了。</p> <p>例如在之前我们的一个案例：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">unary</span><span class="token punctuation">(</span><span class="token function">adder</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre></div><p>上面的表达式，我们将两个函数整合起来，然后将第一个函数调用产生的值(输出)当成第二个函数调用的实参(输入)。画个简图，也就是这样：</p> <div class="language- extra-class"><pre class="language-text"><code>functionValue &lt;-- unary &lt;-- adder &lt;-- 3
+</code></pre></div><p><code>3</code> 是 <code>adder(..)</code> 的输入。而 <code>adder(..)</code> 的输出是 <code>unary(..)</code> 的输入。<code>unary(..)</code> 的输出是 <code>functionValue</code>。 这就是 <code>unary(..)</code> 和 <code>adder(..)</code> 的组合。</p> <h3 id="compose2函数"><a href="#compose2函数" class="header-anchor">#</a> Compose2函数</h3> <p>为了满足上面组合函数的要求，我们可以来构造这么一个简单的函数：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">compose2</span><span class="token punctuation">(</span><span class="token parameter">fn2<span class="token punctuation">,</span>fn1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">composed</span><span class="token punctuation">(</span><span class="token parameter">origValue</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+		<span class="token keyword">return</span> <span class="token function">fn2</span><span class="token punctuation">(</span> <span class="token function">fn1</span><span class="token punctuation">(</span> origValue <span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// ES6 箭头函数形式写法</span>
+<span class="token keyword">var</span> <span class="token function-variable function">compose2</span> <span class="token operator">=</span>
+	<span class="token punctuation">(</span><span class="token parameter">fn2<span class="token punctuation">,</span>fn1</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
+		<span class="token parameter">origValue</span> <span class="token operator">=&gt;</span>
+			<span class="token function">fn2</span><span class="token punctuation">(</span> <span class="token function">fn1</span><span class="token punctuation">(</span> origValue <span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>它能够自动创建两个函数的组合，这和我们手动做的是一模一样的。</p> <h3 id="words案例"><a href="#words案例" class="header-anchor">#</a> Words案例</h3> <p>现在有这么一个需求，需要将给定的一个英文字符串，提取其中全部的英文单词，先全部转化小写，然后去除其中重复的单词。</p> <p>我们可以先来创建这么2个函数：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">words</span><span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token function">String</span><span class="token punctuation">(</span> str <span class="token punctuation">)</span>
+		<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+		<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\s|\b</span><span class="token regex-delimiter">/</span></span> <span class="token punctuation">)</span>
+		<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span> <span class="token keyword">function</span> <span class="token function">alpha</span><span class="token punctuation">(</span><span class="token parameter">v</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			<span class="token keyword">return</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^[\w]+$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span> v <span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">unique</span><span class="token punctuation">(</span><span class="token parameter">list</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">var</span> uniqList <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+	<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> list<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token comment">// value not yet in the new list?</span>
+		<span class="token keyword">if</span> <span class="token punctuation">(</span>uniqList<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span> list<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+			uniqList<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span> list<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">}</span>
+
+	<span class="token keyword">return</span> uniqList<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>接下来我们解析文本字符串：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> text <span class="token operator">=</span> <span class="token string">"To compose two functions together, pass the \
+output of the first function call as the input of the \
+second function call."</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> wordsFound <span class="token operator">=</span> <span class="token function">words</span><span class="token punctuation">(</span> text <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> wordsUsed <span class="token operator">=</span> <span class="token function">unique</span><span class="token punctuation">(</span> wordsFound <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+wordsUsed<span class="token punctuation">;</span>
+<span class="token comment">// ["to","compose","two","functions","together","pass",</span>
+<span class="token comment">// "the","output","of","first","function","call","as",</span>
+<span class="token comment">// "input","second"]</span>
+</code></pre></div><p>在上面的例子中，我们将该过程分为了2步来做。</p> <p>并且先创建了<code>wordsFound</code>函数，然后将该函数的输出再传递给<code>unique</code>,实际上，上面的效果等同于：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> wordsUsed <span class="token operator">=</span> <span class="token function">unique</span><span class="token punctuation">(</span> <span class="token function">words</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span> <span class="token punctuation">)</span>
+</code></pre></div><p>所以我们可以将其封装一层：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">uniqueWords</span><span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token function">unique</span><span class="token punctuation">(</span> <span class="token function">words</span><span class="token punctuation">(</span> str <span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> wordsUsed <span class="token operator">=</span> <span class="token function">uniqueWords</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span>
+</code></pre></div><p>你会发现，其实我们还可以这样写：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> uniqueWords <span class="token operator">=</span> <span class="token function">compose2</span><span class="token punctuation">(</span> unique<span class="token punctuation">,</span> words <span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> wordsUsed <span class="token operator">=</span> <span class="token function">uniqueWords</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span>
+</code></pre></div><p>这样我们就成功将<code>uniqueWords</code>转化为了无形参的函数。</p> <p><code>uniqueWords(..)</code> 接收一个字符串并返回一个数组。它是 <code>unique(..)</code> 和 <code>words(..)</code> 的组合，并且满足我们的数据流向要求：</p> <div class="language- extra-class"><pre class="language-text"><code>wordsUsed &lt;-- unique &lt;-- words &lt;-- text
+</code></pre></div><h3 id="compose函数"><a href="#compose函数" class="header-anchor">#</a> compose函数</h3> <p>在上面我们构造了<code>compose2</code>函数，它能接收2个函数，并将2个函数从右向左的执行。</p> <p>如果我们能够定义两个函数的组合，我们也同样能够支持组合任意数量的函数。任意数目函数的组合的通用可视化数据流如下：</p> <div class="language- extra-class"><pre class="language-text"><code>finalValue &lt;-- func1 &lt;-- func2 &lt;-- ... &lt;-- funcN &lt;-- origValue
+</code></pre></div><p>我们能够像这样实现一个通用 <code>compose(..)</code> 实用函数：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">compose</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>fns</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">composed</span><span class="token punctuation">(</span><span class="token parameter">result</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+		<span class="token comment">// 拷贝一份保存函数的数组</span>
+		<span class="token keyword">var</span> list <span class="token operator">=</span> fns<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+		<span class="token keyword">while</span> <span class="token punctuation">(</span>list<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+			<span class="token comment">// 将最后一个函数从列表尾部拿出</span>
+			<span class="token comment">// 并执行它</span>
+			result <span class="token operator">=</span> list<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">(</span> result <span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+
+		<span class="token keyword">return</span> result<span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// ES6 箭头函数形式写法</span>
+<span class="token keyword">var</span> <span class="token function-variable function">compose</span> <span class="token operator">=</span>
+	<span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>fns</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
+		<span class="token parameter">result</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+			<span class="token keyword">var</span> list <span class="token operator">=</span> fns<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+			<span class="token keyword">while</span> <span class="token punctuation">(</span>list<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+				<span class="token comment">// 将最后一个函数从列表尾部拿出</span>
+				<span class="token comment">// 并执行它</span>
+				result <span class="token operator">=</span> list<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">(</span> result <span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token punctuation">}</span>
+
+			<span class="token keyword">return</span> result<span class="token punctuation">;</span>
+		<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>现在看一下组合超过两个函数的例子。回想下我们的 <code>uniqueWords(..)</code> 组合例子，让我们增加一个 <code>skipShortWords(..)</code>，它将所有单词字母数大于4的提取出来：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">skipShortWords</span><span class="token punctuation">(</span><span class="token parameter">list</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> list<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">str</span> <span class="token operator">=&gt;</span> str<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">4</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>让我们再定义一个 <code>biggerWords(..)</code> 来包含 <code>skipShortWords(..)</code>。我们期望等价的手工组合方式是 <code>skipShortWords(unique(words(text)))</code>，所以让我们采用 <code>compose(..)</code> 来实现它：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> text <span class="token operator">=</span> <span class="token string">"To compose two functions together, pass the \
+output of the first function call as the input of the \
+second function call."</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> biggerWords <span class="token operator">=</span> <span class="token function">compose</span><span class="token punctuation">(</span> skipShortWords<span class="token punctuation">,</span> unique<span class="token punctuation">,</span> words <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> wordsUsed <span class="token operator">=</span> <span class="token function">biggerWords</span><span class="token punctuation">(</span> text <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+wordsUsed<span class="token punctuation">;</span>
+<span class="token comment">// ["compose","functions","together","output","first",</span>
+<span class="token comment">// "function","input","second"]</span>
+</code></pre></div><p>现在，让我们回忆一下第 3 章中出现的 <code>partialRight(..)</code> 来让组合变的更有趣。我们能够构造一个由 <code>compose(..)</code> 自身组成的右偏函数应用，通过提前定义好第二和第三参数（<code>unique(..)</code> 和 <code>words(..)</code>）；我们把它称作 <code>filterWords(..)</code>（如下）。</p> <p>然后，我们能够通过多次调用 <code>filterWords(..)</code> 来完成组合，但是每次的第一参数却各不相同。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">skipShortWords</span><span class="token punctuation">(</span><span class="token parameter">list</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> list<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">str</span> <span class="token operator">=&gt;</span> str<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">4</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">function</span> <span class="token function">skipLongWords</span><span class="token punctuation">(</span><span class="token parameter">list</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+	<span class="token keyword">return</span> list<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">str</span> <span class="token operator">=&gt;</span> str<span class="token punctuation">.</span>length <span class="token operator">&lt;=</span> <span class="token number">4</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> filterWords <span class="token operator">=</span> <span class="token function">partialRight</span><span class="token punctuation">(</span> compose<span class="token punctuation">,</span> unique<span class="token punctuation">,</span> words <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> biggerWords <span class="token operator">=</span> <span class="token function">filterWords</span><span class="token punctuation">(</span> skipShortWords <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> shorterWords <span class="token operator">=</span> <span class="token function">filterWords</span><span class="token punctuation">(</span> skipLongWords <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">biggerWords</span><span class="token punctuation">(</span> text <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// ["compose","functions","together","output","first",</span>
+<span class="token comment">// "function","input","second"]</span>
+
+<span class="token function">shorterWords</span><span class="token punctuation">(</span> text <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// ["to","two","pass","the","of","call","as"]</span>
+</code></pre></div><p>花些时间考虑一下基于 <code>compose(..)</code> 的右偏函数应用给了我们什么。</p> <p>甚至我们可以结合前面一章的<code>not</code>和<code>when</code>、<code>identity</code>函数来重构一下：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// 取反辅助函数</span>
+<span class="token keyword">function</span> <span class="token function">not</span><span class="token punctuation">(</span><span class="token parameter">predicate</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">negated</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token operator">!</span><span class="token function">predicate</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token comment">// 判断某个条件成立之后执行fn</span>
+<span class="token keyword">function</span> <span class="token function">when</span><span class="token punctuation">(</span><span class="token parameter">predicate<span class="token punctuation">,</span> fn</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">conditional</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">predicate</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token function">fn</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token comment">// 传一个返回一个</span>
+<span class="token keyword">function</span> <span class="token function">identity</span><span class="token punctuation">(</span><span class="token parameter">v</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> v<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> <span class="token function-variable function">isLong</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> str<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">4</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> isShort <span class="token operator">=</span> <span class="token function">not</span><span class="token punctuation">(</span>isLong<span class="token punctuation">)</span>
+<span class="token keyword">var</span> returnLong <span class="token operator">=</span> <span class="token function">when</span><span class="token punctuation">(</span>isLong<span class="token punctuation">,</span> identity<span class="token punctuation">)</span>
+<span class="token keyword">var</span> returnShort <span class="token operator">=</span> <span class="token function">when</span><span class="token punctuation">(</span>isShort<span class="token punctuation">,</span> identity<span class="token punctuation">)</span>
+
+<span class="token keyword">function</span> <span class="token function">skipShortWords</span><span class="token punctuation">(</span><span class="token parameter">list</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> list<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">str</span> <span class="token operator">=&gt;</span> <span class="token function">returnLong</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">function</span> <span class="token function">skipLongWords</span><span class="token punctuation">(</span><span class="token parameter">list</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> list<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">str</span> <span class="token operator">=&gt;</span> <span class="token function">returnShort</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> filterWords <span class="token operator">=</span> <span class="token function">partialRight</span><span class="token punctuation">(</span>compose<span class="token punctuation">,</span> unique<span class="token punctuation">,</span> words<span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> biggerWords <span class="token operator">=</span> <span class="token function">filterWords</span><span class="token punctuation">(</span>skipShortWords<span class="token punctuation">)</span>
+<span class="token keyword">var</span> shorterWords <span class="token operator">=</span> <span class="token function">filterWords</span><span class="token punctuation">(</span>skipLongWords<span class="token punctuation">)</span>
+
+<span class="token function">biggerWords</span><span class="token punctuation">(</span> text <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// ["compose","functions","together","output","first",</span>
+<span class="token comment">// "function","input","second"]</span>
+
+<span class="token function">shorterWords</span><span class="token punctuation">(</span> text <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// ["to","two","pass","the","of","call","as"]</span>
+</code></pre></div><h3 id="compose的不同实现方式"><a href="#compose的不同实现方式" class="header-anchor">#</a> compose的不同实现方式</h3> <h4 id="reduce实现"><a href="#reduce实现" class="header-anchor">#</a> reduce实现</h4> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">compose</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>fns</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> fns<span class="token punctuation">.</span><span class="token function">reverse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span> <span class="token keyword">function</span> <span class="token function">reducer</span><span class="token punctuation">(</span><span class="token parameter">fn1<span class="token punctuation">,</span>fn2</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+		<span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">composed</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+			<span class="token keyword">return</span> <span class="token function">fn2</span><span class="token punctuation">(</span> <span class="token function">fn1</span><span class="token punctuation">(</span> <span class="token operator">...</span>args <span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// ES6 箭头函数形式写法</span>
+<span class="token keyword">var</span> <span class="token function-variable function">compose</span> <span class="token operator">=</span>
+	<span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>fns</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
+		fns<span class="token punctuation">.</span><span class="token function">reverse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span> <span class="token punctuation">(</span><span class="token parameter">fn1<span class="token punctuation">,</span>fn2</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
+			<span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
+				<span class="token function">fn2</span><span class="token punctuation">(</span> <span class="token function">fn1</span><span class="token punctuation">(</span> <span class="token operator">...</span>args <span class="token punctuation">)</span> <span class="token punctuation">)</span>
+		<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h4 id="递归实现"><a href="#递归实现" class="header-anchor">#</a> 递归实现</h4> <div class="language-javascript extra-class"><pre class="language-javascript"><code>
+<span class="token keyword">function</span> <span class="token function">compose</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>fns</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token comment">// 拿出最后两个参数</span>
+	<span class="token keyword">var</span> <span class="token punctuation">[</span> fn1<span class="token punctuation">,</span> fn2<span class="token punctuation">,</span> <span class="token operator">...</span>rest <span class="token punctuation">]</span> <span class="token operator">=</span> fns<span class="token punctuation">.</span><span class="token function">reverse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	<span class="token keyword">var</span> <span class="token function-variable function">composedFn</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token function">composed</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+		<span class="token keyword">return</span> <span class="token function">fn2</span><span class="token punctuation">(</span> <span class="token function">fn1</span><span class="token punctuation">(</span> <span class="token operator">...</span>args <span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>rest<span class="token punctuation">.</span>length <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> composedFn<span class="token punctuation">;</span>
+
+	<span class="token keyword">return</span> <span class="token function">compose</span><span class="token punctuation">(</span> <span class="token operator">...</span>rest<span class="token punctuation">.</span><span class="token function">reverse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> composedFn <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// ES6 箭头函数形式写法</span>
+<span class="token keyword">var</span> <span class="token function-variable function">compose</span> <span class="token operator">=</span>
+	<span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>fns</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+		<span class="token comment">// 拿出最后两个参数</span>
+		<span class="token keyword">var</span> <span class="token punctuation">[</span> fn1<span class="token punctuation">,</span> fn2<span class="token punctuation">,</span> <span class="token operator">...</span>rest <span class="token punctuation">]</span> <span class="token operator">=</span> fns<span class="token punctuation">.</span><span class="token function">reverse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+		<span class="token keyword">var</span> <span class="token function-variable function">composedFn</span> <span class="token operator">=</span>
+			<span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
+				<span class="token function">fn2</span><span class="token punctuation">(</span> <span class="token function">fn1</span><span class="token punctuation">(</span> <span class="token operator">...</span>args <span class="token punctuation">)</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+		<span class="token keyword">if</span> <span class="token punctuation">(</span>rest<span class="token punctuation">.</span>length <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> composedFn<span class="token punctuation">;</span>
+
+		<span class="token keyword">return</span> <span class="token function">compose</span><span class="token punctuation">(</span> <span class="token operator">...</span>rest<span class="token punctuation">.</span><span class="token function">reverse</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> composedFn <span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="pipe函数"><a href="#pipe函数" class="header-anchor">#</a> pipe函数</h3> <p>我们早期谈及的是从右往左顺序的标准 <code>compose(..)</code> 实现。这么做的好处是能够和手工组合列出参数（函数）的顺序保持一致。</p> <p>不足之处就是它们排列的顺序和它们执行的顺序是相反的，这将会造成困扰。同时，不得不使用 <code>partialRight(compose, ..)</code> 提早定义要在组合过程中 <strong>第一个</strong> 执行的函数。</p> <p>相反的顺序，从右往左的组合，有个常见的名字：<code>pipe(..)</code>。</p> <p><code>pipe(..)</code> 与 <code>compose(..)</code> 一模一样，除了它将列表中的函数从左往右处理。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">pipe</span><span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>fns</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">piped</span><span class="token punctuation">(</span><span class="token parameter">result</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+		<span class="token keyword">var</span> list <span class="token operator">=</span> fns<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+		<span class="token keyword">while</span> <span class="token punctuation">(</span>list<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+			<span class="token comment">// 从列表中取第一个函数并执行</span>
+			result <span class="token operator">=</span> list<span class="token punctuation">.</span><span class="token function">shift</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">(</span> result <span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+
+		<span class="token keyword">return</span> result<span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>实际上，我们只需将 <code>compose(..)</code> 的参数反转就能定义出来一个 <code>pipe(..)</code>。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> pipe <span class="token operator">=</span> <span class="token function">reverseArgs</span><span class="token punctuation">(</span> compose <span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>回忆下之前的通用组合的例子：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> biggerWords <span class="token operator">=</span> <span class="token function">compose</span><span class="token punctuation">(</span> skipShortWords<span class="token punctuation">,</span> unique<span class="token punctuation">,</span> words <span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>以 <code>pipe(..)</code> 的方式来实现，我们只需要反转参数的顺序：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> biggerWords <span class="token operator">=</span> <span class="token function">pipe</span><span class="token punctuation">(</span> words<span class="token punctuation">,</span> unique<span class="token punctuation">,</span> skipShortWords <span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p><code>pipe(..)</code> 的优势在于它以函数执行的顺序排列参数，某些情况下能够减轻阅读者的疑惑</p> <h2 id="抽象"><a href="#抽象" class="header-anchor">#</a> 抽象</h2> <p>先来介绍2个简单且实用的函数</p> <h3 id="prop函数"><a href="#prop函数" class="header-anchor">#</a> prop函数</h3> <p>将任意对象的任意属性通过属性名提取出来。让我们把这个实用函数称为 <code>prop(..)</code>：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">prop</span><span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span>obj</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> obj<span class="token punctuation">[</span>name<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// ES6 箭头函数形式</span>
+<span class="token keyword">var</span> <span class="token function-variable function">prop</span> <span class="token operator">=</span>
+	<span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span>obj</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
+		obj<span class="token punctuation">[</span>name<span class="token punctuation">]</span><span class="token punctuation">;</span>
+</code></pre></div><p>使用：</p> <div class="language- extra-class"><pre class="language-text"><code>var obj = { x: 1, y: 2 }
+
+prop('x', obj)
+// 1
+</code></pre></div><h3 id="setprop函数"><a href="#setprop函数" class="header-anchor">#</a> setProp函数</h3> <p>我们处理对象属性的时候，也需要定义下反操作的工具函数：<code>setProp(..)</code>，为了将属性值设到某个对象上。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">setProp</span><span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span>obj<span class="token punctuation">,</span>val</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">var</span> o <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">assign</span><span class="token punctuation">(</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> obj <span class="token punctuation">)</span><span class="token punctuation">;</span>
+	o<span class="token punctuation">[</span>name<span class="token punctuation">]</span> <span class="token operator">=</span> val<span class="token punctuation">;</span>
+	<span class="token keyword">return</span> o<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>使用：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> obj <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token literal-property property">x</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">y</span><span class="token operator">:</span> <span class="token number">2</span> <span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> obj2 <span class="token operator">=</span> <span class="token function">setProp</span><span class="token punctuation">(</span><span class="token string">'z'</span><span class="token punctuation">,</span> obj<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span>
+<span class="token comment">// { x: 1, y: 2, z: 3 }</span>
+</code></pre></div><h3 id="makeobjprop函数"><a href="#makeobjprop函数" class="header-anchor">#</a> makeObjProp函数</h3> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">makeObjProp</span><span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span>value</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token function">setProp</span><span class="token punctuation">(</span> name<span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> value <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// ES6 箭头函数形式</span>
+<span class="token keyword">var</span> <span class="token function-variable function">makeObjProp</span> <span class="token operator">=</span>
+	<span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span>value</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
+		<span class="token function">setProp</span><span class="token punctuation">(</span> name<span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> value <span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p><strong>提示：</strong> 这个实用函数在 Ramda 库中被称为 <code>objOf(..)</code>。</p> <h3 id="回顾ajax案例"><a href="#回顾ajax案例" class="header-anchor">#</a> 回顾ajax案例</h3> <p>让我们回顾一下第二章介绍的<code>ajax</code>案例</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">ajax</span> <span class="token punctuation">(</span><span class="token parameter">url<span class="token punctuation">,</span> data<span class="token punctuation">,</span> callback</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token comment">// ...</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">var</span> getUser <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span> ajax<span class="token punctuation">,</span> <span class="token string">"/api/user"</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> getLastOrder <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span> ajax<span class="token punctuation">,</span> <span class="token string">"/api/order"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">orderId</span><span class="token operator">:</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token punctuation">}</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> <span class="token function-variable function">output</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>sgr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">getLastOrder</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token function">orderFound</span><span class="token punctuation">(</span><span class="token parameter">order</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">getUser</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">userId</span><span class="token operator">:</span> order<span class="token punctuation">.</span>userId <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token function">userFound</span> <span class="token punctuation">(</span><span class="token parameter">user</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">output</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span>name<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>如上，我们在给<code>getLastOrder</code>函数传递最后一个参数(一个回调函数<code>orderFound</code>)</p> <p>该函数用查询到的订单信息<code>order</code>中的<code>userId</code>查询当前订单的用户，并输出用户的姓名<code>name</code>.</p> <p>可以看到上面的函数需要<code>order</code>和<code>user</code>两个形参。</p> <p>我们可以用现有的函数式编程的知识将其转化为一个无形参的函数<code>getLastOrder</code>.</p> <h4 id="移除user形参"><a href="#移除user形参" class="header-anchor">#</a> 移除user形参</h4> <p>从里向外，我们先想想如何移除<code>user</code>这个形参。</p> <p>首先<code>output</code>函数是需要接收<code>user.name</code>这个参数的。我们可以用什么样的方式来移除这个参数呢。</p> <p>在这里我们的目的是想要获取<code>user</code>中的<code>name</code>属性：</p> <p>定义一个<code>extractName</code>函数：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> extractName <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span>prop<span class="token punctuation">,</span> <span class="token string">'name'</span><span class="token punctuation">)</span>
+</code></pre></div><p>之后我们就可以直接用：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">extractName</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span>
+</code></pre></div><p>这样的方式获取到<code>user.name</code></p> <p>接着你是不是也想到可以用<code>compose</code>了呢？</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> outputUserName <span class="token operator">=</span> <span class="token function">compose</span><span class="token punctuation">(</span> output<span class="token punctuation">,</span> extractName <span class="token punctuation">)</span>
+</code></pre></div><p>想一下我们需要的数据流是什么样：</p> <div class="language- extra-class"><pre class="language-text"><code>output &lt;-- extractName &lt;-- user
+</code></pre></div><p>下一步，让我们缩小关注点，看下例子中嵌套的这块查找操作的调用：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">getLastOrder</span><span class="token punctuation">(</span> <span class="token keyword">function</span> <span class="token function">orderFound</span><span class="token punctuation">(</span><span class="token parameter">order</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+	<span class="token function">getUser</span><span class="token punctuation">(</span> <span class="token punctuation">{</span> <span class="token literal-property property">userId</span><span class="token operator">:</span> order<span class="token punctuation">.</span>userId<span class="token punctuation">}</span><span class="token punctuation">,</span> outputUserName <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>我们刚刚创建的 <code>outputUserName(..)</code> 函数是提供给 <code>getUser(..)</code> 的回调。所以我们还能定义一个函数叫做 <code>processUser(..)</code> 来处理回调参数，使用 <code>partialRight(..)</code>：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> processUser <span class="token operator">=</span> <span class="token function">partialRight</span><span class="token punctuation">(</span> getUser<span class="token punctuation">,</span> outputUserName <span class="token punctuation">)</span>
+</code></pre></div><p>让我们用新函数来重构下之前的代码：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token function">getLastOrder</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token function">orderFound</span><span class="token punctuation">(</span><span class="token parameter">order</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token function">processUser</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">userId</span><span class="token operator">:</span> order<span class="token punctuation">.</span>userId <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><p>Ok，至此，<code>user</code>这个形参已经被我们干掉了。</p> <h4 id="移除order形参"><a href="#移除order形参" class="header-anchor">#</a> 移除order形参</h4> <p>接下来你可以用类似的方式移除掉<code>order</code>形参。</p> <p>首先是获取<code>userId</code></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> extractUserId <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span>prop<span class="token punctuation">,</span> <span class="token string">'userId'</span><span class="token punctuation">)</span>
+</code></pre></div><p>接着你需要定义一个函数来解决<code>{ userId: order.userId }</code>这个问题。我们可以使用上面的<code>makeObjProp</code>函数：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">var</span> userData <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span>makeObjProp<span class="token punctuation">,</span> <span class="token string">'userId'</span><span class="token punctuation">)</span>
+</code></pre></div><p>为了使用 <code>processUser(..)</code> 来完成通过 <code>order</code> 值查找一个人的功能，我们需要的数据流如下：</p> <div class="language- extra-class"><pre class="language-text"><code>processUser &lt;-- userData &lt;-- extractUserId &lt;-- user
+</code></pre></div><p>所以我们只需要再使用一次 <code>compose(..)</code> 来定义一个 <code>lookupUser(..)</code> ：</p> <div class="language- extra-class"><pre class="language-text"><code>var lookupUser = compose( processUser, userData, extractUserId )
+</code></pre></div><h4 id="完整流程"><a href="#完整流程" class="header-anchor">#</a> 完整流程</h4> <p>然后，就是这样了！把这整个例子重新组合起来，不带任何的“形参”：</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">ajax</span> <span class="token punctuation">(</span><span class="token parameter">url<span class="token punctuation">,</span> data<span class="token punctuation">,</span> callback</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token comment">// ...</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> getUser <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span> ajax<span class="token punctuation">,</span> <span class="token string">"/api/user"</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> getLastOrder <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span> ajax<span class="token punctuation">,</span> <span class="token string">"/api/order"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">orderId</span><span class="token operator">:</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token punctuation">}</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> <span class="token function-variable function">output</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>sgr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> extractName <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span>prop<span class="token punctuation">,</span> <span class="token string">'name'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> outputUserName <span class="token operator">=</span> <span class="token function">compose</span><span class="token punctuation">(</span> output<span class="token punctuation">,</span> extractName <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> processUser <span class="token operator">=</span> <span class="token function">partialRight</span><span class="token punctuation">(</span> getUser<span class="token punctuation">,</span> outputUserName <span class="token punctuation">)</span>
+<span class="token keyword">var</span> extractUserId <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span>prop<span class="token punctuation">,</span> <span class="token string">'userId'</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> userData <span class="token operator">=</span> <span class="token function">partial</span><span class="token punctuation">(</span>makeObjProp<span class="token punctuation">,</span> <span class="token string">'userId'</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> lookupUser <span class="token operator">=</span> <span class="token function">compose</span><span class="token punctuation">(</span> processUser<span class="token punctuation">,</span> userData<span class="token punctuation">,</span> extractUserId <span class="token punctuation">)</span>
+
+<span class="token function">getLastOrder</span><span class="token punctuation">(</span> lookupUser <span class="token punctuation">)</span>
+</code></pre></div><p>Look!不带任何的形参。</p> <h2 id="总结"><a href="#总结" class="header-anchor">#</a> 总结</h2> <blockquote><p>函数组合是一种定义函数的模式，它能将一个函数调用的输出路由到另一个函数的调用上，然后一直进行下去。</p> <p>因为 JS 函数只能返回单个值，这个模式本质上要求所有组合中的函数（可能第一个调用的函数除外）是一元的，当前函数从上一个函数输出中只接收一个输入。</p> <p>相较于在我们的代码里详细列出每个调用，函数组合使用 <code>compose(..)</code> 实用函数来提取出实现细节，让代码变得更可读，让我们更关注组合完成的<strong>是什么</strong>，而不是它具体<strong>做什么</strong>。</p> <p>组合 ———— 声明式数据流 ———— 是支撑函数式编程其他特性的最重要的工具之一。</p></blockquote></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+

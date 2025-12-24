@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>逐行读取 readline - FrontendHub</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/content.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="content-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../../index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-code"></i>
+                    <span>FrontendHub</span>
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">首页</a></li>
+                <li><a href="../index.html#features">特色</a></li>
+                <li><a href="../index.html#courses">课程</a></li>
+                <li><a href="../index.html#resources">资源</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>逐行读取 readline</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="content-main">
+        <div class="container">
+            <div class="content-layout">
+                <!-- 侧边栏目录 -->
+                <aside class="sidebar">
+                    <div class="sidebar-sticky">
+                        <h3><i class="fas fa-list"></i> 目录</h3>
+                        <nav class="toc" id="toc">
+                            <!-- 目录将通过JavaScript自动生成 -->
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- 文章内容 -->
+                <article class="article">
+                    <header class="article-header">
+                        <h1>逐行读取 readline</h1>
+                        <div class="article-meta">
+                            <span><i class="far fa-calendar"></i> 更新时间：2025-12-23</span>
+                            <span><i class="far fa-clock"></i> 阅读时长：约 15 分钟</span>
+                        </div>
+                    </header>
+
+                    <div class="article-content">
+<div class="content__default"><h2 id="模块概览"><a href="#模块概览" class="header-anchor">#</a> 模块概览</h2> <p>readline是个非常实用的模块。如名字所示，主要用来实现逐行读取，比如读取用户输入，或者读取文件内容。常见使用场景有下面几种，本文会逐一举例说明。</p> <ul><li>文件逐行读取：比如说进行日志分析。</li> <li>自动完成：比如输入npm，自动提示"help init install"。</li> <li>命令行工具：比如npm init这种问答式的脚手架工具。</li></ul> <h2 id="基础例子"><a href="#基础例子" class="header-anchor">#</a> 基础例子</h2> <p>先看个简单的例子，要求用户输入一个单词，然后自动转成大写</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> readline <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'readline'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> rl <span class="token operator">=</span> readline<span class="token punctuation">.</span><span class="token function">createInterface</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">input</span><span class="token operator">:</span> process<span class="token punctuation">.</span>stdin<span class="token punctuation">,</span>
+    <span class="token literal-property property">output</span><span class="token operator">:</span> process<span class="token punctuation">.</span>stdout
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+rl<span class="token punctuation">.</span><span class="token function">question</span><span class="token punctuation">(</span><span class="token string">'Please input a word: '</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">answer</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'You have entered [%s]'</span><span class="token punctuation">,</span> answer<span class="token punctuation">.</span><span class="token function">toUpperCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    rl<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>运行如下：</p> <div class="language-bash extra-class"><pre class="language-bash"><code>➜  toUpperCase git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> ✗ <span class="token function">node</span> app.js 
+Please input a word: hello
+You have entered <span class="token punctuation">{</span>HELLO<span class="token punctuation">}</span>
+</code></pre></div><h2 id="例子-文件逐行读取-日志分析"><a href="#例子-文件逐行读取-日志分析" class="header-anchor">#</a> 例子：文件逐行读取：日志分析</h2> <p>比如我们有如下日志文件access.log，我们想要提取“访问时间+访问地址”，借助<code>readline</code>可以很方便的完成日志分析的工作。</p> <div class="language- extra-class"><pre class="language-text"><code>[2016-12-09 13:56:48.407] [INFO] access - ::ffff:127.0.0.1 - - "GET /oc/v/account/user.html HTTP/1.1" 200 213125 "http://www.example.com/oc/v/account/login.html" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.98 Safari/537.36"
+[2016-12-09 14:00:10.618] [INFO] access - ::ffff:127.0.0.1 - - "GET /oc/v/contract/underlying.html HTTP/1.1" 200 216376 "http://www.example.com/oc/v/account/user.html" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.98 Safari/537.36"
+[2016-12-09 14:00:34.200] [INFO] access - ::ffff:127.0.0.1 - - "GET /oc/v/contract/underlying.html HTTP/1.1" 200 216376 "http://www.example.com/oc/v/account/user.html" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.98 Safari/537.36"
+</code></pre></div><p>代码如下：</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> readline <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'readline'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> rl <span class="token operator">=</span> readline<span class="token punctuation">.</span><span class="token function">createInterface</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">input</span><span class="token operator">:</span> fs<span class="token punctuation">.</span><span class="token function">createReadStream</span><span class="token punctuation">(</span><span class="token string">'./access.log'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+rl<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'line'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">line</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> arr <span class="token operator">=</span> line<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">' '</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'访问时间：%s %s，访问地址：%s'</span><span class="token punctuation">,</span> arr<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> arr<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> arr<span class="token punctuation">[</span><span class="token number">13</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>运行结果如下：</p> <div class="language-bash extra-class"><pre class="language-bash"><code>➜  lineByLineFromFile git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> ✗ <span class="token function">node</span> app.js
+访问时间：<span class="token punctuation">[</span><span class="token number">2016</span>-12-09 <span class="token number">13</span>:56:48.407<span class="token punctuation">]</span>，访问地址：<span class="token string">"http://www.example.com/oc/v/account/login.html"</span>
+访问时间：<span class="token punctuation">[</span><span class="token number">2016</span>-12-09 <span class="token number">14</span>:00:10.618<span class="token punctuation">]</span>，访问地址：<span class="token string">"http://www.example.com/oc/v/account/user.html"</span>
+访问时间：<span class="token punctuation">[</span><span class="token number">2016</span>-12-09 <span class="token number">14</span>:00:34.200<span class="token punctuation">]</span>，访问地址：<span class="token string">"http://www.example.com/oc/v/account/user.html"</span>
+</code></pre></div><h2 id="例子-自动完成-代码提示"><a href="#例子-自动完成-代码提示" class="header-anchor">#</a> 例子：自动完成：代码提示</h2> <p>这里我们实现一个简单的自动完成功能，当用户输入npm时，按tab键，自动提示用户可选的子命令，如help、init、install。</p> <ul><li>输入<code>np</code>，按下tab：自动补全为npm</li> <li>输入<code>npm in</code>，按下tab：自动提示可选子命令 init、install</li> <li>输入<code>npm inst</code>，按下tab：自动补全为 <code>npm install</code></li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> readline <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'readline'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">completer</span><span class="token punctuation">(</span><span class="token parameter">line</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> command <span class="token operator">=</span> <span class="token string">'npm'</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> subCommands <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'help'</span><span class="token punctuation">,</span> <span class="token string">'init'</span><span class="token punctuation">,</span> <span class="token string">'install'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 输入为空，或者为npm的一部分，则tab补全为npm</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>line<span class="token punctuation">.</span>length <span class="token operator">&lt;</span> command<span class="token punctuation">.</span>length<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token punctuation">[</span>command<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>line<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token number">0</span> <span class="token operator">?</span> <span class="token punctuation">[</span>command<span class="token punctuation">]</span> <span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> line<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// 输入 npm，tab提示 help init install</span>
+    <span class="token comment">// 输入 npm in，tab提示 init install</span>
+    <span class="token keyword">let</span> hits <span class="token operator">=</span> subCommands<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">subCommand</span><span class="token punctuation">)</span><span class="token punctuation">{</span> 
+        <span class="token keyword">const</span> lineTrippedCommand <span class="token operator">=</span> line<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span>command<span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">trim</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> lineTrippedCommand <span class="token operator">&amp;&amp;</span> subCommand<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span> lineTrippedCommand <span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span><span class="token punctuation">(</span>hits<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        hits <span class="token operator">=</span> hits<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">hit</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token punctuation">[</span>command<span class="token punctuation">,</span> hit<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">' '</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  
+    <span class="token keyword">return</span> <span class="token punctuation">[</span>hits<span class="token punctuation">.</span>length <span class="token operator">?</span> hits <span class="token operator">:</span> subCommands<span class="token punctuation">,</span> line<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> rl <span class="token operator">=</span> readline<span class="token punctuation">.</span><span class="token function">createInterface</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token literal-property property">input</span><span class="token operator">:</span> process<span class="token punctuation">.</span>stdin<span class="token punctuation">,</span>
+  <span class="token literal-property property">output</span><span class="token operator">:</span> process<span class="token punctuation">.</span>stdout<span class="token punctuation">,</span>
+  <span class="token literal-property property">completer</span><span class="token operator">:</span> completer
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+rl<span class="token punctuation">.</span><span class="token function">prompt</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>代码运行效果如下，当输入<code>npm in</code>，按下tab键，则会自动提示可选子命令init、install。</p> <div class="language-bash extra-class"><pre class="language-bash"><code>➜  autoComplete git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> ✗ <span class="token function">node</span> app.js
+<span class="token operator">&gt;</span> <span class="token function">npm</span> <span class="token keyword">in</span>
+init     <span class="token function">install</span>  
+</code></pre></div><h2 id="例子-命令行工具-npmt-init"><a href="#例子-命令行工具-npmt-init" class="header-anchor">#</a> 例子：命令行工具：npmt init</h2> <p>下面借助readline实现一个迷你版的<code>npm init</code>功能，运行脚本时，会依次要求用户输入name、version、author属性（其他略过）。</p> <p>这里用到的是<code>rl.question(msg, cbk)</code>这个方法，它会在控制台输入一行提示，当用户完成输入，敲击回车，<code>cbk</code>就会被调用，并把用户输入作为参数传入。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> readline <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'readline'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> rl <span class="token operator">=</span> readline<span class="token punctuation">.</span><span class="token function">createInterface</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">input</span><span class="token operator">:</span> process<span class="token punctuation">.</span>stdin<span class="token punctuation">,</span>
+    <span class="token literal-property property">output</span><span class="token operator">:</span> process<span class="token punctuation">.</span>stdout<span class="token punctuation">,</span>
+    <span class="token literal-property property">prompt</span><span class="token operator">:</span> <span class="token string">'OHAI&gt; '</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> preHint <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+This utility will walk you through creating a package.json file.
+It only covers the most common items, and tries to guess sensible defaults.
+
+See \`npm help json\` for definitive documentation on these fields
+and exactly what they do.
+
+Use \`npm install &lt;pkg&gt; --save\` afterwards to install a package and
+save it as a dependency in the package.json file.
+
+Press ^C at any time to quit.
+</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>preHint<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 问题</span>
+<span class="token keyword">let</span> questions <span class="token operator">=</span> <span class="token punctuation">[</span> <span class="token string">'name'</span><span class="token punctuation">,</span> <span class="token string">'version'</span><span class="token punctuation">,</span> <span class="token string">'author'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 默认答案</span>
+<span class="token keyword">let</span> defaultAnswers <span class="token operator">=</span> <span class="token punctuation">[</span> <span class="token string">'name'</span><span class="token punctuation">,</span> <span class="token string">'1.0.0'</span><span class="token punctuation">,</span> <span class="token string">'none'</span> <span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 用户答案</span>
+<span class="token keyword">let</span> answers <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">let</span> index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">createPackageJson</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">var</span> map <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    questions<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">question<span class="token punctuation">,</span> index</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        map<span class="token punctuation">[</span>question<span class="token punctuation">]</span> <span class="token operator">=</span> answers<span class="token punctuation">[</span>index<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    fs<span class="token punctuation">.</span><span class="token function">writeFileSync</span><span class="token punctuation">(</span><span class="token string">'./package.json'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>map<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">runQuestionLoop</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">if</span><span class="token punctuation">(</span>index <span class="token operator">===</span> questions<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">createPackageJson</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        rl<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    
+    <span class="token keyword">let</span> defaultAnswer <span class="token operator">=</span> defaultAnswers<span class="token punctuation">[</span>index<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> question <span class="token operator">=</span> questions<span class="token punctuation">[</span>index<span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token string">': ('</span> <span class="token operator">+</span> defaultAnswer <span class="token operator">+</span><span class="token string">') '</span><span class="token punctuation">;</span>
+    
+    rl<span class="token punctuation">.</span><span class="token function">question</span><span class="token punctuation">(</span>question<span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">answer</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        answers<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>answer <span class="token operator">||</span> defaultAnswer<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        index<span class="token operator">++</span><span class="token punctuation">;</span>
+        <span class="token function">runQuestionLoop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token function">runQuestionLoop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>运行效果如下，最后还像模像样的生成了package.json（害羞脸）。</p> <div class="language-bash extra-class"><pre class="language-bash"><code>➜  commandLine git:<span class="token punctuation">(</span>master<span class="token punctuation">)</span> ✗ <span class="token function">node</span> app.js
+
+This utility will walk you through creating a package.json file.
+It only covers the <span class="token function">most</span> common items, and tries to guess sensible defaults.
+
+See <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> <span class="token builtin class-name">help</span> json<span class="token variable">`</span></span> <span class="token keyword">for</span> definitive documentation on these fields
+and exactly what they do.
+
+Use <span class="token variable"><span class="token variable">`</span><span class="token function">npm</span> <span class="token function">install</span> <span class="token operator">&lt;</span>pkg<span class="token operator">&gt;</span> --save<span class="token variable">`</span></span> afterwards to <span class="token function">install</span> a package and
+save it as a dependency <span class="token keyword">in</span> the package.json file.
+
+Press ^C at any <span class="token function">time</span> to quit.
+
+name: <span class="token punctuation">(</span>name<span class="token punctuation">)</span> hello
+version: <span class="token punctuation">(</span><span class="token number">1.0</span>.0<span class="token punctuation">)</span> <span class="token number">0.0</span>.1
+author: <span class="token punctuation">(</span>none<span class="token punctuation">)</span> chyingp
+</code></pre></div><h2 id="写在后面"><a href="#写在后面" class="header-anchor">#</a> 写在后面</h2> <p>有不少基于readline的有趣的工具，比如各种脚手架工具。限于篇幅不展开，感兴趣的同学可以研究下。</p> <h2 id="相关链接"><a href="#相关链接" class="header-anchor">#</a> 相关链接</h2> <p>https://nodejs.org/api/readline.html</p></div> <!----> <div class="readMore-wrapper"><span class="readMore">阅读全文</span></div>
+                    </div>
+                            <p>这是一个信息提示框。</p>
+                        </div>
+
+                        <div class="note warning">
+                            <div class="note-title"><i class="fas fa-exclamation-triangle"></i> 注意</div>
+                            <p>这是一个警告提示框。</p>
+                        </div>
+
+                        <div class="note success">
+                            <div class="note-title"><i class="fas fa-check-circle"></i> 成功</div>
+                            <p>这是一个成功提示框。</p>
+                        </div>
+
+                        <h2>代码示例</h2>
+                        <pre><code class="language-javascript">// 示例代码
+function example() {
+    console.log('Hello, FrontendHub!');
+}
+</code></pre>
+                    </div>
+
+                    <!-- 文章底部导航 -->
+                    <nav class="article-nav">
+                        <a href="#" class="prev-article">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>上一篇</span>
+                        </a>
+                        <a href="#" class="next-article">
+                            <span>下一篇</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </nav>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> FrontendHub</h4>
+                    <p>专注于前端技术学习与面试准备</p>
+                </div>
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="../../index.html">首页</a></li>
+                        <li><a href="../index.html#courses">课程体系</a></li>
+                        <li><a href="../index.html#resources">学习资源</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FrontendHub. 用于个人学习使用.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="../../js/main.js"></script>
+    <script src="../../js/content.js"></script>
+</body>
+</html>
+
