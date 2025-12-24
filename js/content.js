@@ -201,22 +201,32 @@ function setupImageZoom() {
 // ==================== 阅读进度条 ====================
 function setupReadingProgress() {
     const progressBar = document.createElement('div');
+    progressBar.className = 'reading-progress';
     progressBar.style.cssText = `
         position: fixed;
-        top: 70px;
+        top: 60px;
         left: 0;
         height: 3px;
         background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-        z-index: 9998;
+        z-index: 999;
         transition: width 0.2s ease;
+        width: 0;
     `;
     document.body.appendChild(progressBar);
+    
+    // 响应式调整进度条位置
+    function updateProgressBarPosition() {
+        progressBar.style.top = window.innerWidth <= 768 ? '56px' : '60px';
+    }
+    
+    updateProgressBarPosition();
+    window.addEventListener('resize', updateProgressBarPosition);
     
     window.addEventListener('scroll', () => {
         const windowHeight = window.innerHeight;
         const documentHeight = document.documentElement.scrollHeight - windowHeight;
         const scrolled = window.pageYOffset;
-        const progress = (scrolled / documentHeight) * 100;
+        const progress = Math.min((scrolled / documentHeight) * 100, 100);
         progressBar.style.width = `${progress}%`;
     });
 }
@@ -231,11 +241,18 @@ function setupSmoothScroll() {
             e.preventDefault();
             const target = document.querySelector(href);
             if (target) {
-                const offsetTop = target.offsetTop - 100;
+                // 根据屏幕大小调整偏移量
+                const offset = window.innerWidth <= 768 ? 70 : 100;
+                const offsetTop = target.offsetTop - offset;
                 window.scrollTo({
                     top: offsetTop,
                     behavior: 'smooth'
                 });
+                
+                // 在移动端关闭侧边栏
+                if (window.innerWidth <= 768 && window.MobileSidebar) {
+                    window.MobileSidebar.close();
+                }
             }
         });
     });
@@ -247,7 +264,8 @@ function setupPrintStyles() {
     style.textContent = `
         @media print {
             .navbar, .breadcrumb, .sidebar, .back-to-top, 
-            .article-nav, .footer {
+            .article-nav, .footer, .sidebar-toggle, 
+            .sidebar-overlay, .reading-progress {
                 display: none !important;
             }
             .article {
@@ -257,15 +275,115 @@ function setupPrintStyles() {
             .article-content pre {
                 page-break-inside: avoid;
             }
+            body {
+                overflow: visible !important;
+            }
         }
     `;
     document.head.appendChild(style);
+}
+
+// ==================== 移动端侧边栏切换 ====================
+function setupMobileSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+    
+    // 创建侧边栏切换按钮
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'sidebar-toggle';
+    toggleBtn.innerHTML = '<i class="fas fa-list"></i>';
+    toggleBtn.setAttribute('aria-label', '打开目录');
+    document.body.appendChild(toggleBtn);
+    
+    // 创建遮罩层
+    const overlay = document.createElement('div');
+    overlay.className = 'sidebar-overlay';
+    document.body.appendChild(overlay);
+    
+    // 在侧边栏标题中添加关闭按钮
+    const sidebarTitle = sidebar.querySelector('h3');
+    if (sidebarTitle) {
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'sidebar-close';
+        closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        closeBtn.setAttribute('aria-label', '关闭目录');
+        sidebarTitle.appendChild(closeBtn);
+        
+        closeBtn.addEventListener('click', closeSidebar);
+    }
+    
+    // 打开侧边栏
+    function openSidebar() {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        toggleBtn.innerHTML = '<i class="fas fa-times"></i>';
+        toggleBtn.setAttribute('aria-label', '关闭目录');
+    }
+    
+    // 关闭侧边栏
+    function closeSidebar() {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+        toggleBtn.innerHTML = '<i class="fas fa-list"></i>';
+        toggleBtn.setAttribute('aria-label', '打开目录');
+    }
+    
+    // 切换侧边栏
+    toggleBtn.addEventListener('click', () => {
+        if (sidebar.classList.contains('active')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
+    
+    // 点击遮罩层关闭侧边栏
+    overlay.addEventListener('click', closeSidebar);
+    
+    // 点击目录链接后关闭侧边栏（使用事件委托）
+    const toc = sidebar.querySelector('.toc');
+    if (toc) {
+        toc.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A' && window.innerWidth <= 768) {
+                setTimeout(closeSidebar, 100);
+            }
+        });
+    }
+    
+    // 监听ESC键关闭侧边栏
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sidebar.classList.contains('active')) {
+            closeSidebar();
+        }
+    });
+    
+    // 窗口大小变化时处理
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (window.innerWidth > 768 && sidebar.classList.contains('active')) {
+                closeSidebar();
+            }
+        }, 100);
+    });
+    
+    // 暴露方法供外部调用
+    window.MobileSidebar = {
+        open: openSidebar,
+        close: closeSidebar
+    };
 }
 
 // ==================== 页面初始化 ====================
 document.addEventListener('DOMContentLoaded', () => {
     // 生成目录
     generateTOC();
+    
+    // 设置移动端侧边栏
+    setupMobileSidebar();
     
     // 代码高亮
     highlightCode();
